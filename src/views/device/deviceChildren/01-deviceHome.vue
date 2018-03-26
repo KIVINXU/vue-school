@@ -277,7 +277,7 @@
           port: [{required: true, message: '端口不能为空', trigger: 'blur'}],
           username: [{required: true, message: '登录用户名不能为空', trigger: 'blur'}],
           passwd: [{required: true, message: '登录密码不能为空', trigger: 'blur'}],
-          passwd2: [{validator: validatePass, trigger: 'change'}],
+          passwd2: [{required: true, validator: validatePass, trigger: 'blur'}],
           model: [{required: true, message: '设备型号不能为空', trigger: 'blur'}],
         }
       }
@@ -354,15 +354,15 @@
         this.dialogVisible = true;
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
-        })
+        });
       },
       //修改完毕上传
       updateData() {
         for (const v of this.deviceHome) {
           if (v.ID === this.temp.ID) {
-            const index = this.deviceHome.indexOf(v)
-            this.deviceHome.splice(index, 1, this.temp)
-            break
+            const index = this.deviceHome.indexOf(v);
+            this.deviceHome.splice(index, 1, this.temp);
+            break;
           }
         }
         this.dialogVisible = false;
