@@ -31,3 +31,20 @@
  .el-form-item--small.el-form-item {
    margin-bottom: 15px;
  }
+ //表格字体14 表头变黑
+ .el-table--small th {
+   color: #000;
+ }
+ .el-table--small td, .el-table--small th {
+   padding: 0;
+   font-size: 14px;
+   text-align: center;
+ }
+ .el-table .cell, .el-table th div {
+   padding-left: 0px;
+   padding-right: 0px;
+ }
+ //删除首行缩进
+ .el-table .cell, .el-table th div, .el-table--border td:first-child .cell, .el-table--border th:first-child .cell {
+   padding-left: 0px;
+ }

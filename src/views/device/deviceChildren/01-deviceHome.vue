@@ -170,7 +170,7 @@
 </template>
 
 <script>
-  import { fetchList, createTable } from '@/api/table'
+  import { fetchList, SubmitTable } from '@/api/table'
   export default {
 
     data() {
@@ -326,7 +326,7 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-//            createTable(this.temp).then(() => {
+//            SubmitTable(this.temp).then(() => {
 //              this.deviceHome.unshift(this.temp);
 //              this.dialogVisible = false;
 //              this.$notify({
@@ -358,20 +358,28 @@
       },
       //修改完毕上传
       updateData() {
-        for (const v of this.deviceHome) {
-          if (v.ID === this.temp.ID) {
-            const index = this.deviceHome.indexOf(v);
-            this.deviceHome.splice(index, 1, this.temp);
-            break;
+        this.$refs['dataForm'].validate((valid) => {
+          if (valid) {
+//            SubmitTable(this.temp).then(() => {
+//
+//            })
+            for (const v of this.deviceHome) {
+              if (v.ID === this.temp.ID) {
+                const index = this.deviceHome.indexOf(v);
+                this.deviceHome.splice(index, 1, this.temp);
+                break;
+              }
+            }
+            this.dialogVisible = false;
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
           }
-        }
-        this.dialogVisible = false;
-        this.$notify({
-          title: '成功',
-          message: '更新成功',
-          type: 'success',
-          duration: 2000
         })
+        
       },
 
       //获取index
