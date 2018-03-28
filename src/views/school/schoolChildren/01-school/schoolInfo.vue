@@ -107,42 +107,52 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible" top="10px">
       <el-form ref="dataForm" :rules="rules" :model="temp"
                style="margin-top: -30px" label-position="right" label-width="100px">
-        <el-form-item label="学校代码" prop="ID">
-          <el-input v-model="temp.ID"></el-input>
-        </el-form-item>
-        <el-form-item label="学校名称" prop="name">
-          <el-input v-model="temp.name"></el-input>
-        </el-form-item>
-        <el-form-item label="学校类型" prop="IP">
-          <el-select v-model="temp.levels"
-                     placeholder="请选择学校类型">
-            <el-option
-              v-for="item in levelsOption"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"></el-option>
-          </el-select>
-        </el-form-item>
+        <el-row>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="学校编号" prop="ID">
+              <el-input v-model="temp.ID"></el-input>
+            </el-form-item>
+            <el-form-item label="学校名称" prop="name">
+              <el-input v-model="temp.name"></el-input>
+            </el-form-item>
+            <el-form-item label="教育水平" prop="IP">
+              <el-select v-model="temp.levels" placeholder="请选择" style="width: 100%">
+                <el-option
+                  v-for="item in levelsOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="负 责 人" prop="username">
+              <el-input v-model="temp.head"></el-input>
+            </el-form-item>
+            <el-form-item label="主管部门" prop="passwd">
+              <el-select v-model="temp.director" placeholder="请选择" style="width: 100%">
+                <el-option
+                  v-for="item in directorOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="经营状态" prop="model">
+              <el-select v-model="temp.flag" placeholder="请选择" style="width: 100%">
+                <el-option
+                  v-for="item in statusOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item label="学校地址" prop="port">
           <el-input v-model="temp.address"></el-input>
         </el-form-item>
-        <el-form-item label="负责人" prop="username">
-          <el-input v-model="temp.head"></el-input>
-        </el-form-item>
-        <el-form-item label="主管部门" prop="passwd">
-          <el-input v-model="temp.director"></el-input>
-        </el-form-item>
-        <el-form-item label="状态" prop="model">
-          <el-select v-model="temp.flag"
-                     placeholder="请选择状态">
-            <el-option
-              v-for="item in statusOption"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备ID" prop="levels">
+        <el-form-item label="设备" prop="eqpId">
           <el-input v-model="temp.eqpId"></el-input>
         </el-form-item>
         <el-form-item label="说明" prop="descr">
@@ -150,7 +160,7 @@
             type="textarea"
             :maxlength="128"
             v-model.trim="temp.descr"
-            :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+            :autosize="{ minRows: 1, maxRows: 4 }"></el-input>
           <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
         </el-form-item>
       </el-form>
@@ -231,6 +241,17 @@
           eqpId: '',
           descr: ''
         },
+        //主管部门选项
+        directorOption: [
+          {
+            value: '1',
+            label: '温州市鹿城区教育局'
+          },
+          {
+            value: '2',
+            label: '温州市教育局'
+          },
+        ],
         //教育水平选项
         levelsOption: [
           {
@@ -314,7 +335,6 @@
           descr: ''
         }
       },
-      
       //添加对话框
       handleCreate() {
         this.resetTemp();
@@ -340,6 +360,7 @@
 //            })
             this.total = this.total + 1;
             //通过select的value值找到label的值，显示给用户
+            this.temp.director = valueToLabel(this.directorOption, this.temp.director);
             this.temp.levels = valueToLabel(this.levelsOption, this.temp.levels);
             this.temp.flag = valueToLabel(this.statusOption, this.temp.flag);
             //添加到表格
@@ -357,6 +378,7 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        this.temp.director = labelToValue(this.directorOption, this.temp.director);
         this.temp.levels = labelToValue(this.levelsOption, this.temp.levels);
         this.temp.flag = labelToValue(this.statusOption, this.temp.flag);
         this.dialogStatus = 'update';
@@ -372,6 +394,7 @@
 //            SubmitTable('/schoolInfo', this.temp).then(() => {
 //
 //            })
+            this.temp.director = valueToLabel(this.directorOption, this.temp.director);
             this.temp.levels = valueToLabel(this.levelsOption, this.temp.levels);
             this.temp.flag = valueToLabel(this.statusOption, this.temp.flag);
             for (const v of this.schoolInfo) {
@@ -417,13 +440,13 @@
       },
       rowDelete(index, row) {
         if (index !== -1) {
-          this.total=this.total-1;
-            this.$notify({
-              title: '成功',
-              message: '删除成功',
-              type: 'success',
-              duration: 2000,
-            });
+          this.total = this.total - 1;
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+          });
           row.splice(index, 1);
           this.deleteDialogVisible = false;
         }
