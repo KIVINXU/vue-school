@@ -111,7 +111,10 @@
               <el-input v-model="temp.classNO" type="number"></el-input>
             </el-form-item>
             <el-form-item label="班 主 任" prop="teacherID">
-              <el-select v-model="temp.teacherID" filterable placeholder="请选择班主任" style="width: 100%">
+              <el-select
+                v-model="temp.teacherID"
+                filterable placeholder="请选择班主任"
+                style="width: 100%">
                 <el-option v-for="item in teacherIDOption"
                   :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
@@ -130,7 +133,11 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item label="所属学校" prop="schoolID">
-              <el-select v-model="temp.schoolID" filterable placeholder="请选择学校ID" style="width: 100%">
+              <el-select
+                v-model="temp.schoolID"
+                filterable
+                placeholder="请选择学校ID"
+                style="width: 100%">
                 <el-option v-for="item in schoolIDOption"
                   :key="item.value"
                   :label="item.label"

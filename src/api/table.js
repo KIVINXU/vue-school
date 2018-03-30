@@ -7,13 +7,20 @@ export function fetchList(url, query) {
     data: query
   })
 }
-//创建table数据
+//提交table数据
 export function SubmitTable(url, data) {
  return request({
    url: url,
    method: 'post',
    data
  })
+}
+export function fetchSearchOption(url, data) {
+  return request({
+    url: url,
+    method: 'post',
+    data
+  })
 }
 //通过select的value值找到label的值
 export function valueToLabel(option, value) {

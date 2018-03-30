@@ -12,13 +12,13 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(config => {
   if (store.getters.token) {
-    config.headers['token_id'] = getToken(); // 让每个请求携带自定义token,和username 请根据实际情况自行修改
+    config.headers['token'] = getToken(); // 让每个请求携带自定义token,和username 请根据实际情况自行修改
     config.headers['username'] = sessionStorage.getItem('username');
   }
   return config
 }, error => {
   // Do something with request error
-  console.log(error) // for debug
+  console.log(error); // for debug
   Promise.reject(error)
 })
 

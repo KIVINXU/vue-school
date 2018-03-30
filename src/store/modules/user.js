@@ -6,7 +6,7 @@ import { Message } from 'element-ui'
 const user = {
   state: {
     token: getToken(),
-    name: '张三',
+    name: '',
     //avatar: '',
     //roles: []
   },
