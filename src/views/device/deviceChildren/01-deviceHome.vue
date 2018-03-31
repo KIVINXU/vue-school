@@ -332,7 +332,7 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            SubmitTable(this.temp).then(() => {
+            SubmitTable('/deviceHome', this.temp).then(() => {
               this.list.push(this.temp);
               this.dialogVisible = false;
               this.$notify({
@@ -358,7 +358,7 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            SubmitTable(this.temp).then(() => {
+            SubmitTable('/deviceHome', this.temp).then(() => {
               for (const v of this.list) {
                 if (v.ID === this.temp.ID) {
                   const index = this.list.indexOf(v);

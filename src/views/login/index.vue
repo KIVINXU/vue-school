@@ -17,6 +17,7 @@
           type="text"
           size="medium"
           autofocus
+          @keyup.enter.native="setFocus"
           v-model="loginForm.username"
           autoComplete="off"
           placeholder="请输入用户名..."></el-input>
@@ -28,6 +29,7 @@
         <el-input name="password"
                   :type="pwdType"
                   size="medium"
+                  ref="password"
                   @keyup.enter.native="handleLogin"
                   v-model="loginForm.password"
                   autoComplete="off"
@@ -87,6 +89,13 @@ export default {
       } else {
         this.pwdType = 'password'
       }
+    },
+    //回车焦点跳到下一行
+    setFocus() {
+      this.$nextTick(() => {
+        this.$refs.password.focus();
+      });
+      
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
