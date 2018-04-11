@@ -10,7 +10,6 @@ export function setToken(token) {
 }
 export function setUsername(username) {
   return window.sessionStorage.setItem('username', username)
-  
 }
 
 export function removeToken() {

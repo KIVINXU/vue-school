@@ -1,11 +1,11 @@
 <template>
   <div>
     <el-row type="flex" justify="space-between" style="margin-bottom: 10px">
-      <el-col :xs="18" :sm="18" :md="10" :lg="8">
+      <el-col :xs="18" :sm="18" :md="10" :lg="10">
         <el-input placeholder="请输入查询内容"
-                  v-model="listQuery.searchInput"
+                  v-model="listQuery.value"
                   @keyup.enter.native="handleFilter">
-          <el-select v-model="listQuery.searchKey" @focus="handleFocus" placeholder="查询对象" slot="prepend" style="width: 100px">
+          <el-select v-model="listQuery.key" @focus="handleFocus" placeholder="查询对象" slot="prepend" style="width: 100px">
             <el-option
               v-for="item in searchOption"
               :key="item.key"
@@ -16,8 +16,14 @@
           <el-button
             type="primary"
             @click="handleFilter"
-            icon="el-icon-search" slot="append">
+            :disabled="listQuery.key === '' || listQuery.value === ''"
+            icon="el-icon-search" slot="append">查询
           </el-button>
+          <el-button type="primary"
+                     icon="el-icon-search"
+                     slot="append"
+                     @click="handleExtFilter"
+                     :disabled="listQuery.key === '' || listQuery.value === ''">相似查询</el-button>
         </el-input>
       </el-col>
       <el-col :xs="5" :sm="3" :md="4" :lg="2">
@@ -69,19 +75,18 @@
         <el-table :data="list" border
                   ref="deviceTable"
                   highlight-current-row
-                  v-loading="listLoading"
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
-          <el-table-column prop="ID" :show-overflow-tooltip="true" label="设备编号" width="75px"></el-table-column>
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="设备编号" width="75px"></el-table-column>
           <el-table-column prop="name" :show-overflow-tooltip="true" label="设备名称" width="88px"></el-table-column>
           <el-table-column prop="place" :show-overflow-tooltip="true" label="安装位置"></el-table-column>
-          <el-table-column prop="IP" :show-overflow-tooltip="true" label="默认IP" width="115px"></el-table-column>
+          <el-table-column prop="ip" :show-overflow-tooltip="true" label="默认ip" width="115px"></el-table-column>
           <el-table-column prop="port" :show-overflow-tooltip="true" label="端口" width="55px"></el-table-column>
           <el-table-column prop="username" :show-overflow-tooltip="true" label="登录用户" width="100px"></el-table-column>
           <el-table-column prop="passwd" :show-overflow-tooltip="true" label="登录密码" width="100px"></el-table-column>
           <el-table-column prop="model" :show-overflow-tooltip="true" label="设备型号" width="88px"></el-table-column>
-          <el-table-column prop="baseparm" :show-overflow-tooltip="true" label="基本参数"></el-table-column>
-          <el-table-column prop="extparm" :show-overflow-tooltip="true" label="扩展参数"></el-table-column>
+          <el-table-column prop="param" :show-overflow-tooltip="true" label="基本参数"></el-table-column>
+          <el-table-column prop="exparam" :show-overflow-tooltip="true" label="扩展参数"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
         </el-table>
       </el-col>
@@ -121,8 +126,8 @@
                label-width="100px">
         <el-row>
         <el-col :sm="24" :md="12">
-          <el-form-item label="设备编号" prop="ID">
-            <el-input v-model="temp.ID" :maxlength="16"></el-input>
+          <el-form-item label="设备编号" prop="id">
+            <el-input v-model="temp.id" :maxlength="16"></el-input>
           </el-form-item>
           <el-form-item label="设备名称" prop="name">
             <el-input v-model="temp.name" :maxlength="16"></el-input>
@@ -135,8 +140,8 @@
           </el-form-item>
         </el-col>
         <el-col :sm="24" :md="12">
-          <el-form-item label="默 认 I P" prop="IP">
-            <el-input v-model="temp.IP"></el-input>
+          <el-form-item label="默 认 I P" prop="ip">
+            <el-input v-model="temp.ip"></el-input>
           </el-form-item>
           <el-form-item label="设备端口" prop="port">
             <el-input v-model="temp.port"></el-input>
@@ -144,8 +149,8 @@
           <el-form-item label="设备型号" prop="model">
             <el-input v-model="temp.model"  :maxlength="32"></el-input>
           </el-form-item>
-          <el-form-item label="确认密码" prop="passwd2">
-            <el-input type="password" v-model="temp.passwd2"  :maxlength="128"></el-input>
+          <el-form-item>
+            <el-button type="primary" plain @click="handleTest">测试</el-button>
           </el-form-item>
         </el-col>
         </el-row>
@@ -153,10 +158,10 @@
           <el-input type="textarea" v-model="temp.place" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="基本参数" prop="basepram">
-          <el-input type="textarea" v-model="temp.baseparm" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+          <el-input type="textarea" v-model="temp.param" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
-        <el-form-item label="扩展参数" prop="extparm">
-          <el-input type="textarea" v-model="temp.extparm" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+        <el-form-item label="扩展参数" prop="exparam">
+          <el-input type="textarea" v-model="temp.exparam" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="备注说明" prop="descr">
           <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"
@@ -203,17 +208,18 @@
         listQuery: {
           page: 1,
           limit: 20,
-          searchKey: undefined, //查询对象的key值
-          searchInput: undefined, //查询对象内容
+          ext: undefined,
+          key: undefined,  //查询对象的key值
+          value: undefined  //查询对象内容
         },
+        //搜索flag
+        queryFlag: true,
         //总条目数
         total: 0,
         searchOption: [],
         list: [],
         //行数
         currentRowIndex: -1,
-        //加载中
-        listLoading: true,
         //-----添加/修改对话框--------
         //对话框状态
         dialogVisible: false,
@@ -226,16 +232,16 @@
         },
         //对话框内容
         temp: {
-          ID: '',
+          id: '',
           name: '',
           place: '',
-          IP: '',
+          ip: '',
           port: '',
           username: '',
           passwd: '',
           model: '',
-          baseparm: '',
-          extparm: '',
+          param: '',
+          exparam: '',
           descr: ''
         },
         //-----删除对话框----
@@ -243,16 +249,16 @@
         deleteDialogVisible: false,
         //内容验证规则
         rules: {
-          ID: [{required: true, message: '设备序列号不能为空', trigger: 'blur'}],
+          id: [{required: true, message: '设备序列号不能为空', trigger: 'blur'}],
           name: [{required: true, message: '设备名称不能为空', trigger: 'blur'}],
-          IP: [
+          ip: [
             {required: true, message: '默认IP不能为空', trigger: 'blur'},
             {validator: validateIP, trigger: 'blur'}
           ],
           port: [{required: true, message: '端口不能为空', trigger: 'blur'}],
           username: [{required: true, message: '登录用户名不能为空', trigger: 'blur'}],
           passwd: [{required: true, message: '登录密码不能为空', trigger: 'blur'}],
-          passwd2: [{required: true, validator: validatePass, trigger: 'blur'}],
+          //passwd2: [{required: true, validator: validatePass, trigger: 'blur'}],
           model: [{required: true, message: '设备型号不能为空', trigger: 'blur'}],
         }
       }
@@ -263,59 +269,121 @@
     methods: {
       //获取列表
       getList () {
-        this.listLoading = true;
-        fetchList('/deviceHome', this.listQuery).then( response => {
+        let List = Object.assign({method: 'List'}, this.listQuery);
+        fetchList('/deviceHome', List).then( response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
             Message.error(data.msg);
           }
           this.list = [];
-          for(let i = 0; i < data.data.length; i++){
-            let tempData = {};
-             tempData.ID = data.data[i][0];
-            tempData.name = data.data[i][1];
-             tempData.place = data.data[i][2];
-             tempData.IP = data.data[i][3];
-             tempData.port = data.data[i][4];
-             tempData.username = data.data[i][5];
-             tempData.passwd = data.data[i][6];
-             tempData.model = data.data[i][7];
-             tempData.baseparm = data.data[i][8];
-             tempData.extparm = data.data[i][9];
-             tempData.descr = data.data[i][10];
-             this.list.push(tempData);
+          if(data.data){
+            for(let i = 0; i < data.data.length; i++){
+              let tempData = {};
+              tempData.id = data.data[i][0];
+              tempData.name = data.data[i][1];
+              tempData.place = data.data[i][2];
+              tempData.ip = data.data[i][3];
+              tempData.port = data.data[i][4];
+              tempData.username = data.data[i][5];
+              tempData.passwd = data.data[i][6];
+              tempData.model = data.data[i][7];
+              tempData.param = data.data[i][8];
+              tempData.exparam = data.data[i][9];
+              tempData.descr = data.data[i][10];
+              this.list.push(tempData);
+            }
+            this.total = data.total;
           }
-          this.total = data.total;
-          this.listLoading = false;
+          
         })
       },
       handleFilter() {
-        this.listQuery.page = 1;
-        this.getList();
-      },
-      handleFocus() {
-        if(this.searchOption.length <= 0){
-          fetchSearchOption('/deviceHome').then(response => {
+        let Query = Object.assign({method: 'Query'}, this.listQuery);
+        fetchList('/deviceHome', Query).then( response => {
             const data = response.data;
             if(data.msg && data.msg !== ''){
               Message.error(data.msg);
             }
-            this.searchOption = data.options
+            this.list = [];
+            if(data.data){
+              for(let i = 0; i < data.data.length; i++){
+                let tempData = {};
+                tempData.id = data.data[i][0];
+                tempData.name = data.data[i][1];
+                tempData.place = data.data[i][2];
+                tempData.ip = data.data[i][3];
+                tempData.port = data.data[i][4];
+                tempData.username = data.data[i][5];
+                tempData.passwd = data.data[i][6];
+                tempData.model = data.data[i][7];
+                tempData.param = data.data[i][8];
+                tempData.exparam = data.data[i][9];
+                tempData.descr = data.data[i][10];
+                this.list.push(tempData);
+              }
+              this.total = data.total;
+            }
+        });
+        this.queryFlag = false;
+        this.listQuery.page = 1;
+        window.setTimeout(() => {
+          this.queryFlag = true;
+        }, 1000)
+      },
+      //相似查询
+      handleExtFilter() {
+        this.listQuery.ext = 'like';
+        this.handleFilter();
+      },
+      handleFocus() {
+        if(this.searchOption.length === 0) {
+          fetchSearchOption('/deviceHome',{method: 'FieldSelect'})
+            .then(response => {
+            const data = response.data;
+            if(data.msg && data.msg !== ''){
+              Message.error(data.msg);
+            }
+            if(data.data){
+              let keys = Object.keys(data.data);
+              let values = Object.values(data.data);
+              for(let i = 0; i < keys.length; i++) {
+                let optionObj = {};
+                optionObj.key = keys[i];
+                optionObj.label = values[i];
+                this.searchOption.push(optionObj);
+              }
+            }
           })
         }
       },
+      handleTest() {
+        let temp = Object.assign({method: 'test'}, this.temp);
+        delete temp.id;
+        delete temp.name;
+        delete temp.place;
+        delete temp.param;
+        delete temp.exparam;
+        delete temp.descr;
+        SubmitTable('/deviceHome', temp).then(response => {
+          const data = response.data;
+          if (data.msg && data.msg !== '') {
+            Message.info(data.msg);
+          }
+        });
+      },
       resetTemp() {
         this.temp = {
-          ID: '',
+          id: '',
           name: '',
           place: '',
-          IP: '',
+          ip: '',
           port: '',
           username: '',
           passwd: '',
+          passwd2: '',
           model: '',
-          baseparm: '',
-          extparm: '',
+          param: '',
+          exparam: '',
           descr: ''
         }
       },
@@ -332,15 +400,24 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            SubmitTable('/deviceHome', this.temp).then(() => {
-              this.list.push(this.temp);
-              this.dialogVisible = false;
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
-              });
+            var temp = Object.assign({method: 'Insert'}, this.temp);
+            delete temp.passwd2;
+            SubmitTable('/deviceHome', temp).then(response => {
+              const data = response.data;
+              if(data.msg && data.msg !== ''){
+                Message.error(data.msg);
+              }
+              if(data.id === '00000') {
+                this.list.unshift(this.temp);
+                this.dialogVisible = false;
+                this.$notify({
+                  title: '成功',
+                  message: '创建成功',
+                  type: 'success',
+                  duration: 2000
+                });
+              }
+              
             });
           }
         })
@@ -358,21 +435,29 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            SubmitTable('/deviceHome', this.temp).then(() => {
-              for (const v of this.list) {
-                if (v.ID === this.temp.ID) {
-                  const index = this.list.indexOf(v);
-                  this.list.splice(index, 1, this.temp);
-                  break;
-                }
+            let temp = Object.assign({method: 'Update'}, this.temp);
+            delete temp.passwd2;
+            SubmitTable('/deviceHome', temp).then(response => {
+              const data = response.data;
+              if(data.msg && data.msg !== ''){
+                Message.error(data.msg);
               }
-              this.dialogVisible = false;
-              this.$notify({
-                title: '成功',
-                message: '更新成功',
-                type: 'success',
-                duration: 2000
-              });
+              if(data.id === '00000') {
+                for (const v of this.list) {
+                  if (v.id === this.temp.id) {
+                    const index = this.list.indexOf(v);
+                    this.list.splice(index, 1, this.temp);
+                    break;
+                  }
+                }
+                this.dialogVisible = false;
+                this.$notify({
+                  title: '成功',
+                  message: '更新成功',
+                  type: 'success',
+                  duration: 2000
+                });
+              }
             });
           }
         })
@@ -385,12 +470,16 @@
       //改变显示条目
       handleSizeChange(val) {
         this.listQuery.limit = val;
-        this.getList();
+        if(this.queryFlag) {
+          this.getList();
+        }
       },
       //改变页面事件
       handlePageChange(val) {
         this.listQuery.page = val;
-        this.getList();
+        if(this.queryFlag) {
+          this.getList();
+        }
       },
       //descr剩余长度计算
       leftLength() {
@@ -404,16 +493,23 @@
         this.deleteDialogVisible = true;
       },
       rowDelete(index, row) {
-        if (index !== -1) {
-          this.$notify({
-            title: '成功',
-            message: '删除成功',
-            type: 'success',
-            duration: 2000
-          });
-          row.splice(index, 1);
-          this.deleteDialogVisible = false;
-        }
+        var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
+        SubmitTable('/deviceHome', deleteData).then(response => {
+          const data = response.data;
+          if(data.msg && data.msg !== ''){
+            Message.info(data.msg);
+          }
+          if(data.id === '00000') {
+            this.$notify({
+              title: '成功',
+              message: '删除成功',
+              type: 'success',
+              duration: 2000
+            });
+            row.splice(index, 1);
+            this.deleteDialogVisible = false;
+          }
+        });
       },
     }
   }

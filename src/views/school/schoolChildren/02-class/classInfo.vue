@@ -67,14 +67,14 @@
                   border highlight-current-row
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
-          <el-table-column prop="ID" :show-overflow-tooltip="true" label="班级编号" width="150px"></el-table-column>
-          <el-table-column prop="gradeID" :show-overflow-tooltip="true" label="入学年份" width="70px"></el-table-column>
-          <el-table-column prop="classNO" :show-overflow-tooltip="true" label="班级序列" width="65px"></el-table-column>
-          <el-table-column prop="teacherID" :show-overflow-tooltip="true" label="班主任" width="70px"></el-table-column>
-          <el-table-column prop="head2" :show-overflow-tooltip="true" label="副班主任" width="70px"></el-table-column>
-          <el-table-column prop="flag" :show-overflow-tooltip="true" label="班级状态" width="70px"></el-table-column>
-          <el-table-column prop="schoolID" :show-overflow-tooltip="true" label="所属学校" width="165px"></el-table-column>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="备注说明"></el-table-column>
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="班级编号" width="150px "></el-table-column>
+          <el-table-column prop="classNO" :show-overflow-tooltip="true" label="班级号" width="65px"></el-table-column>
+          <el-table-column prop="gradeid" :show-overflow-tooltip="true" label="年级号" width="70px"></el-table-column>
+          <el-table-column prop="schoolName" :show-overflow-tooltip="true" label="学校名称" width="230px"></el-table-column>
+          <el-table-column prop="head" :show-overflow-tooltip="true" label="班主任" width="120px"></el-table-column>
+          <el-table-column prop="head2" :show-overflow-tooltip="true" label="班主任(前/代)" width="120px"></el-table-column>
+          <el-table-column prop="flagName" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
         </el-table>
         <!--分页条-->
         <el-pagination
@@ -104,58 +104,50 @@
                style="margin-top: -30px" label-position="right" label-width="100px">
         <el-row>
           <el-col :sm="24" :md="12">
-            <el-form-item label="班级编号" prop="ID" v-if="dialogStatus=='update'">
-              <el-input v-model="temp.ID" readonly></el-input>
+            <el-form-item label="班级编号" prop="id" v-if="dialogStatus=='update'">
+              <el-input v-model="temp.id" readonly></el-input>
             </el-form-item>
-            <el-form-item label="班级序列" prop="classNO">
-              <el-input v-model="temp.classNO" type="number"></el-input>
+            <el-form-item label="班级号" prop="classNO">
+              <el-input v-model="temp.classNO" type="number" :maxlength="2"></el-input>
             </el-form-item>
-            <el-form-item label="班 主 任" prop="teacherID">
-              <el-select
-                v-model="temp.teacherID"
-                filterable placeholder="请选择班主任"
-                style="width: 100%">
-                <el-option v-for="item in teacherIDOption"
-                  :key="item.value" :label="item.label" :value="item.value">
+            <el-form-item label="班主任" prop="teacherid">
+              <el-select v-model="temp.teacherid" filterable placeholder="请选择班主任" style="width: 100%">
+                <el-option v-for="item in teacheridOption"
+                           :key="item.value" :label="item.label" :value="item.value">
+                  <span style="float: left">{{ item.label }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="副班主任" prop="head2">
-              <el-input v-model="temp.head2"></el-input>
+            <el-form-item label="班主任(前/代)" prop="head2">
+              <el-input v-model="temp.head2" :maxlength="16"></el-input>
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
-            <el-form-item label="入学年份" prop="gradeID">
-              <el-date-picker v-model="temp.gradeID"
-                align="right"
-                type="year" value-format="yyyy"
-                placeholder="选择入学年份">
+            <el-form-item label="年级号" prop="gradeid">
+              <el-date-picker v-model="temp.gradeid" placeholder="选择年级号"
+                              align="right" style="width: 100%"
+                              type="year" format="yyyy" value-format="yyyy">
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="所属学校" prop="schoolID">
-              <el-select
-                v-model="temp.schoolID"
-                filterable
-                placeholder="请选择学校ID"
-                style="width: 100%">
-                <el-option v-for="item in schoolIDOption"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"></el-option>
+            <el-form-item label="学校名称" prop="schoolid">
+              <el-select v-model="temp.schoolid" filterable placeholder="请选择学校名称" style="width: 100%">
+                <el-option v-for="item in schoolidOption"
+                           :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="班级状态" prop="flag">
-              <el-select v-model="temp.flag" placeholder="请选择状态" style="width: 100%">
+            <el-form-item label="状态" prop="flag">
+              <el-select v-model="temp.flag" placeholder="请选择班级状态" style="width: 100%">
                 <el-option v-for="item in flagOption"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"></el-option>
+                           :key="item.value" :label="item.label" :value="item.value"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="备注说明" prop="descr">
-          <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr" :autosize="{ minRows: 1, maxRows: 4 }"></el-input>
+        <el-form-item label="说明" prop="descr">
+          <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"
+                    :autosize="{ minRows: 1, maxRows: 4 }"></el-input>
           <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
         </el-form-item>
       </el-form>
@@ -167,6 +159,7 @@
     </el-dialog>
   </div>
 </template>
+
 <script>
   import {fetchList, SubmitTable, valueToLabel, labelToValue} from '@/api/table'
 
@@ -183,30 +176,36 @@
         total: 2,
         searchOption: [
           {key: '1', label: '班级编号'},
-          {key: '2', label: '班级代号'},
-          {key: '3', label: '班级名称'}
+          {key: '2', label: '班级号'},
+          {key: '3', label: '年级号'}
         ],
         //加载图标
         listLoading: true,
         classInfo: [
           {
-            ID: 'c1001',
+            id: 'c1001',
             classNO: 5,
-            gradeID: '2014',
-            schoolID: '温州市鹿城区第三小学',
-            teacherID: '王维',
+            gradeid: '2014',
+            schoolid: 's1001',
+            schoolName: '温州市鹿城区蒲鞋市小学龟湖路校区',
+            teacherid: '12345678900',
+            head: '王安石',
             head2: '李白',
-            flag: '停办',
+            flag: '2',
+            flagName:'停办',
             descr: '好班级'
           },
           {
-            ID: 'c1002',
+            id: 'c1002',
             classNO: 8,
-            gradeID: '2018',
-            schoolID: '温州市鹿城区第八中学',
-            teacherID: '王安石',
+            gradeid: '2018',
+            schoolid: 's1002',
+            schoolName: '温州市鹿城区第八中学',
+            teacherid: '12345600789',
+            head: '王安石',
             head2: '李白',
-            flag: '正常',
+            flag: '1',
+            flagName:'正常',
             descr: '好班级'
           },
         ],
@@ -224,37 +223,39 @@
         },
         //对话框内容
         temp: {
-          ID: '',
+          id: '',
           classNO: '',
-          gradeID: '',
+          gradeid: '',
           gradeName: '',
-          schoolID: '',
-          teacherID: '',
+          schoolid: '',
+          schoolName: '',
+          teacherid: '',
+          head: '',
           head2: '',
           flag: '',
           descr: ''
         },
-        //学校ID选项
-        schoolIDOption: [
+        //学校id选项
+        schoolidOption: [
           {
             value: 's1001',
-            label: '温州市鹿城区第三小学'
+            label: '温州市鹿城区蒲鞋市小学龟湖路校区'
           }, {
             value: 's1002',
             label: '温州市鹿城区第八中学'
           },
         ],
         //班主任选项
-        teacherIDOption: [
+        teacheridOption: [
           {
-            value: 't1001',
+            value: '12345678900',
             label: '王安石'
           }, {
-            value: 't1002',
+            value: '00987654321',
             label: '李白'
           }, {
-            value: 't1003',
-            label: '王维'
+            value: '12345600789',
+            label: '王安石'
           },
         ],
         //标志选项
@@ -268,7 +269,7 @@
           }, {
             value: '2',
             label: '停办'
-          },{
+          }, {
             value: '3',
             label: '特殊休息'
           },
@@ -278,10 +279,10 @@
         deleteDialogVisible: false,
         //内容验证规则
         rules: {
-          classNO: [{required: true, message: '班级序列不能为空', trigger: 'blur'}],
-          gradeID: [{required: true, message: '请选择入学年份', trigger: 'blur'}],
-          teacherID: [{required: true, message: '请选择班主任', trigger: 'blur'}],
-          schoolID: [{required: true, message: '请选择学校', trigger: 'blur'}],
+          classNO: [{required: true, message: '班级号不能为空', trigger: 'blur'}],
+          gradeid: [{required: true, message: '请选择年级号', trigger: 'blur'}],
+          teacherid: [{required: true, message: '请选择班主任', trigger: 'blur'}],
+          schoolid: [{required: true, message: '请选择所属学校名称', trigger: 'blur'}],
           flag: [{required: true, message: '请选择班级状态', trigger: 'change'}],
         },
       }
@@ -305,13 +306,16 @@
       },
       resetTemp() {
         this.temp = {
-          ID: '',
+          id: '',
           classNO: '',
-          gradeID: new Date(),
-          schoolID: '',
-          teacherID:'',
+          gradeid: new Date(),
+          schoolid: '',
+          schoolName: '',
+          teacherid: '',
+          head: '',
           head2: '',
           flag: '',
+          flagName:'',
           descr: ''
         }
       },
@@ -328,7 +332,7 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-//            SubmitTable(this.temp).then(() => {
+//            SubmitTable('/classInfo', this.temp).then(() => {
 //              this.classInfo.unshift(this.temp);
 //              this.dialogVisible = false;
 //              this.$notify({
@@ -340,9 +344,9 @@
 //            })
             this.total = this.total + 1;
             //通过select的value值找到label的值，显示给用户
-             this.temp.teacherID = valueToLabel(this.teacherIDOption, this.temp.teacherID);
-             this.temp.schoolID = valueToLabel(this.schoolIDOption, this.temp.schoolID);
-             this.temp.flag = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.head = valueToLabel(this.teacheridOption, this.temp.teacherid);
+            this.temp.schoolName = valueToLabel(this.schoolidOption, this.temp.schoolid);
+            this.temp.flagName = valueToLabel(this.flagOption, this.temp.flag);
             //添加到表格
             console.log(this.temp);
             this.classInfo.push(this.temp);
@@ -359,9 +363,9 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
-        this.temp.schoolID = labelToValue(this.schoolIDOption, this.temp.schoolID);
-        this.temp.teacherID = labelToValue(this.teacherIDOption, this.temp.teacherID);
-        this.temp.flag = labelToValue(this.flagOption, this.temp.flag);
+        //this.temp.schoolid = labelToValue(this.schoolidOption, this.temp.schoolid);
+        //this.temp.teacherid = labelToValue(this.teacheridOption, this.temp.teacherid);
+        //this.temp.flag = labelToValue(this.flagOption, this.temp.flag);
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.$nextTick(() => {
@@ -375,11 +379,11 @@
 //            SubmitTable('/classInfo', this.temp).then(() => {
 //
 //            })
-            this.temp.teacherID = valueToLabel(this.teacherIDOption, this.temp.teacherID);
-            this.temp.schoolID = valueToLabel(this.schoolIDOption, this.temp.schoolID);
-            this.temp.flag = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.head = valueToLabel(this.teacheridOption, this.temp.teacherid);
+            this.temp.schoolName = valueToLabel(this.schoolidOption, this.temp.schoolid);
+            this.temp.flageName = valueToLabel(this.flagOption, this.temp.flag);
             for (const v of this.classInfo) {
-              if (v.ID === this.temp.ID) {
+              if (v.id === this.temp.id) {
                 const index = this.classInfo.indexOf(v);
                 this.classInfo.splice(index, 1, this.temp);
                 break;
@@ -422,12 +426,12 @@
       rowDelete(index, row) {
         if (index !== -1) {
           this.total = this.total - 1;
-            this.$notify({
-              title: '成功',
-              message: '删除成功',
-              type: 'success',
-              duration: 2000,
-            });
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000,
+          });
           row.splice(index, 1);
           this.deleteDialogVisible = false;
         }

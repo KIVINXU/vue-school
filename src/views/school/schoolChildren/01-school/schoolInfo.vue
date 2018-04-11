@@ -2,7 +2,8 @@
   <div>
     <el-row type="flex" justify="space-between" style="margin-bottom: 10px">
       <el-col :xs="18" :sm="18" :md="10" :lg="8">
-        <el-input placeholder="请输入查询内容">
+        <el-input placeholder="请输入查询内容"
+                  :disabled="searchOption.length === 0">
           <el-select v-model="listQuery.option" placeholder="查询对象" slot="prepend" style="width: 100px">
             <el-option
               v-for="item in searchOption"
@@ -74,9 +75,6 @@
           <el-table-column prop="head" :show-overflow-tooltip="true" label="负责人"></el-table-column>
           <el-table-column prop="director" :show-overflow-tooltip="true" label="主管部门"></el-table-column>
           <el-table-column prop="flag" :show-overflow-tooltip="true" label="状态">
-            <template slot-scope="scope">
-              <el-tag :type="scope.row.flag | flagFilter">{{scope.row.flag}}</el-tag>
-            </template>
           </el-table-column>
           <el-table-column prop="eqpId" :show-overflow-tooltip="true" label="设备ID"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
@@ -109,58 +107,53 @@
                style="margin-top: -30px" label-position="right" label-width="100px">
         <el-row>
           <el-col :sm="24" :md="12">
-            <el-form-item label="学校编号" prop="ID">
-              <el-input v-model="temp.ID"></el-input>
+            <el-form-item label="学校代码" prop="id">
+              <el-input v-model="temp.id" :maxlength="12"></el-input>
             </el-form-item>
-            <el-form-item label="学校名称" prop="name">
-              <el-input v-model="temp.name"></el-input>
+            <el-form-item label="名称" prop="name">
+              <el-input v-model="temp.name" :maxlength="24"></el-input>
             </el-form-item>
-            <el-form-item label="教育水平" prop="IP">
-              <el-select v-model="temp.levels" placeholder="请选择" style="width: 100%">
-                <el-option
-                  v-for="item in levelsOption"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"></el-option>
+            <el-form-item label="教育程度" prop="levels">
+              <el-select v-model="temp.levels" placeholder="请选择教育程度" style="width: 100%">
+                <el-option v-for="item in levelsOption"
+                           :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
-            <el-form-item label="负 责 人" prop="username">
-              <el-input v-model="temp.head"></el-input>
+            <el-form-item label="负责人" prop="head">
+              <el-input v-model="temp.head" :maxlength="8"></el-input>
             </el-form-item>
-            <el-form-item label="主管部门" prop="passwd">
-              <el-select v-model="temp.director" placeholder="请选择" style="width: 100%">
-                <el-option
-                  v-for="item in directorOption"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"></el-option>
-              </el-select>
+            <el-form-item label="主管部门" prop="director">
+              <el-input v-model="temp.director" :maxlength="24"></el-input>
             </el-form-item>
-            <el-form-item label="经营状态" prop="model">
-              <el-select v-model="temp.flag" placeholder="请选择" style="width: 100%">
-                <el-option
-                  v-for="item in statusOption"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"></el-option>
+            <el-form-item label="状态" prop="flag">
+              <el-select v-model="temp.flag" placeholder="请选择学校状态" style="width: 100%">
+                <el-option v-for="item in statusOption"
+                           :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="学校地址" prop="port">
-          <el-input v-model="temp.address"></el-input>
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="temp.address" :maxlength="64"></el-input>
         </el-form-item>
-        <el-form-item label="设备" prop="eqpId">
-          <el-input v-model="temp.eqpId"></el-input>
+        <el-form-item label="设备编号" prop="eqpid">
+          <el-select v-model="temp.eqpid" placeholder="请选择设备编号"
+                     multiple style="width: 100%">
+            <el-option v-for="item in eqpidOption"
+                       :key="item.value" :label="item.label" :value="item.value">
+              <span style="float: left">{{ item.value }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px; margin-right: 15px">{{ item.label }}</span>
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="说明" prop="descr">
-          <el-input
-            type="textarea"
-            :maxlength="128"
-            v-model.trim="temp.descr"
-            :autosize="{ minRows: 1, maxRows: 4 }"></el-input>
+          <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"
+                    :autosize="{ minRows: 1, maxRows: 4 }">
+          </el-input>
           <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
         </el-form-item>
       </el-form>
@@ -174,9 +167,18 @@
 </template>
 
 <script>
-  import { fetchList, SubmitTable, valueToLabel, labelToValue } from '@/api/table'
+  import {fetchList, SubmitTable, valueToLabel, labelToValue} from '@/api/table'
+
   export default {
     data() {
+      //编号验证
+      var checkID = (rule, value, callback) => {
+        if (!validateOther(value)) {
+          callback(new Error('只能输入数字和英文字母'));
+        } else {
+          callback();
+        }
+      };
       return {
         //搜索内容
         listQuery: {
@@ -195,25 +197,29 @@
         listLoading: true,
         schoolInfo: [
           {
-            ID: '3133004943',
+            id: 's1001',
             name: '温州市鹿城区第三小学',
-            levels: '小学',
+            levels: '0',
+            levelsName: '幼儿园',
             address: '温州市鹿城区高新路3号',
             head: '潘老师',
-            director: '温州市教育局',
-            flag: '正常',
-            eqpId: 'E1001',
+            director: '温州市鹿城区教育局',
+            flag: '0',
+            flagName: '正常',
+            eqpid: ["EQP1001", "EQP101010101010", "EQP20202020"],//格式：[ "EQP1001", "EQP101010101010", "EQP20202020" ]
             descr: '好学校'
           },
           {
-            ID: '123456789888',
-            name: '温州市鹿城区第八中学',
-            levels: '中学',
+            id: 's1002',
+            name: '温州市鹿城区帝杰曼',
+            levels: '7',
+            levelsName: '培训中心',
             address: '温州市鹿城区高新路3号',
             head: '潘老师',
-            director: '温州市教育局',
-            flag: '停办',
-            eqpId: 'E1001',
+            director: '温州市鹿城区教育局',
+            flag: '0',
+            flagName: '正常',
+            eqpid: ["EQP1001", "EQP101010101010", "EQP20202020"],//格式：[ "EQP1001", "EQP101010101010", "EQP20202020" ]
             descr: '好学校'
           },
         ],
@@ -234,24 +240,15 @@
           ID: '',
           name: '',
           levels: '',
+          levelsName: '',
           address: '',
           head: '',
           director: '',
           flag: '',
-          eqpId: '',
+          flagName: '',
+          eqpid: '',
           descr: ''
         },
-        //主管部门选项
-        directorOption: [
-          {
-            value: '1',
-            label: '温州市鹿城区教育局'
-          },
-          {
-            value: '2',
-            label: '温州市教育局'
-          },
-        ],
         //教育水平选项
         levelsOption: [
           {
@@ -262,10 +259,10 @@
             label: '小学'
           }, {
             value: '2',
-            label: '中学'
+            label: '初中'
           }, {
-            value: '3',
-            label: '其他'
+            value: '7',
+            label: '培训中心'
           }],
         //学校状态选项
         statusOption: [{
@@ -278,39 +275,37 @@
           value: '1',
           label: '停办'
         }],
+        //设备编号选项
+        eqpidOption: [{
+          value: 'EQP1001',
+          label: '三小学校前门'
+        }, {
+          value: 'EQP101010101010',
+          label: '三小后门'
+        }, {
+          value: 'EQP20202020',
+          label: '八中正门'
+        }],
         //-----删除对话框----
         //对话框状态
         deleteDialogVisible: false,
         //内容验证规则
         rules: {
-          ID: [{required: true, message: '学校代码不能为空', trigger: 'blur'}],
+          ID: [{required: true, message: '学校代码不能为空', trigger: 'blur'},
+            {validator: checkID, trigger: 'blur'}],
           name: [{required: true, message: '学校名称不能为空', trigger: 'blur'}],
-          levels: [{required: true, message: '请选择学校类型', trigger: 'change'}],
-          address: [{required: true, message: '学校地址不能为空', trigger: 'blur'}],
-          head: [{required: true, message: '负责人不能为空', trigger: 'blur'}],
-          director: [{required: true, message: '主管部门不能为空', trigger: 'blur'}],
+          levels: [{required: true, message: '请选择教育程度', trigger: 'change'}],
           flag: [{required: true, message: '请选择学校状态', trigger: 'change'}],
-          eqpId: [{required: true, message: '设备类型不能为空', trigger: 'blur'}],
+          eqpid: [{required: true, message: '设备类型不能为空', trigger: 'blur'}],
         },
       }
     },
     created() {
       this.getList();
     },
-    filters: {
-      //根据状态过滤不同颜色
-      flagFilter(flag) {
-        const statusMap = {
-          '注销': 'danger',
-          '正常': 'success',
-          '停办': 'warning'
-        };
-        return statusMap[flag]
-      },
-    },
     methods: {
       //获取列表
-      getList () {
+      getList() {
 //        this.listLoading = true;
 //        fetchList('/schoolInfo', this.listQuery).then( response => {
 //          this.schoolInfo = response.data.schoolInfo;
@@ -327,11 +322,13 @@
           ID: '',
           name: '',
           levels: '',
+          levelsName: '',
           address: '',
           head: '',
           director: '',
           flag: '',
-          eqpId: '',
+          flagName: '',
+          eqpid: '',
           descr: ''
         }
       },
@@ -360,9 +357,8 @@
 //            })
             this.total = this.total + 1;
             //通过select的value值找到label的值，显示给用户
-            this.temp.director = valueToLabel(this.directorOption, this.temp.director);
-            this.temp.levels = valueToLabel(this.levelsOption, this.temp.levels);
-            this.temp.flag = valueToLabel(this.statusOption, this.temp.flag);
+            this.temp.levelsName = valueToLabel(this.levelsOption, this.temp.levels);
+            this.temp.flagName = valueToLabel(this.statusOption, this.temp.flag);
             //添加到表格
             this.schoolInfo.push(this.temp);
             this.dialogVisible = false;
@@ -378,9 +374,6 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
-        this.temp.director = labelToValue(this.directorOption, this.temp.director);
-        this.temp.levels = labelToValue(this.levelsOption, this.temp.levels);
-        this.temp.flag = labelToValue(this.statusOption, this.temp.flag);
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.$nextTick(() => {
@@ -390,13 +383,12 @@
       //修改完毕上传
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
-          if(valid) {
+          if (valid) {
 //            SubmitTable('/schoolInfo', this.temp).then(() => {
 //
 //            })
-            this.temp.director = valueToLabel(this.directorOption, this.temp.director);
-            this.temp.levels = valueToLabel(this.levelsOption, this.temp.levels);
-            this.temp.flag = valueToLabel(this.statusOption, this.temp.flag);
+            this.temp.levelsName = valueToLabel(this.levelsOption, this.temp.levels);
+            this.temp.flagName = valueToLabel(this.statusOption, this.temp.flag);
             for (const v of this.schoolInfo) {
               if (v.ID === this.temp.ID) {
                 const index = this.schoolInfo.indexOf(v);
@@ -413,7 +405,7 @@
             })
           }
         });
-        
+
       },
 
       //获取index

@@ -40,19 +40,13 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/device/deviceHome',
     name: 'device',
-    meta: { title: '终端设备', icon: 'example' },
+    meta: { title: '终端设备', icon: 'device' },
     children: [
       {
         path: 'deviceHome',
         component: () => import('@/views/device/deviceChildren/01-deviceHome'),
         name: 'deviceHome',
         meta: { title: '设备信息'}
-      },
-      {
-        path: 'faceLibs',
-        component: () => import('@/views/device/deviceChildren/05-faceLibs'),
-        name: 'faceLibs',
-        meta: { title: '人脸库'}
       },
       {
         path: 'facePics',
@@ -75,7 +69,7 @@ export const constantRouterMap = [
     name: 'school',
     meta: {
       title: '学校管理',
-      icon: 'example'
+      icon: 'school'
     },
     children: [
       {
@@ -111,7 +105,7 @@ export const constantRouterMap = [
     name: 'person',
     meta: {
       title: '人员管理',
-      icon: 'example'
+      icon: 'person'
     },
     children: [
       {
@@ -141,7 +135,7 @@ export const constantRouterMap = [
     name: 'portraits',
     meta: {
       title: '照片录入',
-      icon: 'example'
+      icon: 'portraits'
     },
     children: [
       {
@@ -171,26 +165,13 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '/photo',
-    component: Layout,
-    redirect: '/photo/storagePath',
-    children: [
-      {
-        path: 'storagePath',
-        component: () => import('@/views/photo/storagePath'),
-        name: 'storagePath',
-        meta: { title: '照片路径', icon: 'example' }
-      },
-    ]
-  },
-  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/managerMenu',
     name: 'permission',
     meta: {
       title: '系统设置',
-      icon: 'example'
+      icon: 'permission'
     },
     children: [
       {
