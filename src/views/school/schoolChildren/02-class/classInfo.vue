@@ -67,9 +67,9 @@
                   border highlight-current-row
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
-          <el-table-column prop="id" :show-overflow-tooltip="true" label="班级编号" width="150px "></el-table-column>
+          <el-table-column prop="ID" :show-overflow-tooltip="true" label="班级编号" width="150px "></el-table-column>
           <el-table-column prop="classNO" :show-overflow-tooltip="true" label="班级号" width="65px"></el-table-column>
-          <el-table-column prop="gradeid" :show-overflow-tooltip="true" label="年级号" width="70px"></el-table-column>
+          <el-table-column prop="gradeID" :show-overflow-tooltip="true" label="年级号" width="70px"></el-table-column>
           <el-table-column prop="schoolName" :show-overflow-tooltip="true" label="学校名称" width="230px"></el-table-column>
           <el-table-column prop="head" :show-overflow-tooltip="true" label="班主任" width="120px"></el-table-column>
           <el-table-column prop="head2" :show-overflow-tooltip="true" label="班主任(前/代)" width="120px"></el-table-column>
@@ -104,15 +104,15 @@
                style="margin-top: -30px" label-position="right" label-width="100px">
         <el-row>
           <el-col :sm="24" :md="12">
-            <el-form-item label="班级编号" prop="id" v-if="dialogStatus=='update'">
-              <el-input v-model="temp.id" readonly></el-input>
+            <el-form-item label="班级编号" prop="ID" v-if="dialogStatus=='update'">
+              <el-input v-model="temp.ID" readonly></el-input>
             </el-form-item>
             <el-form-item label="班级号" prop="classNO">
-              <el-input v-model="temp.classNO" type="number" :maxlength="2"></el-input>
+              <el-input v-model="temp.classNO" :maxlength="2"></el-input>
             </el-form-item>
-            <el-form-item label="班主任" prop="teacherid">
-              <el-select v-model="temp.teacherid" filterable placeholder="请选择班主任" style="width: 100%">
-                <el-option v-for="item in teacheridOption"
+            <el-form-item label="班主任" prop="teacherID">
+              <el-select v-model="temp.teacherID" filterable placeholder="请选择班主任" style="width: 100%">
+                <el-option v-for="item in teacherIDOption"
                            :key="item.value" :label="item.label" :value="item.value">
                   <span style="float: left">{{ item.label }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
@@ -124,15 +124,16 @@
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
-            <el-form-item label="年级号" prop="gradeid">
-              <el-date-picker v-model="temp.gradeid" placeholder="选择年级号"
+            <el-form-item label="年级号" prop="gradeID">
+              <el-date-picker v-model="temp.gradeID" placeholder="选择年级号"
                               align="right" style="width: 100%"
-                              type="year" format="yyyy" value-format="yyyy">
+                              type="year" format="yyyy" value-format="yyyy"
+                              :picker-options="gradeIDScope">
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="学校名称" prop="schoolid">
-              <el-select v-model="temp.schoolid" filterable placeholder="请选择学校名称" style="width: 100%">
-                <el-option v-for="item in schoolidOption"
+            <el-form-item label="学校名称" prop="schoolID">
+              <el-select v-model="temp.schoolID" filterable placeholder="请选择学校名称" style="width: 100%">
+                <el-option v-for="item in schoolIDOption"
                            :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
@@ -162,10 +163,23 @@
 
 <script>
   import {fetchList, SubmitTable, valueToLabel, labelToValue} from '@/api/table'
+  import {validateNum} from "../../../../utils/validate";
 
   export default {
     data() {
+      //班级号验证
+      var checkClassNO = (rule, value, callback) => {
+        if (!validateNum(value)) {
+          callback(new Error('只能输入纯数字'));
+        } else if(value < 1 || value > 99){
+          callback(new Error('限制1-99'))
+        }else {
+          callback();
+        }
+      };
       return {
+        test: '0',
+        test2: '0',
         //搜索内容
         listQuery: {
           page: 1,
@@ -183,29 +197,29 @@
         listLoading: true,
         classInfo: [
           {
-            id: 'c1001',
+            ID: 'c1001',
             classNO: 5,
-            gradeid: '2014',
-            schoolid: 's1001',
+            gradeID: '2014',
+            schoolID: 's1001',
             schoolName: '温州市鹿城区蒲鞋市小学龟湖路校区',
-            teacherid: '12345678900',
+            teacherID: '12345678900',
             head: '王安石',
             head2: '李白',
             flag: '2',
-            flagName:'停办',
+            flagName: '停办',
             descr: '好班级'
           },
           {
-            id: 'c1002',
+            ID: 'c1002',
             classNO: 8,
-            gradeid: '2018',
-            schoolid: 's1002',
+            gradeID: '2018',
+            schoolID: 's1002',
             schoolName: '温州市鹿城区第八中学',
-            teacherid: '12345600789',
+            teacherID: '12345600789',
             head: '王安石',
             head2: '李白',
             flag: '1',
-            flagName:'正常',
+            flagName: '正常',
             descr: '好班级'
           },
         ],
@@ -223,20 +237,21 @@
         },
         //对话框内容
         temp: {
-          id: '',
+          ID: '',
           classNO: '',
-          gradeid: '',
+          gradeID: '',
           gradeName: '',
-          schoolid: '',
+          schoolID: '',
           schoolName: '',
-          teacherid: '',
+          teacherID: '',
           head: '',
           head2: '',
           flag: '',
+          flagName: '',
           descr: ''
         },
-        //学校id选项
-        schoolidOption: [
+        //学校ID选项
+        schoolIDOption: [
           {
             value: 's1001',
             label: '温州市鹿城区蒲鞋市小学龟湖路校区'
@@ -245,8 +260,14 @@
             label: '温州市鹿城区第八中学'
           },
         ],
+        //年级号范围限制2000年到2099年
+        gradeIDScope: {
+          disabledDate(time) {
+            return time.getTime() < new Date(2000, 1, 1) || time.getTime() > new Date(2099, 1, 1);
+          },
+        },
         //班主任选项
-        teacheridOption: [
+        teacherIDOption: [
           {
             value: '12345678900',
             label: '王安石'
@@ -279,11 +300,14 @@
         deleteDialogVisible: false,
         //内容验证规则
         rules: {
-          classNO: [{required: true, message: '班级号不能为空', trigger: 'blur'}],
-          gradeid: [{required: true, message: '请选择年级号', trigger: 'blur'}],
-          teacherid: [{required: true, message: '请选择班主任', trigger: 'blur'}],
-          schoolid: [{required: true, message: '请选择所属学校名称', trigger: 'blur'}],
-          flag: [{required: true, message: '请选择班级状态', trigger: 'change'}],
+          classNO: [
+            {required: true, message: '班级号不能为空', trigger: 'blur'},
+            {validator: checkClassNO, trigger: 'change'}
+          ],
+          gradeID: {required: true, message: '请选择年级号', trigger: 'blur'},
+          teacherID: {required: true, message: '请选择班主任', trigger: 'blur'},
+          schoolID: {required: true, message: '请选择所属学校名称', trigger: 'blur'},
+          flag: {required: true, message: '请选择班级状态', trigger: 'change'},
         },
       }
     },
@@ -306,16 +330,16 @@
       },
       resetTemp() {
         this.temp = {
-          id: '',
+          ID: '',
           classNO: '',
-          gradeid: new Date(),
-          schoolid: '',
+          gradeID: new Date().getFullYear().toString(),
+          schoolID: '',
           schoolName: '',
-          teacherid: '',
+          teacherID: '',
           head: '',
           head2: '',
           flag: '',
-          flagName:'',
+          flagName: '',
           descr: ''
         }
       },
@@ -344,8 +368,8 @@
 //            })
             this.total = this.total + 1;
             //通过select的value值找到label的值，显示给用户
-            this.temp.head = valueToLabel(this.teacheridOption, this.temp.teacherid);
-            this.temp.schoolName = valueToLabel(this.schoolidOption, this.temp.schoolid);
+            this.temp.head = valueToLabel(this.teacherIDOption, this.temp.teacherID);
+            this.temp.schoolName = valueToLabel(this.schoolIDOption, this.temp.schoolID);
             this.temp.flagName = valueToLabel(this.flagOption, this.temp.flag);
             //添加到表格
             console.log(this.temp);
@@ -363,8 +387,8 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
-        //this.temp.schoolid = labelToValue(this.schoolidOption, this.temp.schoolid);
-        //this.temp.teacherid = labelToValue(this.teacheridOption, this.temp.teacherid);
+        //this.temp.schoolID = labelToValue(this.schoolIDOption, this.temp.schoolID);
+        //this.temp.teacherID = labelToValue(this.teacherIDOption, this.temp.teacherID);
         //this.temp.flag = labelToValue(this.flagOption, this.temp.flag);
         this.dialogStatus = 'update';
         this.dialogVisible = true;
@@ -379,11 +403,11 @@
 //            SubmitTable('/classInfo', this.temp).then(() => {
 //
 //            })
-            this.temp.head = valueToLabel(this.teacheridOption, this.temp.teacherid);
-            this.temp.schoolName = valueToLabel(this.schoolidOption, this.temp.schoolid);
+            this.temp.head = valueToLabel(this.teacherIDOption, this.temp.teacherID);
+            this.temp.schoolName = valueToLabel(this.schoolIDOption, this.temp.schoolID);
             this.temp.flageName = valueToLabel(this.flagOption, this.temp.flag);
             for (const v of this.classInfo) {
-              if (v.id === this.temp.id) {
+              if (v.ID === this.temp.ID) {
                 const index = this.classInfo.indexOf(v);
                 this.classInfo.splice(index, 1, this.temp);
                 break;
@@ -438,5 +462,5 @@
       },
     }
   }
-</script>
 
+</script>

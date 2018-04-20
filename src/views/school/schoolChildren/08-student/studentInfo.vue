@@ -83,11 +83,11 @@
                     </el-form-item>
                   </el-col>
                   <el-col :sm="3">
-                    <el-form-item label="证件" style="margin-bottom: 0;"><span>{{ props.row.fa_id_type_name }}</span>
+                    <el-form-item label="证件" style="margin-bottom: 0;"><span>{{ props.row.fa_ID_type_name }}</span>
                     </el-form-item>
                   </el-col>
                   <el-col :sm="6">
-                    <el-form-item label="证件号" style="margin-bottom: 0;"><span>{{ props.row.fa_id_number }}</span>
+                    <el-form-item label="证件号" style="margin-bottom: 0;"><span>{{ props.row.fa_ID_number }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -104,24 +104,24 @@
                     </el-form-item>
                   </el-col>
                   <el-col :sm="3">
-                    <el-form-item label="证件" style="margin-bottom: 0;"><span>{{ props.row.mo_id_type_name }}</span>
+                    <el-form-item label="证件" style="margin-bottom: 0;"><span>{{ props.row.mo_ID_type_name }}</span>
                     </el-form-item>
                   </el-col>
                   <el-col :sm="6">
-                    <el-form-item label="证件号" style="margin-bottom: 0;"><span>{{ props.row.fa_id_number }}</span>
+                    <el-form-item label="证件号" style="margin-bottom: 0;"><span>{{ props.row.fa_ID_number }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
               </el-form>
             </template>
           </el-table-column>
-          <el-table-column prop="id" :show-overflow-tooltip="true" label="学生编号（证件号码）" width="150px"></el-table-column>
+          <el-table-column prop="ID" :show-overflow-tooltip="true" label="学生编号（证件号码）" width="150px"></el-table-column>
           <el-table-column prop="name" :show-overflow-tooltip="true" label="姓名"></el-table-column>
           <el-table-column prop="D_OF_B" :show-overflow-tooltip="true" label="出生日期"></el-table-column>
           <el-table-column prop="sex" :show-overflow-tooltip="true" label="性别"></el-table-column>
           <el-table-column prop="flagName" :show-overflow-tooltip="true" label="状态"></el-table-column>
           <el-table-column prop="address" :show-overflow-tooltip="true" label="住址"></el-table-column>
-          <el-table-column prop="id_type_name" :show-overflow-tooltip="true" label="证件类型"></el-table-column>
+          <el-table-column prop="ID_type_name" :show-overflow-tooltip="true" label="证件类型"></el-table-column>
           <el-table-column prop="master" :show-overflow-tooltip="true" label="责任人"></el-table-column>
           <el-table-column prop="relationName" :show-overflow-tooltip="true" label="与责任人关系"></el-table-column>
           <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"></el-table-column>
@@ -171,15 +171,15 @@
                                 type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy">
                 </el-date-picker>
               </el-form-item>
-              <el-form-item label="证件类别" prop="id_type">
-                <el-select v-model="temp.id_type" placeholder="请选择证件类别" style="width: 100%">
-                  <el-option v-for="item in id_typeOption"
+              <el-form-item label="证件类别" prop="ID_type">
+                <el-select v-model="temp.ID_type" placeholder="请选择证件类别" style="width: 100%">
+                  <el-option v-for="item in ID_typeOption"
                              :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="证件号码" prop="id">
-                <el-input v-model="temp.id" :maxlength="18"></el-input>
+              <el-form-item label="证件号码" prop="ID">
+                <el-input v-model="temp.ID" :maxlength="18"></el-input>
               </el-form-item>
               <el-form-item label="住址" prop="address">
                 <el-input v-model="temp.address" :maxlength="64"></el-input>
@@ -189,8 +189,8 @@
               <el-form-item label="责任人" prop="master">
                 <el-input v-model="temp.master" :maxlength="16"></el-input>
               </el-form-item>
-              <el-form-item label="证件号码" prop="masterid">
-                <el-input v-model="temp.masterid" :maxlength="18"></el-input>
+              <el-form-item label="证件号码" prop="masterID">
+                <el-input v-model="temp.masterID" :maxlength="18"></el-input>
               </el-form-item>
               <el-form-item label="关系" prop="relation">
                 <el-select v-model="temp.relation" placeholder="请选择学生与责任人关系" style="width: 100%">
@@ -223,15 +223,15 @@
               <el-form-item label="父亲" prop="father">
                 <el-input v-model="temp.father" :maxlength="16"></el-input>
               </el-form-item>
-              <el-form-item label="证件类别" prop="fa_id_type">
-                <el-select v-model="temp.fa_id_type" placeholder="请选择" style="width: 100%">
-                  <el-option v-for="item in id_typeOption"
+              <el-form-item label="证件类别" prop="fa_ID_type">
+                <el-select v-model="temp.fa_ID_type" placeholder="请选择" style="width: 100%">
+                  <el-option v-for="item in ID_typeOption"
                              :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="证件号码" prop="fa_id_number">
-                <el-input v-model="temp.fa_id_number" :maxlength="18"></el-input>
+              <el-form-item label="证件号码" prop="fa_ID_number">
+                <el-input v-model="temp.fa_ID_number" :maxlength="18"></el-input>
               </el-form-item>
               <el-form-item label="联系" prop="fa_contact">
                 <el-input v-model="temp.fa_contact" :maxlength="24"></el-input>
@@ -244,15 +244,15 @@
               <el-form-item label="母亲" prop="mother">
                 <el-input v-model="temp.mother" :maxlength="16"></el-input>
               </el-form-item>
-              <el-form-item label="证件类别" prop="mo_id_type">
-                <el-select v-model="temp.mo_id_type" placeholder="请选择" style="width: 100%">
-                  <el-option v-for="item in id_typeOption"
+              <el-form-item label="证件类别" prop="mo_ID_type">
+                <el-select v-model="temp.mo_ID_type" placeholder="请选择" style="width: 100%">
+                  <el-option v-for="item in ID_typeOption"
                              :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="证件号码" prop="mo_id_number">
-                <el-input v-model="temp.mo_id_number" :maxlength="18"></el-input>
+              <el-form-item label="证件号码" prop="mo_ID_number">
+                <el-input v-model="temp.mo_ID_number" :maxlength="18"></el-input>
               </el-form-item>
               <el-form-item label="联系" prop="mo_contact">
                 <el-input v-model="temp.mo_contact" :maxlength="24"></el-input>
@@ -277,7 +277,7 @@
 
 <script>
   import {fetchList, SubmitTable, valueToLabel, labelToValue} from '@/api/table';
-  import {validateTel, validateIdentity18, validatePassport} from "../../../../utils/validate";
+  import {validateTel, validateIdentity18, validatePassport,validateOther} from "../../../../utils/validate";
   import ElRow from "element-ui/packages/row/src/row";
 
   export default {
@@ -293,19 +293,19 @@
       };
       //证件号码验证
       var checkID_number = (rule, value, callback) => {
-        if (this.temp.id_type === '0') {
+        if (this.temp.ID_type === '0') {
           if (!validateIdentity18(value)) {
             callback(new Error('请输入正确的18位身份证号码'))
           } else {
             callback()
           }
-        } else if (this.temp.id_type === '1') {
+        } else if (this.temp.ID_type === '1') {
           if (!validatePassport(value)) {
             callback(new Error('请输入正确的护照号码'));
           } else {
             callback();
           }
-        } else if(this.temp.id_type === '2') {
+        } else if(this.temp.ID_type === '2') {
           if (!validateOther(value)) {
             callback(new Error('只能输入数字和英文字母'));
           } else {
@@ -334,26 +334,26 @@
         listLoading: true,
         studentInfo: [
           {
-            id: '123456789123456789',
+            ID: '123456789123456789',
             name: '汪涵爱新觉罗',
             D_OF_B: '12/28/2012',
             sex: '男',
             address: '温州市鹿城区高新路5号',
-            id_type: '0',
-            id_type_name: '身份证',
+            ID_type: '0',
+            ID_type_name: '身份证',
             father: '爱新觉罗波涛大海',
-            fa_id_type: '0',
-            fa_id_type_name: '身份证',
-            fa_id_number: '123456789123456789',
+            fa_ID_type: '0',
+            fa_ID_type_name: '身份证',
+            fa_ID_number: '123456789123456789',
             fa_contact: '12345678900',
             fa_company: '浙江帝杰曼',
             mother: '谢小小',
-            mo_id_type: '1',
-            mo_id_type_name: '身份证',
-            mo_id_number: '123456788',
+            mo_ID_type: '1',
+            mo_ID_type_name: '身份证',
+            mo_ID_number: '123456788',
             mo_contact: '12345678900',
             mo_company: '无',
-            masterid: '1001',
+            masterID: '1001',
             master: '谢娜',
             relation: '1',
             relationName: '父母',
@@ -380,26 +380,26 @@
         },
         //对话框内容
         temp: {
-          id: '',
+          ID: '',
           name: '',
           D_OF_B: '',
           sex: '',
           address: '',
-          id_type: '',
-          id_type_name: '',
+          ID_type: '',
+          ID_type_name: '',
           father: '',
-          fa_id_type: '',
-          fa_id_type_name: '',
-          fa_id_number: '',
+          fa_ID_type: '',
+          fa_ID_type_name: '',
+          fa_ID_number: '',
           fa_contact: '',
           fa_company: '',
           mother: '',
-          mo_id_type: '',
-          mo_id_type_name: '',
-          mo_id_number: '',
+          mo_ID_type: '',
+          mo_ID_type_name: '',
+          mo_ID_number: '',
           mo_contact: '',
           mo_company: '',
-          masterid: '',
+          masterID: '',
           master: '',
           relation: '',
           relnum: '',
@@ -420,7 +420,7 @@
           },
         ],
         //证件类型
-        id_typeOption: [
+        ID_typeOption: [
           {
             value: '0',
             label: '身份证'
@@ -480,16 +480,16 @@
           name: {required: true, message: '请输入学生姓名', trigger: 'blur'},
           sex: {required: true, message: '请选择学生性别', trigger: 'blur'},
           D_OF_B: {required: true, message: '请选择出生日期', trigger: 'blur'},
-          id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
-          id: [{required: true, message: '请输入正确的证件号码', trigger: 'blur'},
-            {validator: checkid_number, trigger: 'change'}],
+          ID_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
+          ID: [{required: true, message: '请输入正确的证件号码', trigger: 'blur'},
+            {validator: checkID_number, trigger: 'change'}],
           // fa_contact: {validator: checkTel, trigger: 'change'},
-          fa_id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
-          fa_id_number: [{validator: checkid_number, trigger: 'change'}],
+          fa_ID_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
+          fa_ID_number: [{validator: checkID_number, trigger: 'change'}],
           // mo_contact: {validator: checkTel, trigger: 'change'},
-          mo_id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
-          mo_id_number: [{validator: checkid_number, trigger: 'change'}],
-          masterid: {required: true, message: '请输入责任人证件号码', trigger: 'blur'},
+          mo_ID_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
+          mo_ID_number: [{validator: checkID_number, trigger: 'change'}],
+          masterID: {required: true, message: '请输入责任人证件号码', trigger: 'blur'},
           master: {required: true, message: '请输入责任人姓名', trigger: 'blur'},
           relation: {required: true, message: '请选择与责任人关系', trigger: 'blur'},
           flag: {required: true, message: '请选择学生状态', trigger: 'blur'},
@@ -516,26 +516,26 @@
       },
       resetTemp() {
         this.temp = {
-          id: '',
+          ID: '',
           name: '',
           D_OF_B: '',
           sex: 'M',
           address: '',
-          id_type: '0',
-          id_type_name: '',
+          ID_type: '0',
+          ID_type_name: '',
           father: '',
-          fa_id_type: '0',
-          fa_id_type_name: '',
-          fa_id_number: '',
+          fa_ID_type: '0',
+          fa_ID_type_name: '',
+          fa_ID_number: '',
           fa_contact: '',
           fa_company: '',
           mother: '',
-          mo_id_type: '0',
-          mo_id_type_name: '',
-          mo_id_number: '',
+          mo_ID_type: '0',
+          mo_ID_type_name: '',
+          mo_ID_number: '',
           mo_contact: '',
           mo_company: '',
-          masterid: '',
+          masterID: '',
           master: '',
           relation: '',
           relnum: '0',
@@ -574,9 +574,9 @@
             this.total = this.total + 1;
             //通过select的value值找到label的值，显示给用户
             this.temp.sex = valueToLabel(this.sexOption, this.temp.sex);
-            this.temp.id_type_name = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.fa_id_type_name = valueToLabel(this.id_typeOption, this.temp.fa_id_type);
-            this.temp.mo_id_type_name = valueToLabel(this.id_typeOption, this.temp.mo_id_type);
+            this.temp.ID_type_name = valueToLabel(this.ID_typeOption, this.temp.ID_type);
+            this.temp.fa_ID_type_name = valueToLabel(this.ID_typeOption, this.temp.fa_ID_type);
+            this.temp.mo_ID_type_name = valueToLabel(this.ID_typeOption, this.temp.mo_ID_type);
             this.temp.flagName = valueToLabel(this.flagOption, this.temp.flag);
             this.temp.relationName = valueToLabel(this.relationOption, this.temp.relation);
             //添加到表格
@@ -613,15 +613,15 @@
 //            })
             //通过select的value值找到label的值，显示给用户
             this.temp.sex = valueToLabel(this.sexOption, this.temp.sex);
-            this.temp.id_type_name = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.fa_id_type_name = valueToLabel(this.id_typeOption, this.temp.fa_id_type);
-            this.temp.mo_id_type_name = valueToLabel(this.id_typeOption, this.temp.mo_id_type);
+            this.temp.ID_type_name = valueToLabel(this.ID_typeOption, this.temp.ID_type);
+            this.temp.fa_ID_type_name = valueToLabel(this.ID_typeOption, this.temp.fa_ID_type);
+            this.temp.mo_ID_type_name = valueToLabel(this.ID_typeOption, this.temp.mo_ID_type);
             this.temp.flagName = valueToLabel(this.flagOption, this.temp.flag);
             this.temp.relationName = valueToLabel(this.relationOption, this.temp.relation);
             // for (const v of this.studentInfo) {
-            //   if (v.id === this.temp.id) {
+            //   if (v.ID === this.temp.ID) {
             //     const index = this.studentInfo.indexOf(v);
-            //由于学生id是可修改的证件号码 所以无法通过id修改条目
+            //由于学生ID是可修改的证件号码 所以无法通过ID修改条目
             this.studentInfo.splice(index, 1, this.temp);
             //   break;
             // }

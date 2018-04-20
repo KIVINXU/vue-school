@@ -20,6 +20,12 @@ export default {
     AppMain,
     AppFooter
   },
+  mounted() {
+    //关闭页面的时候提示
+    window.onbeforeunload = function (){
+      return '关闭提示';
+    }
+  },
   computed: {
     sidebar() {
       return this.$store.state.app.sidebar

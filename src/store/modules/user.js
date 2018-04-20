@@ -74,7 +74,7 @@ const user = {
         logout(state.token).then((response) => {
           var data = response.data;
           if(data.msg && data.msg !== ''){
-            alert(data.msg)
+            Message.info(data.msg);
           }
           commit('SET_TOKEN', '');
           commit('SET_NAME', '');

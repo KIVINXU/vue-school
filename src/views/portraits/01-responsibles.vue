@@ -2,12 +2,12 @@
   <el-form ref="parentForm" :rules="parentRules" :model="parentForm" label-width="100px">
     <el-row style="margin-bottom: 10px">
       <el-col :xs="20" :sm="12" :md="9" :lg="7">
-        <el-input placeholder="请输入证件号码" >
+        <el-input placeholder="请输入证件号码">
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </el-col>
       <el-col :span="2" :offset="1">
-          <el-button type="primary" @click="submitForm('parentForm')">确认录入</el-button>
+        <el-button type="primary" @click="submitForm('parentForm')">确认录入</el-button>
       </el-col>
     </el-row>
     <el-row>
@@ -34,57 +34,57 @@
           <el-input v-model="parentForm.id" readonly></el-input>
         </el-form-item>
         <el-form-item label="联系电话：" prop="tel">
-          <el-input v-model.number="parentForm.tel"></el-input>
+          <el-input v-model="parentForm.tel" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址：" prop="addr">
-          <el-input v-model="parentForm.addr"></el-input>
+          <el-input v-model="parentForm.addr" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="说明：" prop="desc">
-          <el-input type="textarea" v-model="parentForm.desc" max="128"></el-input>
+          <el-input type="textarea" v-model="parentForm.desc" :maxlength="128"></el-input>
         </el-form-item>
       </el-col>
       <el-col :xs="22" :sm="12" :md="14" :lg="16" :offset="1">
-            <el-table :data="stuInfo" class="tab2">
-              <el-table-column label="序号" width="30px"type="index" ></el-table-column>
-              <el-table-column label="学生姓名" width="80px" prop="stuName"></el-table-column>
-              <el-table-column label="与责任人关系" width="90px">
-                <template slot-scope="scope">
-                  <el-button type="text" @click="selectShow(scope.row)" v-if="!scope.row.clickshow"
-                             style="font-size: 14px;color: #606266" title="点击可修改关系">
-                    {{scope.row.stuRela}}
+        <el-table :data="stuInfo" class="tab2">
+          <el-table-column label="序号" width="30px" type="index"></el-table-column>
+          <el-table-column label="学生姓名" width="80px" prop="stuName"></el-table-column>
+          <el-table-column label="与责任人关系" width="90px">
+            <template slot-scope="scope">
+              <el-button type="text" @click="selectShow(scope.row)" v-if="!scope.row.clickshow"
+                         style="font-size: 14px;color: #606266" title="点击可修改关系">
+                {{scope.row.stuRela}}
+              </el-button>
+              <el-select v-model="scope.row.stuRela" value="stuRela" @change="selectShow(scope.row)"
+                         size="mini" style="width: 90px" v-else>
+                <el-option
+                  v-for="item in options" :key="item.key" :label="item.label" :value="item.label">
+                </el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column label="所属学校" width="160px" prop="stuSchool"></el-table-column>
+          <el-table-column label="所属班级" width="80px" prop="stuClass"></el-table-column>
+          <el-table-column label="委托人（点击可操作）">
+            <template slot-scope="scope">
+              <el-button-group v-for="(g, index) in scope.row.guardianName" :key="index">
+                <el-popover trigger="click" placement="top">
+                  <p>是否解除该委托人？</p>
+                  <el-button type="warning" @click="">
+                    解除
                   </el-button>
-                  <el-select v-model="scope.row.stuRela" value="stuRela" @change="selectShow(scope.row)"
-                             size="mini" style="width: 90px" v-else>
-                    <el-option
-                      v-for="item in options" :key="item.key" :label="item.label" :value="item.label">
-                    </el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column label="所属学校" width="160px" prop="stuSchool"></el-table-column>
-              <el-table-column label="所属班级" width="80px" prop="stuClass"></el-table-column>
-              <el-table-column label="委托人（点击可操作）">
-                <template slot-scope="scope">
-                  <el-button-group v-for="(g, index) in scope.row.guardianName" :key="index">
-                    <el-popover trigger="click" placement="top">
-                      <p>是否解除该委托人？</p>
-                      <el-button type="warning" @click="">
-                        解除
-                      </el-button>
-                      <el-button type="text" @click="trans(scope.row.stuName,scope.row.responseName)">
-                        添加其他接送人
-                      </el-button>
-                      <div slot="reference">
-                        <el-button size="mini" type="text" title="点击可修改委托人"
-                                   style="font-size: 14px;color: #606266;margin-left: 5px">
-                          {{g}}
-                        </el-button>
-                      </div>
-                    </el-popover>
-                  </el-button-group>
-                </template>
-              </el-table-column>
-            </el-table>
+                  <el-button type="text" @click="trans(scope.row.stuName,scope.row.responseName)">
+                    添加其他接送人
+                  </el-button>
+                  <div slot="reference">
+                    <el-button size="mini" type="text" title="点击可修改委托人"
+                               style="font-size: 14px;color: #606266;margin-left: 5px">
+                      {{g}}
+                    </el-button>
+                  </div>
+                </el-popover>
+              </el-button-group>
+            </template>
+          </el-table-column>
+        </el-table>
       </el-col>
     </el-row>
   </el-form>
@@ -124,7 +124,7 @@
             stuSchool: "温州市鹿城第八十八小学",
             stuClass: "六<52>班",
             guardianName: ['诸葛亮',],
-            responseName:'谢娜',
+            responseName: '谢娜',
             //select是否显示
             clickshow: false,
           },
@@ -134,7 +134,7 @@
             stuSchool: "温州市鹿城区第三小学",
             stuClass: "六<2>班",
             guardianName: ['慕容复', '诸葛亮'],
-            responseName:'谢娜',
+            responseName: '谢娜',
             //select是否显示
             clickshow: false,
           },
@@ -144,7 +144,7 @@
             stuSchool: "温州市鹿城区小学",
             stuClass: "六<2>班",
             guardianName: ['黄飞鸿', '慕容复', '诸葛亮'],
-            responseName:'谢娜',
+            responseName: '谢娜',
             //select是否显示
             clickshow: false,
           },
@@ -154,7 +154,7 @@
             stuSchool: "温州市鹿城区小学",
             stuClass: "六<2>班",
             guardianName: ['赵阿三', '周王', '赵孙李', '周吴郑', '钱孙李'],
-            responseName:'谢娜',
+            responseName: '谢娜',
             //select是否显示
             clickshow: false,
           },
@@ -164,7 +164,7 @@
             stuSchool: "温州市鹿城区小学",
             stuClass: "六<2>班",
             guardianName: ['赵钱孙李', '周吴郑王', '赵钱孙李', '周吴郑王', '赵钱孙李'],
-            responseName:'谢娜',
+            responseName: '谢娜',
             //select是否显示
             clickshow: false,
           },
@@ -183,9 +183,7 @@
             {required: true, message: '请输入有效电话', trigger: 'blur'},
             {validator: checkTel, trigger: 'change'}
           ],
-          addr: [
-            {required: true, message: '请输入有效住址', trigger: 'blur'}
-          ]
+          addr: [{required: true, message: '请输入有效住址', trigger: 'blur'}]
         },
         //tabs标签切换
         activeName: 'guardian',
@@ -212,7 +210,7 @@
           },
         ],
         value: '',
-        imgsize:'1:2',
+        imgsize: '1:2',
       }
     },
     methods: {
@@ -246,8 +244,8 @@
         })
       },
       //添加接送人跳转
-      trans(stuName,responseName){
-          this.$router.push({name: 'consigners',params:{stuName:stuName,responseName:responseName}})
+      trans(stuName, responseName) {
+        this.$router.push({name: 'consigners', params: {stuName: stuName, responseName: responseName}})
       }
     }
   }
@@ -279,19 +277,12 @@
     color: #8c939d;
     text-align: center;
   }
-  .el-table--small td, .el-table--small th {
-    padding: 0;
-    font-size: 14px;
-    text-align: center;
-  }
-  .el-form-item{
+
+  .el-form-item {
     margin-bottom: 14px;
   }
-  .el-table .cell, .el-table th div{
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-  .section{
+
+  .section {
     position: relative;
     top: -20px;
   }

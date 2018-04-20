@@ -48,3 +48,11 @@
  .el-table .cell, .el-table th div, .el-table--border td:first-child .cell, .el-table--border th:first-child .cell {
    padding-left: 0px;
  }
+ //计数器文本取消居中，靠左
+ .el-input-number .el-input__inner {
+   text-align: left;
+ }
+ //取消按钮间的默认间距
+ .el-button+.el-button {
+   margin-left: 0px;
+ }

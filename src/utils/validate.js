@@ -93,12 +93,17 @@ export function validatePassport(str) {
   return flag;
 }
 
-/* 其他证件验证：只允许数字和英文字母,允许为空 */
+/* 其他证件验证：只允许数字和英文字母,允许为空,允许下划线 */
 export function validateOther(str) {
-  const reg = /^[a-zA-Z0-9]*$/;
+  const reg = /^[_a-zA-Z0-9]*$/;
   var flag = false;
   if (reg.test(str)){
     flag = true;
   }
   return flag;
+}
+/*纯数字*/
+export function validateNum(str) {
+  const reg = /^[0-9]*$/;
+  return reg.test(str)
 }

@@ -21,7 +21,7 @@
                         @crop-success="cropSuccess" :no-circle="true" :width="300" :height="420">
           </image-upload>
         </el-form-item>
-        <el-form-item label="访客姓名：">
+        <el-form-item label="员工姓名：">
           <el-input v-model="staffForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
           <el-radio-group v-model="staffForm.gender">
             <el-radio-button label="M">男</el-radio-button>
@@ -32,13 +32,13 @@
           <el-input v-model="staffForm.id" readonly></el-input>
         </el-form-item>
         <el-form-item label="联系电话：" prop="tel">
-          <el-input v-model.number="staffForm.tel"></el-input>
+          <el-input v-model="staffForm.tel" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址：" prop="addr">
-          <el-input v-model="staffForm.addr"></el-input>
+          <el-input v-model="staffForm.addr" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="所属学校：" prop="school">
-          <el-input type="textarea" v-model="staffForm.school" max="128"></el-input>
+          <el-input type="textarea" v-model="staffForm.school" :maxlength="128"></el-input>
         </el-form-item>
       </el-col>
     </el-row>

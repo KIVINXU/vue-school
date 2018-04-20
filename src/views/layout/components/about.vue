@@ -21,7 +21,7 @@
     </el-row>
     <el-row>
       <el-col class="right">
-        Copyright ©2018 浙江帝杰曼信息科技股份有限公司
+        Copyright ©2017 浙江帝杰曼信息科技股份有限公司
       </el-col>
     </el-row>
   </div>
@@ -44,7 +44,7 @@
           CPU: '',
           total: '',
           free: '',
-          brower:'谷歌浏览器/火狐浏览器/360浏览器/IE9.0+',
+          brower:'谷歌浏览器',
         }
       }
     },
@@ -74,7 +74,7 @@
           }
         })
       },
-      //获取其他数据
+      //获取其他数据——方式:数据交换
       reqOther() {
         request({url:'/about',method: 'post'}).then( response => {
           const data = response.data;

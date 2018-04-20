@@ -34,13 +34,13 @@
           <el-input v-model="guardianForm.id" readonly></el-input>
         </el-form-item>
         <el-form-item label="联系电话：" prop="tel">
-          <el-input v-model.number="guardianForm.tel"></el-input>
+          <el-input v-model="guardianForm.tel" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址：" prop="addr">
-          <el-input v-model="guardianForm.addr"></el-input>
+          <el-input v-model="guardianForm.addr" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="说明：" prop="desc">
-          <el-input type="textarea" v-model="guardianForm.desc" max="128"></el-input>
+          <el-input type="textarea" v-model="guardianForm.desc" :maxlength="128"></el-input>
         </el-form-item>
       </el-col>
       <el-col :xs="22" :sm="12" :md="14" :lg="16" :offset="1">
@@ -232,16 +232,7 @@
     color: #8c939d;
     text-align: center;
   }
-  .el-table--small td, .el-table--small th {
-    padding: 0;
-    font-size: 14px;
-    text-align: center;
-  }
   .el-form-item{
     margin-bottom: 14px;
-  }
-  .el-table .cell, .el-table th div{
-    padding-left: 0px;
-    padding-right: 0px;
   }
 </style>

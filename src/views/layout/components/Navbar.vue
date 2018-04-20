@@ -17,7 +17,7 @@
             <span @click="aboutVisible = true">关于我们</span>
           </el-dropdown-item>
           <el-dropdown-item divided>
-            <span @click="logout" style="display:block;">注销用户</span>
+            <span @click="logout" style="display:block;">退出用户</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>

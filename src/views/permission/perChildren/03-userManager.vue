@@ -115,18 +115,18 @@
               <el-input v-model="temp.passwd" :maxlength="16" type="password"></el-input>
             </el-form-item>
             <el-form-item label="确认密码" prop="passwd2">
-              <el-input v-model="temp.passwd2" :maxlength="16" type="password"></el-input>
+              <el-input v-model="temp.passwd2" :maxlength="16" type="password" ></el-input>
             </el-form-item>
             <el-form-item label="最大连接数" prop="maxcon">
-              <el-input v-model="temp.maxcon" :maxlength="2" type="number"></el-input>
+              <el-input v-model="temp.maxcon" :maxlength="2"></el-input>
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
             <el-form-item label="空闲期/s" prop="idle">
-              <el-input v-model="temp.idle" :maxlength="4" type="number"></el-input>
+              <el-input v-model="temp.idle" :maxlength="4"></el-input>
             </el-form-item>
             <el-form-item label="生存期/s" prop="alive">
-              <el-input v-model="temp.alive" :maxlength="5" type="number"></el-input>
+              <el-input v-model="temp.alive" :maxlength="5"></el-input>
             </el-form-item>
             <el-form-item label="密保方式" prop="way">
               <el-input v-model="temp.way" :maxlength="32"></el-input>
@@ -163,7 +163,7 @@
 
 <script>
   import {fetchList, SubmitTable, valueToLabel, labelToValue} from '@/api/table';
-  import {isvalidPassword,isvalidUsername,validateTel,validateMail,validateWehat} from "../../../utils/validate";
+  import {isvalidPassword,isvalidUsername,validateTel,validateMail,validateWehat,validateNum} from "../../../utils/validate";
 
   export default {
     data() {
@@ -195,7 +195,9 @@
       };
       //最大连接数限制
       var checkMaxcon = (rule, value, callback) => {
-        if(value < 0 || value > 16){
+        if (!validateNum(value)) {
+          callback(new Error('只能输入纯数字'));
+        } else if(value < 0 || value > 16){
           callback(new Error('限制3-16,默认2'))
         }else{
           callback();
@@ -203,7 +205,9 @@
       };
       //空闲期限制
       var checkIdle = (rule, value, callback) => {
-        if(value < 300 || value > 7200){
+        if (!validateNum(value)) {
+          callback(new Error('只能输入纯数字'));
+        } else if(value < 300 || value > 7200){
           callback(new Error('限制300s-7200s,默认1800s'))
         }else{
           callback();
@@ -211,7 +215,9 @@
       };
       //生存期限制
       var checkAlive = (rule, value, callback) => {
-        if(value < 600 || value > 86400){
+        if (!validateNum(value)) {
+          callback(new Error('只能输入纯数字'));
+        } else if(value < 600 || value > 86400){
           callback(new Error('限制600s-86400s,默认28800s'))
         }else{
           callback();
@@ -231,7 +237,9 @@
       var checkFlag = (rule, value, callback) => {
         if(this.flagValue ==='1'){
           //当状态为禁止时要求flag在1-43200之间
-          if(value < 1 || value > 43200){
+          if (!validateNum(value)) {
+            callback(new Error('只能输入纯数字'));
+          } else if(value < 1 || value > 43200){
             callback(new Error('禁止时间限制0m-43200m,默认1m'))
           }else{
             callback()
@@ -249,6 +257,7 @@
         }
       };
       return {
+        //弹框一次性数据
         flagValue: '',
         //搜索内容
         listQuery: {

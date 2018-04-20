@@ -112,7 +112,7 @@
             <el-form-item label="教师编号" prop="id">
               <el-input v-model="temp.id" :maxlength="18"></el-input>
             </el-form-item>
-            <el-form-item label="姓名" prop="id">
+            <el-form-item label="姓名" prop="name">
               <el-input v-model="temp.name" :maxlength="16"
                         style="float: left;margin-right:10px;width:50%;min-width: 87px"></el-input>
               <el-radio-group v-model="temp.sex">
@@ -145,12 +145,13 @@
               </el-select>
             </el-form-item>
             <el-form-item label="证件号码" prop="id_number">
-              <el-input v-model="temp.id_number" placeholder="请输入证件号码" :maxlength="18"></el-input>
+              <el-input v-model="temp.ID_number" placeholder="请输入证件号码" :maxlength="18"></el-input>
             </el-form-item>
             <el-form-item label="合同效期" prop="validity">
               <el-date-picker v-model="temp.validity" placeholder="请选择合同期限"
                               align="right" style="width: 100%"
-                              type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy">
+                              type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy"
+                              :editable = false>
               </el-date-picker>
             </el-form-item>
             <el-form-item label="状态" prop="flag">
@@ -190,7 +191,7 @@
     },
     data() {
       //编号验证
-      var checkid = (rule, value, callback) => {
+      var checkID = (rule, value, callback) => {
         if (!validateOther(value)) {
           callback(new Error('只能输入数字和英文字母'));
         } else {
@@ -206,7 +207,7 @@
         }
       };
       //证件号码验证
-      var checkid_number = (rule, value, callback) => {
+      var checkID_number = (rule, value, callback) => {
         if (this.temp.id_type === '0') {
           if (!validateIdentity18(value)) {
             callback(new Error('请输入正确的18位身份证号码'))
@@ -317,7 +318,7 @@
             label: '其他'
           },
         ],
-        //学校id选项
+        //学校ID选项
         schoolidOption: [
           {
             value: 's1001',
@@ -353,11 +354,11 @@
         //内容验证规则
         rules: {
           id: [{required: true, message: '教师编号不能为空', trigger: 'blur'},
-            {validator: checkid, trigger: 'blur'}],
+            {validator: checkID, trigger: 'blur'}],
           name: {required: true, message: '请输入教师姓名', trigger: 'blur'},
           sex: {required: true, message: '请选择性别', trigger: 'blur'},
           id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
-          id_number: [{validator: checkid_number, trigger: 'change'}],
+          id_number: [{validator: checkID_number, trigger: 'change'}],
           contact: [{required: true, message: '请输入联系方式', trigger: 'blur'},
             {validator: checkTel, trigger: 'change'}],
           schoolid: {required: true, message: '请选择所属学校名称', trigger: 'blur'},
@@ -396,7 +397,7 @@
           address: '',
           schoolid: '',
           schoolName: '',
-          validity: new Date(),
+          validity:'',
           flag: '',
           flagName: '',
           descr: ''
