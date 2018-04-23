@@ -23,9 +23,9 @@ export function fetchSearchOption(url, data) {
   })
 }
 //通过select的value值找到label的值
-export function valueToLabel(option, value) {
+export function valueToLabel(option, key) {
   var obj = option.find((item) => {
-    return item.value === value
+    return item.key === key
   });
    return obj.label;
 }
@@ -34,7 +34,7 @@ export function labelToValue(option, label) {
   var obj = option.find((item) => {
     return item.label === label
   });
-  return obj.value;
+  return obj.key;
 }
 
 //人员录入请求

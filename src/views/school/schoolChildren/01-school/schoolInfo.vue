@@ -4,7 +4,7 @@
       <el-col :span="22">
         <el-select v-model="listQuery.key"
                    style="width: 10%"
-                   @focus="handleFocus(searchOption, 'FieldSelect')"
+                   @focus="handleFocus"
                    placeholder="查询对象">
           <el-option
             v-for="item in searchOption"
@@ -139,7 +139,6 @@
             </el-form-item>
             <el-form-item label="教育程度" prop="levels">
               <el-select v-model="temp.levels"
-                         @focus="handleFocus(levelsOption, 'FieldLevels')"
                          placeholder="请选择教育程度"
                          style="width: 100%">
                 <el-option v-for="item in levelsOption"
@@ -151,7 +150,7 @@
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
-            <el-form-item label="负责人" prop="head">
+            <el-form-item label="负责人" prop="master">
               <el-input v-model="temp.master" :maxlength="8"></el-input>
             </el-form-item>
             <el-form-item label="主管部门" prop="director">
@@ -159,7 +158,6 @@
             </el-form-item>
             <el-form-item label="状态" prop="flag">
               <el-select v-model="temp.flag"
-                         @focus="handleFocus(statusOption, 'FieldFlag')"
                          placeholder="请选择学校状态"
                          style="width: 100%">
                 <el-option v-for="item in statusOption"
@@ -173,16 +171,33 @@
           <el-input v-model="temp.address" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="设备编号" prop="eqpid">
-          <el-select v-model="temp.eqpid"
-                     @focus="handleFocus(eqpidOption, 'FieldEqpid')"
-                     placeholder="请选择设备编号"
-                     multiple style="width: 100%">
-            <el-option v-for="item in eqpidOption"
-                       :key="item.key" :label="item.label" :value="item.key">
-              <span style="float: left">{{ item.key }}</span>
-              <span style="float: right; color: #8492a6; font-size: 13px; margin-right: 15px">{{ item.label }}</span>
-            </el-option>
-          </el-select>
+          <!--<el-select v-model="temp.eqpid"-->
+                     <!--placeholder="请选择设备编号"-->
+                     <!--multiple style="width: 100%">-->
+            <!--<el-option v-for="item in eqpidOption"-->
+                       <!--:key="item.key" :label="item.label" :value="item.key">-->
+              <!--<span style="float: left">{{ item.key }}</span>-->
+              <!--<span style="float: right; color: #8492a6; font-size: 13px; margin-right: 15px">{{ item.label }}</span>-->
+            <!--</el-option>-->
+          <!--</el-select>-->
+          <el-tag
+            :key="tag" closable
+            size="medium"
+            v-for="tag in temp.eqpid"
+            @close="handleCloseTag(tag)">
+            {{tag}}
+          </el-tag>
+          <el-input
+            v-if="inputVisible"
+            v-model="eqpInput"
+            ref="saveTagInput"
+            style="width: 110px"
+            @keyup.enter.native="handleInputConfirm"
+            @blur="handleInputConfirm"></el-input>
+          <el-button
+            v-else
+            style="margin-left: 8px"
+            @click="showEqpInput">+设备编号</el-button>
         </el-form-item>
         <el-form-item label="说明" prop="descr">
           <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"
@@ -201,7 +216,7 @@
 </template>
 
 <script>
-  import {fetchList, SubmitTable, fetchSearchOption, valueToLabel, labelToValue} from '@/api/table'
+  import {fetchList, SubmitTable, fetchSearchOption, valueToLabel } from '@/api/table'
   import {validateOther} from "../../../../utils/validate";
   import { Message } from 'element-ui'
 
@@ -230,34 +245,7 @@
         searchOption: [],
         //加载图标
         listLoading: true,
-        list: [
-          {
-            id: 's1001',
-            name: '温州市鹿城区第三小学',
-            levels: '0',
-            levelsName: '幼儿园',
-            address: '温州市鹿城区高新路3号',
-            master: '潘老师',
-            director: '温州市鹿城区教育局',
-            flag: '0',
-            flagName: '正常',
-            eqpid: ["EQP1001", "EQP101010101010", "EQP20202020"],
-            descr: '好学校'
-          },
-          {
-            id: 's1002',
-            name: '温州市鹿城区帝杰曼',
-            levels: '7',
-            levelsName: '培训中心',
-            address: '温州市鹿城区高新路3号',
-            master: '潘老师',
-            director: '温州市鹿城区教育局',
-            flag: '0',
-            flagName: '正常',
-            eqpid: ["EQP1001", "EQP101010101010", "EQP20202020"],
-            descr: '好学校'
-          },
-        ],
+        list: [],
         //行数
         currentRowIndex: -1,
         //-----添加/修改对话框--------
@@ -290,6 +278,11 @@
         statusOption: [],
         //设备编号选项
         eqpidOption: [],
+        //标签输入框状态
+        inputVisible: false,
+        //标签输入框内容
+        eqpInput: '',
+        
         //-----删除对话框----
         //对话框状态
         deleteDialogVisible: false,
@@ -301,7 +294,6 @@
           name: [{required: true, message: '学校名称不能为空', trigger: 'blur'}],
           levels: [{required: true, message: '请选择教育程度', trigger: 'change'}],
           flag: [{required: true, message: '请选择学校状态', trigger: 'change'}],
-          eqpid: [{required: true, message: '设备类型不能为空', trigger: 'blur'}],
         },
       }
     },
@@ -372,6 +364,7 @@
         }else if(this.listQuery.method === 'Query') {
           this.handleFilter(1);
         }else if(this.listQuery.method === 'List') {
+          this.listQuery.page = 1;
           this.getList();
         }
       },
@@ -386,9 +379,9 @@
         }
       },
       //select获取焦点后请求数据
-      handleFocus(option ,method) {
-        if(option.length === 0) {
-          fetchSearchOption('/schoolHome',{method: method})
+      handleFocus() {
+        if(this.searchOption.length === 0) {
+          fetchSearchOption('/schoolHome',{method: 'FieldSelect'})
             .then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
@@ -401,12 +394,65 @@
                   let optionObj = {};
                   optionObj.key = keys[i];
                   optionObj.label = values[i];
-                  option.push(optionObj);
+                  this.searchOption.push(optionObj);
                 }
               }
             })
         }
       },
+      //打开弹出框select请求数据
+      handleOption() {
+        if(this.levelsOption.length === 0) {
+          fetchSearchOption('/schoolHome',{method: 'FieldLabel'})
+            .then(response => {
+              const data = response.data;
+              if(data.msg && data.msg !== ''){
+                Message.error(data.msg);
+              }
+              if(data.data){
+                this.levelsOption = data.data.LEVELS;
+                this.statusOption = data.data.FLAG;
+              }
+            })
+        }
+      },
+      //关闭删除标签
+      handleCloseTag(tag) {
+        this.temp.eqpid.splice(this.temp.eqpid.indexOf(tag), 1);
+      },
+      //显示关闭输入框
+      showEqpInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        })
+      },
+      //确认添加新标签
+      handleInputConfirm() {
+        let eqpInput = this.eqpInput;
+        if(eqpInput) {
+          let eqpData = Object.assign({method: 'FieldVerify'}, {eqpid: eqpInput});
+          SubmitTable('/schoolHome', eqpData).then(response => {
+            const data = response.data;
+            if(data.msg && data.msg !== ''){
+              Message.info(data.msg);
+            }
+            if(data.id === '00000') {
+              this.temp.eqpid.push(eqpInput)
+            }else {
+              this.$notify({
+                title: '失败',
+                message: '添加失败，请重新输入',
+                type: 'error',
+                duration: 2000
+              });
+            }
+          });
+        }
+        this.inputVisible = false;
+        this.eqpInput = '';
+      },
+      //重置对话框内容
       resetTemp() {
         this.temp = {
           id: '',
@@ -414,7 +460,7 @@
           levels: '',
           levelsName: '',
           address: '',
-          head: '',
+          master: '',
           director: '',
           flag: '',
           flagName: '',
@@ -427,6 +473,7 @@
         this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogVisible = true;
+        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -435,7 +482,11 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
+            this.temp.levelsName = valueToLabel(this.levelsOption, this.temp.levels);
+            this.temp.flagName = valueToLabel(this.statusOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
+            delete temp.levelsName;
+            delete temp.flagName;
             SubmitTable('/schoolHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
@@ -459,8 +510,13 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        //eqpid不能为null
+        if(this.temp.eqpid === null) {
+          this.temp.eqpid = [];
+        }
         this.dialogStatus = 'update';
         this.dialogVisible = true;
+        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -469,7 +525,11 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
+            this.temp.levelsName = valueToLabel(this.levelsOption, this.temp.levels);
+            this.temp.flagName = valueToLabel(this.statusOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
+            delete temp.levelsName;
+            delete temp.flagName;
             SubmitTable('/schoolHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
@@ -502,11 +562,15 @@
       },
       //descr剩余长度计算
       leftLength() {
+        if(this.temp.descr === null){
+          this.temp.descr = '';
+        }
         return 128 - this.temp.descr.length
       },
       //删除行
-      handleDelete() {
+      handleDelete(index) {
         this.deleteDialogVisible = true;
+        this.deleteName = this.list[index].name
       },
       rowDelete(index, row) {
         var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});

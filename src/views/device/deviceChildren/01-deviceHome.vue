@@ -385,6 +385,7 @@
         }else if(this.listQuery.method === 'Query') {
           this.handleFilter(1);
         }else if(this.listQuery.method === 'List') {
+          this.listQuery.page = 1;
           this.getList();
         }
       },
