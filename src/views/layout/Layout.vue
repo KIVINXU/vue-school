@@ -23,7 +23,7 @@ export default {
   mounted() {
     //关闭页面的时候提示
     window.onbeforeunload = function (){
-      return '关闭提示';
+      return '确定要离开么？'
     }
   },
   computed: {

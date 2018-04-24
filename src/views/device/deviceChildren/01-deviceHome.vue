@@ -17,7 +17,7 @@
                   style="width: 30%;"
                   clearable
                   :disabled="listQuery.key === ''"
-                  v-model="listQuery.value"
+                  v-model.trim="listQuery.value"
                   @clear="getList()"
                   @keyup.enter.native="handleFilter(1)">
         </el-input>
@@ -118,7 +118,7 @@
         </el-pagination>
       </el-col>
     </el-row>
-    <!--删除设备-->
+    <!--删除-->
     <el-dialog title="提示" :visible.sync="deleteDialogVisible" width="30%">
       <span><i class="el-icon-warning"></i>是否确认删除名称为【{{deleteName}}】的数据？确认删除后，将不能恢复！</span>
       <span slot="footer" class="dialog-footer">
@@ -126,7 +126,7 @@
         <el-button type="primary" @click="rowDelete(currentRowIndex, list)">确 定</el-button>
       </span>
     </el-dialog>
-    <!--添加/修改设备-->
+    <!--添加/修改-->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible" top="10px">
       <el-form ref="dataForm"
                :rules="rules"
@@ -137,7 +137,8 @@
         <el-row>
         <el-col :sm="24" :md="12">
           <el-form-item label="设备编号" prop="id">
-            <el-input v-model="temp.id" :maxlength="16" :readonly="dialogStatus == 'update'"></el-input>
+            <el-input v-model="temp.id" :maxlength="16"
+                      :readonly="dialogStatus == 'update'"></el-input>
           </el-form-item>
           <el-form-item label="设备名称" prop="name">
             <el-input v-model="temp.name" :maxlength="16"></el-input>

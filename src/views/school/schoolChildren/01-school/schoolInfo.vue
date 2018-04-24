@@ -17,7 +17,7 @@
                   style="width: 30%;"
                   clearable
                   :disabled="listQuery.key === ''"
-                  v-model="listQuery.value"
+                  v-model.trim="listQuery.value"
                   @clear="getList()"
                   @keyup.enter.native="handleFilter(1)">
         </el-input>
@@ -132,7 +132,8 @@
         <el-row>
           <el-col :sm="24" :md="12">
             <el-form-item label="学校代码" prop="id">
-              <el-input v-model="temp.id" :maxlength="12"></el-input>
+              <el-input v-model="temp.id" :maxlength="12"
+                        :readonly="dialogStatus == 'update'"></el-input>
             </el-form-item>
             <el-form-item label="名称" prop="name">
               <el-input v-model="temp.name" :maxlength="24"></el-input>
@@ -431,23 +432,21 @@
       handleInputConfirm() {
         let eqpInput = this.eqpInput;
         if(eqpInput) {
-          let eqpData = Object.assign({method: 'FieldVerify'}, {eqpid: eqpInput});
-          SubmitTable('/schoolHome', eqpData).then(response => {
-            const data = response.data;
-            if(data.msg && data.msg !== ''){
-              Message.info(data.msg);
-            }
-            if(data.id === '00000') {
-              this.temp.eqpid.push(eqpInput)
-            }else {
-              this.$notify({
-                title: '失败',
-                message: '添加失败，请重新输入',
-                type: 'error',
-                duration: 2000
-              });
-            }
-          });
+          if(this.temp.eqpid.indexOf(eqpInput) === -1){
+            let eqpData = Object.assign({method: 'FieldVerify'}, {eqpid: eqpInput});
+            SubmitTable('/schoolHome', eqpData).then(response => {
+              const data = response.data;
+              if(data.msg && data.msg !== ''){
+                Message.info(data.msg);
+              }
+              if(data.id === '00000') {
+                this.temp.eqpid.push(eqpInput)
+              }
+            });
+          }else {
+            Message.info('该设备编号已被使用，请重新输入');
+          }
+          
         }
         this.inputVisible = false;
         this.eqpInput = '';
