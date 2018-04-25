@@ -209,8 +209,13 @@
       </el-form>
       <div slot="footer" style="height: 0; margin-top: -70px">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" v-if="dialogStatus === 'create'" @click="createData">保 存</el-button>
-        <el-button type="primary" v-else @click="updateData">保 存</el-button>
+        <el-button type="primary"
+                   v-if="dialogStatus === 'create'"
+                   :disabled="inputVisible === true"
+                   @click="createData">保 存</el-button>
+        <el-button type="primary" v-else
+                   :disabled="inputVisible === true"
+                   @click="updateData">保 存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -456,12 +461,12 @@
         this.temp = {
           id: '',
           name: '',
-          levels: '',
+          levels: 0,
           levelsName: '',
           address: '',
           master: '',
           director: '',
-          flag: '',
+          flag: 0,
           flagName: '',
           eqpid: [],
           descr: ''
@@ -469,10 +474,10 @@
       },
       //添加对话框
       handleCreate() {
+        this.handleOption();
         this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogVisible = true;
-        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -513,9 +518,9 @@
         if(this.temp.eqpid === null) {
           this.temp.eqpid = [];
         }
+        this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
-        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
