@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>关于我们</title>
+    <style>
+        table{
+            font-size: 16px;
+        }
+        th {
+            text-align: right;
+            vertical-align: top;
+            width:100px;
+        }
+
+        .logo {
+            width: 200px;
+            height: 200px;
+            float: left;
+        }
+
+        .right {
+            font-size: 14px;
+            color: grey;
+            text-align: center;
+            position: relative;
+            top: 40px;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 700px">
+    <img src="applogo.jpg" class="logo">
+    <span style="width: 490px;float:left;">
+        <table>
+            <tr>
+                <th>名称：</th><td id="name"></td>
+            </tr>
+            <tr>
+                <th>版本：</th><td id="version"></td>
+            </tr>
+            <tr>
+                <th>描述：</th><td id="descript"></td>
+            </tr>
+            <tr>
+                <th>CPU：</th><td id="cpu"></td>
+            </tr>
+            <tr>
+                <th>内存：</th><td id="mem"></td>
+            </tr>
+            <tr>
+                <th>服务器：</th><td id="web"></td>
+            </tr>
+            <tr>
+                <th>操作系统：</th><td id="os"></td>
+            </tr>
+            <tr>
+                <th>推荐浏览器：</th><td>火狐浏览器/谷歌浏览器/360浏览器</td>
+            </tr>
+        </table>
+    </span>
+    <p class="right">Copyright ©2018 浙江帝杰曼信息科技股份有限公司</p>
+</div>
+</body>
+<script>
+  //页面加载   获取全部信息
+  $(function(){
+    $.ajax({
+      type: "POST",//请求方式
+      url: "/about",//地址，就是json文件的请求路径
+      dataType: "json",//数据类型可以为 text xml json  script  jsonp
+      success: function(result){//返回的参数就是 action里面所有的有get和set方法的参数
+        addBox(result);
+      }
+    });
+  });
+  function addBox(result) {
+    //result是一个集合,所以需要先遍历
+    $.each(result, function (index, obj) {
+      $('#name').innerText = obj['appName'];
+      $('#version').innerText = obj['appVer'];
+      $('#descript').innerText = obj['appDesc'];
+      $('#web').innerText = obj['WEB'];
+      $('#os').innerText = obj['OS'];
+      $('#cpu').innerText = obj['CPU'];
+      $('#mem').innerText = "总量:" + obj['total'] + "   MB   可用:" + obj['free'] + "   MB";
+
+    });
+  }
+  //注意：推送文本中请不要出现|符号，否则内容错乱
+    //获取服务器信息
+    // var req = new XMLHttpRequest();
+    // req.open('GET', document.location, false);
+    // req.send(null);
+    // var message = req.getResponseHeader('info');
+    // var server =  req.getResponseHeader('server');
+    //
+    // var arrs=message.split("|");
+    //
+    // var mem = "总量:" + arrs[5] + "   MB   可用:" + arrs[6] + "   MB";
+    //
+    // //输出
+    // document.getElementById("name").innerHTML = arrs[0];
+    // document.getElementById("version").innerHTML = arrs[1];
+    // document.getElementById("descript").innerHTML = arrs[2];
+    // document.getElementById("cpu").innerHTML = arrs[4];
+    // document.getElementById("mem").innerHTML = mem;
+    // document.getElementById("server").innerHTML = server;
+    // document.getElementById("os").innerHTML = arrs[3];
+</script>
+</html>
