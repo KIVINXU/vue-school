@@ -250,7 +250,6 @@
           id: '',
           classNO: '',
           gradeid: '',
-          gradeName: '',
           schoolid: '',
           schoolName: '',
           teacherid: '',
@@ -312,15 +311,14 @@
               tempData.id = data.data[i][0];
               tempData.classNO = data.data[i][1];
               tempData.gradeid = data.data[i][2];
-              tempData.gradeName = data.data[i][3];
-              tempData.schoolid = data.data[i][4];
-              tempData.schoolName = data.data[i][5];
-              tempData.teacherid = data.data[i][6];
-              tempData.head = data.data[i][7];
-              tempData.head2 = data.data[i][8];
-              tempData.flag = data.data[i][9];
-              tempData.flagName = data.data[i][10];
-              tempData.descr = data.data[i][11];
+              tempData.schoolid = data.data[i][3];
+              tempData.schoolName = data.data[i][4];
+              tempData.teacherid = data.data[i][5];
+              tempData.head = data.data[i][6];
+              tempData.head2 = data.data[i][7];
+              tempData.flag = data.data[i][8];
+              tempData.flagName = data.data[i][9];
+              tempData.descr = data.data[i][10];
               this.list.push(tempData);
             }
             this.total = data.total;
