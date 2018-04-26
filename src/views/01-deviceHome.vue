@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 10px">
-      <el-col :span="22">
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
         <el-select v-model="listQuery.key"
-                   style="width: 10%"
+                   style="width: 14%"
                    @focus="handleFocus"
                    placeholder="查询对象">
           <el-option
@@ -17,12 +17,12 @@
                   style="width: 30%;"
                   clearable
                   :disabled="listQuery.key === ''"
-                  v-model="listQuery.value"
+                  v-model.trim="listQuery.value"
                   @clear="getList()"
                   @keyup.enter.native="handleFilter(1)">
         </el-input>
         <el-button
-          type="primary" plain
+          type="info" plain
           @click="handleFilter(1)"
           :disabled="listQuery.key === ''
             || listQuery.value === ''"
@@ -30,7 +30,7 @@
         </el-button>
         <el-button
           icon="el-icon-search"
-          type="primary" plain
+          type="info" plain
           @click="handleExtFilter(1)"
           :disabled="listQuery.key === ''
             || listQuery.value === ''">相似</el-button>
@@ -80,30 +80,24 @@
     </el-row>
     <el-row>
       <el-col>
-        <el-table :data="list" border
-                  ref="deviceTable"
-                  highlight-current-row
+        <el-table :data="list" ref="schoolTable"
+                  border highlight-current-row
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
-          <el-table-column prop="id" :show-overflow-tooltip="true" label="设备编号" width="75px"></el-table-column>
-          <el-table-column prop="name" :show-overflow-tooltip="true" label="设备名称" width="88px"></el-table-column>
-          <el-table-column prop="model" :show-overflow-tooltip="true" label="设备型号" width="88px"></el-table-column>
-          <el-table-column prop="belong" :show-overflow-tooltip="true" label="学校名称"></el-table-column>
-          <el-table-column prop="place" :show-overflow-tooltip="true" label="安装位置"></el-table-column>
-          <el-table-column prop="total" :show-overflow-tooltip="true" label="图片数"></el-table-column>
-          <el-table-column prop="ip" :show-overflow-tooltip="true" label="默认IP" width="115px"></el-table-column>
-          <el-table-column prop="port" :show-overflow-tooltip="true" label="端口" width="55px"></el-table-column>
-          <el-table-column prop="username" :show-overflow-tooltip="true" label="登录用户" width="100px"></el-table-column>
-          <el-table-column prop="passwd" :show-overflow-tooltip="true" label="登录密码" width="100px"></el-table-column>
-          <el-table-column prop="param" :show-overflow-tooltip="true" label="基本参数"></el-table-column>
-          <el-table-column prop="exparam" :show-overflow-tooltip="true" label="扩展参数"></el-table-column>
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="学校代码" width="110px"></el-table-column>
+          <el-table-column prop="name" :show-overflow-tooltip="true" label="名称" width="230px"></el-table-column>
+          <el-table-column prop="levelsName" :show-overflow-tooltip="true" label="教育程度" width="65px"></el-table-column>
+          <el-table-column prop="address" :show-overflow-tooltip="true" label="地址"></el-table-column>
+          <el-table-column prop="master" :show-overflow-tooltip="true" label="负责人" width="120px"></el-table-column>
+          <el-table-column prop="flagName" :show-overflow-tooltip="true" label="状态" width="65px"></el-table-column>
+          <el-table-column prop="director" :show-overflow-tooltip="true" label="主管部门" width="160px"></el-table-column>
+          <el-table-column prop="eqpid" :show-overflow-tooltip="true" label="设备编号">
+            <template slot-scope="scope">
+              <span v-for="eq in scope.row.eqpid">{{eq}} </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
         </el-table>
-      </el-col>
-      <!-- /.表格结束 -->
-    </el-row>
-    <el-row>
-      <el-col :xs="18" :sm="18" :md="10" :lg="8">
         <!--分页条-->
         <el-pagination
           style="margin-top: 10px;margin-left: -9px;"
@@ -118,7 +112,7 @@
         </el-pagination>
       </el-col>
     </el-row>
-    <!--删除设备-->
+    <!--删除-->
     <el-dialog title="提示" :visible.sync="deleteDialogVisible" width="30%">
       <span><i class="el-icon-warning"></i>是否确认删除名称为【{{deleteName}}】的数据？确认删除后，将不能恢复！</span>
       <span slot="footer" class="dialog-footer">
@@ -126,121 +120,119 @@
         <el-button type="primary" @click="rowDelete(currentRowIndex, list)">确 定</el-button>
       </span>
     </el-dialog>
-    <!--添加/修改设备-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible" top="10px">
-      <el-form ref="dataForm"
-               :rules="rules"
+    <!--添加/修改-->
+    <el-dialog :title="textMap[dialogStatus]"
+               :visible.sync="dialogVisible"
+               top="10px">
+      <el-form ref="dataForm" :rules="rules"
                :model="temp"
                style="margin-top: -30px"
                label-position="right"
                label-width="100px">
         <el-row>
           <el-col :sm="24" :md="12">
-            <el-form-item label="设备编号" prop="id">
-              <el-input v-model="temp.id" :maxlength="16" :readonly="dialogStatus == 'update'"></el-input>
+            <el-form-item label="学校代码" prop="id">
+              <el-input v-model="temp.id" :maxlength="12"
+                        :readonly="dialogStatus == 'update'"></el-input>
             </el-form-item>
-            <el-form-item label="设备名称" prop="name">
-              <el-input v-model="temp.name" :maxlength="16"></el-input>
+            <el-form-item label="名称" prop="name">
+              <el-input v-model="temp.name" :maxlength="24"></el-input>
             </el-form-item>
-            <el-form-item label="登录用户" prop="username">
-              <el-input v-model="temp.username" :maxlength="32"></el-input>
-            </el-form-item>
-            <el-form-item label="登录密码" prop="passwd">
-              <el-input type="password" v-model="temp.passwd"  :maxlength="64" @keyup.native="handlePasswd"></el-input>
+            <el-form-item label="教育程度" prop="levels">
+              <el-select v-model="temp.levels"
+                         placeholder="请选择教育程度"
+                         style="width: 100%">
+                <el-option v-for="item in levelsOption"
+                           :key="item.key"
+                           :label="item.label"
+                           :value="item.key">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
-            <el-form-item label="地 址" prop="ip">
-              <el-input v-model="temp.ip"></el-input>
+            <el-form-item label="负责人" prop="master">
+              <el-input v-model="temp.master" :maxlength="8"></el-input>
             </el-form-item>
-            <el-form-item label="端 口" prop="port">
-              <el-input v-model="temp.port" :maxlength="5"></el-input>
+            <el-form-item label="主管部门" prop="director">
+              <el-input v-model="temp.director" :maxlength="24"></el-input>
             </el-form-item>
-            <el-form-item label="型 号" prop="model">
-              <el-input v-model="temp.model"  :maxlength="32"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" plain @click="handleTest">测试</el-button>
+            <el-form-item label="状态" prop="flag">
+              <el-select v-model="temp.flag"
+                         placeholder="请选择学校状态"
+                         style="width: 100%">
+                <el-option v-for="item in statusOption"
+                           :key="item.key" :label="item.label" :value="item.key">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="安装位置" prop="place">
-          <el-input type="textarea" v-model="temp.place" :maxlength="32"
-                    :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="temp.address" :maxlength="64"></el-input>
         </el-form-item>
-        <el-form-item label="基本参数" prop="basepram">
-          <el-input type="textarea" v-model="temp.param" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+        <el-form-item label="设备编号" prop="eqpid">
+          <!--<el-select v-model="temp.eqpid"-->
+          <!--placeholder="请选择设备编号"-->
+          <!--multiple style="width: 100%">-->
+          <!--<el-option v-for="item in eqpidOption"-->
+          <!--:key="item.key" :label="item.label" :value="item.key">-->
+          <!--<span style="float: left">{{ item.key }}</span>-->
+          <!--<span style="float: right; color: #8492a6; font-size: 13px; margin-right: 15px">{{ item.label }}</span>-->
+          <!--</el-option>-->
+          <!--</el-select>-->
+          <el-tag
+            :key="tag" closable
+            size="medium"
+            v-for="tag in temp.eqpid"
+            @close="handleCloseTag(tag)">
+            {{tag}}
+          </el-tag>
+          <el-input
+            v-if="inputVisible"
+            v-model="eqpInput"
+            ref="saveTagInput"
+            style="width: 110px"
+            @keyup.enter.native="handleInputConfirm"
+            @blur="handleInputConfirm"></el-input>
+          <el-button
+            v-else
+            style="margin-left: 8px"
+            @click="showEqpInput">+设备编号</el-button>
         </el-form-item>
-        <el-form-item label="扩展参数" prop="exparam">
-          <el-input type="textarea" v-model="temp.exparam" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
-        </el-form-item>
-        <el-form-item label="备注说明" prop="descr">
+        <el-form-item label="说明" prop="descr">
           <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"
-                    :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+                    :autosize="{ minRows: 1, maxRows: 4 }">
+          </el-input>
           <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
         </el-form-item>
       </el-form>
       <div slot="footer" style="height: 0; margin-top: -70px">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" v-if="dialogStatus === 'create'" @click="createData">保 存</el-button>
-        <el-button type="primary" v-else @click="updateData">保 存</el-button>
+        <el-button type="primary"
+                   v-if="dialogStatus === 'create'"
+                   :disabled="inputVisible === true"
+                   @click="createData">保 存</el-button>
+        <el-button type="primary" v-else
+                   :disabled="inputVisible === true"
+                   @click="updateData">保 存</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import { fetchList, SubmitTable, fetchSearchOption } from '@/api/table'
-  import { cryptoPass } from '@/api/login'
-  import { isvalidUsername, isvalidPassword, validateOther, validateNum } from '@/utils/validate'
+  import {fetchList, SubmitTable, fetchSearchOption, valueToLabel } from '@/api/table'
+  import {validateOther} from "../../../../utils/validate";
   import { Message } from 'element-ui'
-  export default {
 
+  export default {
     data() {
       //编号验证
       var checkID = (rule, value, callback) => {
         if (!validateOther(value)) {
-          callback(new Error('只能输入数字、英文字母和下划线'));
+          callback(new Error('只能输入数字和英文字母'));
         } else {
-          callback();
-        }
-      };
-      //登录名验证
-      const validateUsername = (rule, value, callback) => {
-        if (!isvalidUsername(value)) {
-          callback(new Error('必须由英文、数字或下划线组成，3到16位'))
-        } else {
-          callback()
-        }
-      }
-      //密码验证
-      const validatePass = (rule, value, callback) => {
-        if (value.length < 32) {
-          if (!isvalidPassword(value)) {
-            callback(new Error('至少有1位英文、数字和特殊字符，3到16位'))
-          } else {
-            callback()
-          }
-        } else {
-          callback()
-        }
-      };
-      //IP地址验证
-      var validateIP = (rule, value, callback) => {
-        const IPReg = /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/;
-        if(!IPReg.test(value)) {
-          callback(new Error('请输入正确的IP地址'));
-        }else {
-          callback();
-        }
-      };
-      //端口限制
-      var checkPort = (rule, value, callback) => {
-        if (!validateNum(value)) {
-          callback(new Error('只能输入纯数字'));
-        } else if(value < 10 || value > 65535){
-          callback(new Error('限制10-65535,默认10'))
-        }else{
           callback();
         }
       };
@@ -254,11 +246,11 @@
           key: '',  //查询对象的key值
           value: ''  //查询对象内容
         },
-        //搜索flag
-        queryFlag: true,
         //总条目数
         total: 0,
         searchOption: [],
+        //加载图标
+        listLoading: true,
         list: [],
         //行数
         currentRowIndex: -1,
@@ -269,54 +261,49 @@
         dialogStatus: '',
         //对话框标题
         textMap: {
-          create: '添加设备',
-          update: '修改设备'
+          create: '添加学校',
+          update: '修改学校'
         },
         //对话框内容
         temp: {
           id: '',
           name: '',
-          place: '',
-          ip: '',
-          port: '',
-          username: '',
-          passwd: '',
-          model: '',
-          param: '',
-          exparam: '',
+          levels: '',
+          levelsName: '',
+          address: '',
+          master: '',
+          director: '',
+          flag: '',
+          flagName: '',
+          eqpid: [],
           descr: ''
         },
+        //教育水平选项
+        levelsOption: [],
+        //学校状态选项
+        statusOption: [],
+        //设备编号选项
+        eqpidOption: [],
+        //标签输入框状态
+        inputVisible: false,
+        //标签输入框内容
+        eqpInput: '',
+
         //-----删除对话框----
         //对话框状态
         deleteDialogVisible: false,
         deleteName: '',
         //内容验证规则
         rules: {
-          id: [
-            {required: true, message: '设备编号不能为空', trigger: 'blur'},
-            {validator: checkID, trigger: 'change'}
-          ],
-          name: [{required: true, message: '设备名称不能为空', trigger: 'blur'}],
-          ip: [
-            {required: true, message: '默认IP不能为空', trigger: 'blur'},
-            {validator: validateIP, trigger: 'blur'}
-          ],
-          port: [
-            {required: true, message: '端口不能为空', trigger: 'blur'},
-            {validator: checkPort, trigger: 'change'}
-          ],
-          username: [
-            {required: true, message: '登录用户名不能为空', trigger: 'blur'},
-            {validator: validateUsername, trigger: 'blur'}
-          ],
-          passwd: [
-            {required: true, message: '登录密码不能为空', trigger: 'blur'},
-            {validator: validatePass, trigger: 'change'}
-          ]
-        }
+          id: [{required: true, message: '学校代码不能为空', trigger: 'blur'},
+            {validator: checkID, trigger: 'change'}],
+          name: [{required: true, message: '学校名称不能为空', trigger: 'blur'}],
+          levels: [{required: true, message: '请选择教育程度', trigger: 'change'}],
+          flag: [{required: true, message: '请选择学校状态', trigger: 'change'}],
+        },
       }
     },
-    created () {
+    created() {
       this.getList();
     },
     watch: {
@@ -327,7 +314,7 @@
     methods: {
       //请求后台
       requestList (List){
-        fetchList('/deviceHome', List).then( response => {
+        fetchList('/schoolHome', List).then( response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
             Message.error(data.msg);
@@ -338,17 +325,15 @@
               let tempData = {};
               tempData.id = data.data[i][0];
               tempData.name = data.data[i][1];
-              tempData.model = data.data[i][2];
-              tempData.belong = data.data[i][3];
-              tempData.place = data.data[i][4];
-              tempData.total = data.data[i][5];
-              tempData.ip = data.data[i][6];
-              tempData.port = data.data[i][7];
-              tempData.username = data.data[i][8];
-              tempData.passwd = data.data[i][9];
-              tempData.param = data.data[i][10];
-              tempData.exparam = data.data[i][11];
-              tempData.descr = data.data[i][12];
+              tempData.levels = data.data[i][2];
+              tempData.levelsName = data.data[i][3];
+              tempData.address = data.data[i][4];
+              tempData.master = data.data[i][5];
+              tempData.director = data.data[i][6];
+              tempData.flag = data.data[i][7];
+              tempData.flagName = data.data[i][8];
+              tempData.eqpid = data.data[i][9];
+              tempData.descr = data.data[i][10];
               this.list.push(tempData);
             }
             this.total = data.total;
@@ -358,7 +343,7 @@
         })
       },
       //获取列表
-      getList () {
+      getList() {
         this.listQuery.ext = undefined;
         this.listQuery.method = 'List';
         this.requestList(this.listQuery);
@@ -402,7 +387,7 @@
       //select获取焦点后请求数据
       handleFocus() {
         if(this.searchOption.length === 0) {
-          fetchSearchOption('/deviceHome',{method: 'FieldSelect'})
+          fetchSearchOption('/schoolHome',{method: 'FieldSelect'})
             .then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
@@ -421,45 +406,75 @@
             })
         }
       },
-      handleTest() {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            Message.info('正在连接设备，请稍等');
-            let temp = Object.assign({method: 'Test'}, this.temp);
-            delete temp.id;
-            delete temp.name;
-            delete temp.place;
-            delete temp.model;
-            delete temp.param;
-            delete temp.exparam;
-            delete temp.descr;
-            SubmitTable('/deviceHome', temp).then(response => {
+      //打开弹出框select请求数据
+      handleOption() {
+        if(this.levelsOption.length === 0) {
+          fetchSearchOption('/schoolHome',{method: 'FieldLabel'})
+            .then(response => {
               const data = response.data;
-              if (data.msg && data.msg !== '') {
+              if(data.msg && data.msg !== ''){
+                Message.error(data.msg);
+              }
+              if(data.data){
+                this.levelsOption = data.data.LEVELS;
+                this.statusOption = data.data.FLAG;
+              }
+            })
+        }
+      },
+      //关闭删除标签
+      handleCloseTag(tag) {
+        this.temp.eqpid.splice(this.temp.eqpid.indexOf(tag), 1);
+      },
+      //显示关闭输入框
+      showEqpInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        })
+      },
+      //确认添加新标签
+      handleInputConfirm() {
+        let eqpInput = this.eqpInput;
+        if(eqpInput) {
+          if(this.temp.eqpid.indexOf(eqpInput) === -1){
+            let eqpData = Object.assign({method: 'FieldVerify'}, {eqpid: eqpInput});
+            SubmitTable('/schoolHome', eqpData).then(response => {
+              const data = response.data;
+              if(data.msg && data.msg !== ''){
                 Message.info(data.msg);
               }
+              if(data.id === '00000') {
+                this.temp.eqpid.push(eqpInput)
+              }
             });
+          }else {
+            Message.info('该设备编号已被使用，请重新输入');
           }
-        });
 
+        }
+        this.inputVisible = false;
+        this.eqpInput = '';
       },
+      //重置对话框内容
       resetTemp() {
         this.temp = {
           id: '',
           name: '',
-          place: '',
-          ip: '',
-          port: '10',
-          username: '',
-          passwd: '',
-          model: '',
-          param: '',
-          exparam: '',
+          levels: 0,
+          levelsName: '',
+          address: '',
+          master: '',
+          director: '',
+          flag: 0,
+          flagName: '',
+          eqpid: [],
           descr: ''
         }
       },
       //添加对话框
       handleCreate() {
+        this.handleOption();
         this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogVisible = true;
@@ -471,11 +486,12 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            if(this.temp.passwd.length <= 16) {
-              this.temp.passwd = cryptoPass(this.temp.passwd);
-            }
+            this.temp.levelsName = valueToLabel(this.levelsOption, this.temp.levels);
+            this.temp.flagName = valueToLabel(this.statusOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
-            SubmitTable('/deviceHome', temp).then(response => {
+            delete temp.levelsName;
+            delete temp.flagName;
+            SubmitTable('/schoolHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 Message.info(data.msg);
@@ -498,27 +514,27 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        //eqpid不能为null
+        if(this.temp.eqpid === null) {
+          this.temp.eqpid = [];
+        }
+        this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
-        });
-      },
-      handlePasswd(e) {
-        if(this.temp.passwd.length > 16 ||
-          e.keyCode === 8 || e.keyCode === 46) {
-          this.temp.passwd = '';
-        }
+        })
       },
       //修改完毕上传
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            if(this.temp.passwd.length <= 16) {
-              this.temp.passwd = cryptoPass(this.temp.passwd);
-            }
+            this.temp.levelsName = valueToLabel(this.levelsOption, this.temp.levels);
+            this.temp.flagName = valueToLabel(this.statusOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
-            SubmitTable('/deviceHome', temp).then(response => {
+            delete temp.levelsName;
+            delete temp.flagName;
+            SubmitTable('/schoolHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 Message.info(data.msg);
@@ -541,7 +557,7 @@
               }
             });
           }
-        })
+        });
       },
 
       //获取index
@@ -562,7 +578,7 @@
       },
       rowDelete(index, row) {
         var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
-        SubmitTable('/deviceHome', deleteData).then(response => {
+        SubmitTable('/schoolHome', deleteData).then(response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
             Message.info(data.msg);
@@ -584,17 +600,3 @@
   }
 
 </script>
-
-<style lang="less">
-  .el-table--small td, .el-table--small th {
-    padding: 0;
-    font-size: 14px;
-    text-align: center;
-  }
-
-  .el-table .cell, .el-table th div {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-
-</style>
