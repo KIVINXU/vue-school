@@ -3,28 +3,7 @@
     <el-menu class="navbar" mode="horizontal">
       <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
       <breadcrumb></breadcrumb>
-      <el-dropdown class="avatar-container" trigger="click">
-        <el-button type="warning">
-          当前用户：{{username}}<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu class="user-dropdown" slot="dropdown">
-          <router-link class="inlineBlock" to="/">
-            <el-dropdown-item>
-              回到主页
-            </el-dropdown-item>
-          </router-link>
-          <el-dropdown-item divided>
-            <span @click="aboutVisible = true">关于我们</span>
-          </el-dropdown-item>
-          <el-dropdown-item divided>
-            <span @click="logout" style="display:block;">退出用户</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
     </el-menu>
-    <el-dialog title="关于我们" :visible.sync="aboutVisible" width="700px" top="10px">
-      <About></About>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -37,7 +16,6 @@ import About from './about.vue'
     components: {
       Breadcrumb,
       Hamburger,
-      About
     },
     computed: {
       ...mapGetters([
@@ -45,34 +23,10 @@ import About from './about.vue'
         'name'
       ])
     },
-    data() {
-      return {
-        aboutVisible: false,
-        username: window.sessionStorage.getItem('username')
-      }
-    },
     methods: {
       toggleSideBar() {
         this.$store.dispatch('ToggleSideBar')
       },
-      logout() {
-        this.$confirm('是否确认退出当前用户？', '提示', {
-          confirmButtonText: '确认',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$store.dispatch('LogOut').then(() => {
-            this.$router.push({ path: '/login' })
-            //location.reload() // 为了重新实例化vue-router对象 避免bug
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消退出'
-          });
-        })
-        
-      }
     }
   }
 </script>

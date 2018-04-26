@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 10px">
-      <el-col :span="22">
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
         <el-select v-model="listQuery.key"
-                   style="width: 10%"
+                   style="width: 14%"
                    @focus="handleFocus"
                    placeholder="查询对象">
           <el-option
@@ -22,7 +22,7 @@
                   @keyup.enter.native="handleFilter(1)">
         </el-input>
         <el-button
-          type="primary" plain
+          type="info" plain
           @click="handleFilter(1)"
           :disabled="listQuery.key === ''
             || listQuery.value === ''"
@@ -30,7 +30,7 @@
         </el-button>
         <el-button
           icon="el-icon-search"
-          type="primary" plain
+          type="info" plain
           @click="handleExtFilter(1)"
           :disabled="listQuery.key === ''
             || listQuery.value === ''">相似

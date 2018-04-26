@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 10px">
-      <el-col :span="22">
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
         <el-select v-model="listQuery.key"
-                   style="width: 10%"
+                   style="width: 14%"
                    @focus="handleFocus"
                    placeholder="查询对象">
           <el-option
@@ -22,7 +22,7 @@
                   @keyup.enter.native="handleFilter(1)">
         </el-input>
         <el-button
-          type="primary" plain
+          type="info" plain
           @click="handleFilter(1)"
           :disabled="listQuery.key === ''
             || listQuery.value === ''"
@@ -30,7 +30,7 @@
         </el-button>
         <el-button
           icon="el-icon-search"
-          type="primary" plain
+          type="info" plain
           @click="handleExtFilter(1)"
           :disabled="listQuery.key === ''
             || listQuery.value === ''">相似</el-button>
@@ -166,8 +166,7 @@
         </el-col>
         </el-row>
         <el-form-item label="安装位置" prop="place">
-          <el-input type="textarea" v-model="temp.place" :maxlength="32"
-                    :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+          <el-input v-model="temp.place" :maxlength="32"></el-input>
         </el-form-item>
         <el-form-item label="基本参数" prop="basepram">
           <el-input type="textarea" v-model="temp.param" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
@@ -181,7 +180,7 @@
           <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
         </el-form-item>
       </el-form>
-      <div slot="footer" style="height: 0; margin-top: -70px">
+      <div slot="footer" style="height: 0; margin-top: -50px">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" v-if="dialogStatus === 'create'" @click="createData">保 存</el-button>
         <el-button type="primary" v-else @click="updateData">保 存</el-button>

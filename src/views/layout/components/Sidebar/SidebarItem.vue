@@ -23,7 +23,7 @@
         <!--标题-->
         <template slot="title">
           <svg-icon v-if="item.meta&&item.meta.icon" :icon-class="item.meta.icon"></svg-icon>
-          <span v-if="item.meta&&item.meta.title">{{item.meta.title}}</span>
+          <span v-if="item.meta&&item.meta.title" style="font-size: 16px; font-weight: 500">{{item.meta.title}}</span>
         </template>
         <template v-for="child in item.children" v-if="!child.hidden">
           <sidebar-item :is-nest="true" class="nest-menu" v-if="child.children&&child.children.length>0" :routes="[child]" :key="child.path"></sidebar-item>
