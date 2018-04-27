@@ -85,16 +85,15 @@
                   highlight-current-row
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
-          <el-table-column prop="id" :show-overflow-tooltip="true" label="设备编号" width="75px"></el-table-column>
-          <el-table-column prop="name" :show-overflow-tooltip="true" label="设备名称" width="88px"></el-table-column>
-          <el-table-column prop="model" :show-overflow-tooltip="true" label="设备型号" width="88px"></el-table-column>
-          <el-table-column prop="belong" :show-overflow-tooltip="true" label="学校名称"></el-table-column>
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="设备编号" width="120px"></el-table-column>
+          <el-table-column prop="name" :show-overflow-tooltip="true" label="设备名称" width="160px"></el-table-column>
+          <el-table-column prop="model" :show-overflow-tooltip="true" label="设备型号"></el-table-column>
+          <el-table-column prop="belong" :show-overflow-tooltip="true" label="学校名称" width="230px"></el-table-column>
           <el-table-column prop="place" :show-overflow-tooltip="true" label="安装位置"></el-table-column>
-          <el-table-column prop="total" :show-overflow-tooltip="true" label="图片数"></el-table-column>
-          <el-table-column prop="ip" :show-overflow-tooltip="true" label="默认IP" width="115px"></el-table-column>
-          <el-table-column prop="port" :show-overflow-tooltip="true" label="端口" width="55px"></el-table-column>
-          <el-table-column prop="username" :show-overflow-tooltip="true" label="登录用户" width="100px"></el-table-column>
-          <el-table-column prop="passwd" :show-overflow-tooltip="true" label="登录密码" width="100px"></el-table-column>
+          <el-table-column prop="total" :show-overflow-tooltip="true" label="图片数" width="50px"></el-table-column>
+          <el-table-column prop="ip" :show-overflow-tooltip="true" label="IP地址" width="120px"></el-table-column>
+          <el-table-column prop="port" :show-overflow-tooltip="true" label="端口" width="50px"></el-table-column>
+          <el-table-column prop="username" :show-overflow-tooltip="true" label="访问用户"></el-table-column>
           <el-table-column prop="param" :show-overflow-tooltip="true" label="基本参数"></el-table-column>
           <el-table-column prop="exparam" :show-overflow-tooltip="true" label="扩展参数"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
@@ -143,10 +142,10 @@
           <el-form-item label="设备名称" prop="name">
             <el-input v-model="temp.name" :maxlength="16"></el-input>
           </el-form-item>
-          <el-form-item label="登录用户" prop="username">
+          <el-form-item label="访问用户" prop="username">
             <el-input v-model="temp.username" :maxlength="32"></el-input>
           </el-form-item>
-          <el-form-item label="登录密码" prop="passwd">
+          <el-form-item label="访问密码" prop="passwd">
             <el-input type="password" v-model="temp.passwd"  :maxlength="64" @keyup.native="handlePasswd"></el-input>
           </el-form-item>
         </el-col>
@@ -161,7 +160,7 @@
             <el-input v-model="temp.model"  :maxlength="32"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" plain @click="handleTest">测试</el-button>
+            <el-button type="primary" plain @click="handleTest">设备连接测试</el-button>
           </el-form-item>
         </el-col>
         </el-row>
@@ -425,6 +424,9 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             Message.info('正在连接设备，请稍等');
+            if(this.temp.passwd.length <= 16) {
+              this.temp.passwd = cryptoPass(this.temp.passwd);
+            }
             let temp = Object.assign({method: 'Test'}, this.temp);
             delete temp.id;
             delete temp.name;

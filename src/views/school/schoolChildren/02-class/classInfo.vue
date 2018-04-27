@@ -202,8 +202,9 @@
 </template>
 
 <script>
-  import {fetchList, SubmitTable, valueToLabel, labelToValue} from '@/api/table'
+  import {fetchList, SubmitTable, fetchSearchOption, valueToLabel} from '@/api/table'
   import {validateNum} from "../../../../utils/validate";
+  import { Message } from 'element-ui'
 
   export default {
     data() {
@@ -312,15 +313,14 @@
               tempData.id = data.data[i][0];
               tempData.classNO = data.data[i][1];
               tempData.gradeid = data.data[i][2];
-              tempData.gradeName = data.data[i][3];
-              tempData.schoolid = data.data[i][4];
-              tempData.schoolName = data.data[i][5];
-              tempData.teacherid = data.data[i][6];
-              tempData.head = data.data[i][7];
-              tempData.head2 = data.data[i][8];
-              tempData.flag = data.data[i][9];
-              tempData.flagName = data.data[i][10];
-              tempData.descr = data.data[i][11];
+              tempData.schoolid = data.data[i][3];
+              tempData.schoolName = data.data[i][4];
+              tempData.teacherid = data.data[i][5];
+              tempData.head = data.data[i][6];
+              tempData.head2 = data.data[i][7];
+              tempData.flag = data.data[i][8];
+              tempData.flagName = data.data[i][9];
+              tempData.descr = data.data[i][10];
               this.list.push(tempData);
             }
             this.total = data.total;
@@ -395,7 +395,7 @@
       },
       //打开弹出框select请求数据
       handleOption() {
-        if (this.levelsOption.length === 0) {
+        if (this.flagOption.length === 0) {
           fetchSearchOption('/classHome', {method: 'FieldLabel'})
             .then(response => {
               const data = response.data;
@@ -403,8 +403,6 @@
                 Message.error(data.msg);
               }
               if (data.data) {
-                this.schoolIDOption = data.data.SCHOOLID;
-                this.teacherIDOption = data.data.TEACHERID;
                 this.flagOption = data.data.FLAG;
               }
             })
@@ -427,10 +425,10 @@
       },
       //添加对话框
       handleCreate() {
+        this.handleOption();
         this.resetTemp();
         this.dialogStatus = 'create';
         this.dialogVisible = true;
-        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -439,10 +437,9 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.head = valueToLabel(this.teacherIDOption, this.temp.teacherID);
-            this.temp.schoolName = valueToLabel(this.schoolIDOption, this.temp.schoolID);
             this.temp.flagName = valueToLabel(this.flagOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
+            delete temp.teacherid;
             delete temp.schoolName;
             delete temp.flagName;
             SubmitTable('/classHome', temp).then(response => {
@@ -479,10 +476,9 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.head = valueToLabel(this.teacherIDOption, this.temp.teacherID);
-            this.temp.schoolName = valueToLabel(this.schoolIDOption, this.temp.schoolID);
             this.temp.flageName = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
+            delete temp.teacherid;
             delete temp.schoolName;
             delete temp.flagName;
             SubmitTable('/classHome', temp).then(response => {
