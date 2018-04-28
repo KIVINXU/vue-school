@@ -90,7 +90,7 @@
           <el-table-column prop="model" :show-overflow-tooltip="true" label="设备型号"></el-table-column>
           <el-table-column prop="belong" :show-overflow-tooltip="true" label="学校名称" width="230px"></el-table-column>
           <el-table-column prop="place" :show-overflow-tooltip="true" label="安装位置"></el-table-column>
-          <el-table-column prop="total" :show-overflow-tooltip="true" label="图片数" width="50px"></el-table-column>
+          <el-table-column prop="pictotal" :show-overflow-tooltip="true" label="图片数" width="50px"></el-table-column>
           <el-table-column prop="ip" :show-overflow-tooltip="true" label="IP地址" width="120px"></el-table-column>
           <el-table-column prop="port" :show-overflow-tooltip="true" label="端口" width="50px"></el-table-column>
           <el-table-column prop="username" :show-overflow-tooltip="true" label="访问用户"></el-table-column>
@@ -143,7 +143,7 @@
             <el-input v-model="temp.name" :maxlength="16"></el-input>
           </el-form-item>
           <el-form-item label="访问用户" prop="username">
-            <el-input v-model="temp.username" :maxlength="32"></el-input>
+            <el-input v-model="temp.username" :maxlength="16"></el-input>
           </el-form-item>
           <el-form-item label="访问密码" prop="passwd">
             <el-input type="password" v-model="temp.passwd"  :maxlength="64" @keyup.native="handlePasswd"></el-input>
@@ -276,6 +276,8 @@
           id: '',
           name: '',
           place: '',
+          belong: '',
+          pictotal: '',
           ip: '',
           port: '',
           username: '',
@@ -331,27 +333,11 @@
           if(data.msg && data.msg !== ''){
             Message.error(data.msg);
           }
-          this.list = [];
           if(data.data){
-            for(let i = 0; i < data.data.length; i++){
-              let tempData = {};
-              tempData.id = data.data[i][0];
-              tempData.name = data.data[i][1];
-              tempData.model = data.data[i][2];
-              tempData.belong = data.data[i][3];
-              tempData.place = data.data[i][4];
-              tempData.total = data.data[i][5];
-              tempData.ip = data.data[i][6];
-              tempData.port = data.data[i][7];
-              tempData.username = data.data[i][8];
-              tempData.passwd = data.data[i][9];
-              tempData.param = data.data[i][10];
-              tempData.exparam = data.data[i][11];
-              tempData.descr = data.data[i][12];
-              this.list.push(tempData);
-            }
+            this.list = data.data;
             this.total = data.total;
           }else {
+            this.list = [];
             this.total = 0;
           }
         })
@@ -432,6 +418,8 @@
             delete temp.name;
             delete temp.place;
             delete temp.model;
+            delete temp.belong;
+            delete temp.pictotal;
             delete temp.param;
             delete temp.exparam;
             delete temp.descr;
@@ -450,11 +438,13 @@
           id: '',
           name: '',
           place: '',
+          model: '',
+          belong: '',
+          pictotal: 0,
           ip: '',
-          port: '10',
+          port: 10,
           username: '',
           passwd: '',
-          model: '',
           param: '',
           exparam: '',
           descr: ''
@@ -477,6 +467,8 @@
               this.temp.passwd = cryptoPass(this.temp.passwd);
             }
             var temp = Object.assign({method: 'Insert'}, this.temp);
+            delete temp.pictotal;
+            delete temp.belong;
             SubmitTable('/deviceHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
@@ -520,6 +512,8 @@
               this.temp.passwd = cryptoPass(this.temp.passwd);
             }
             let temp = Object.assign({method: 'Update'}, this.temp);
+            delete temp.pictotal;
+            delete temp.belong;
             SubmitTable('/deviceHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){

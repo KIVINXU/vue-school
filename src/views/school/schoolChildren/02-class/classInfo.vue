@@ -87,12 +87,12 @@
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
           <el-table-column prop="id" :show-overflow-tooltip="true" label="班级编号" width="150px "></el-table-column>
-          <el-table-column prop="classNO" :show-overflow-tooltip="true" label="班级号" width="65px"></el-table-column>
+          <el-table-column prop="classno" :show-overflow-tooltip="true" label="班级号" width="65px"></el-table-column>
           <el-table-column prop="gradeid" :show-overflow-tooltip="true" label="年级号" width="70px"></el-table-column>
-          <el-table-column prop="schoolName" :show-overflow-tooltip="true" label="学校名称" width="230px"></el-table-column>
+          <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校名称" width="230px"></el-table-column>
           <el-table-column prop="head" :show-overflow-tooltip="true" label="班主任" width="120px"></el-table-column>
           <el-table-column prop="head2" :show-overflow-tooltip="true" label="班主任(前/代)" width="120px"></el-table-column>
-          <el-table-column prop="flagName" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
+          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
         </el-table>
         <!--分页条-->
@@ -131,13 +131,14 @@
             <el-form-item label="班级编号" prop="id" v-if="dialogStatus=='update'">
               <el-input v-model="temp.id" readonly></el-input>
             </el-form-item>
-            <el-form-item label="班级号" prop="classNO">
-              <el-input v-model="temp.classNO" :maxlength="2"></el-input>
+            <el-form-item label="班级号" prop="classno">
+              <el-input v-model="temp.classno" :maxlength="2"></el-input>
             </el-form-item>
             <el-form-item label="班主任" prop="teacherid">
               <el-select v-model="temp.teacherid"
                          placeholder="请选择班主任"
-                         filterable
+                         filterable remote
+                         :remote-method="teacherRemoteMethod"
                          style="width: 100%">
                 <el-option v-for="item in teacherIDOption"
                            :key="item.key"
@@ -163,7 +164,8 @@
             <el-form-item label="学校名称" prop="schoolid">
               <el-select v-model="temp.schoolid"
                          placeholder="请选择学校名称"
-                         filterable
+                         filterable remote
+                         :remote-method="schoolRemoteMethod"
                          style="width: 100%">
                 <el-option v-for="item in schoolIDOption"
                            :key="item.key"
@@ -249,16 +251,16 @@
         //对话框内容
         temp: {
           id: '',
-          classNO: '',
+          classno: '',
           gradeid: '',
-          gradeName: '',
+          gradename: '',
           schoolid: '',
-          schoolName: '',
+          schoolname: '',
           teacherid: '',
           head: '',
           head2: '',
           flag: '',
-          flagName: '',
+          flagname: '',
           descr: ''
         },
         //学校ID选项
@@ -279,7 +281,7 @@
         deleteName: '',
         //内容验证规则
         rules: {
-          classNO: [
+          classno: [
             {required: true, message: '班级号不能为空', trigger: 'blur'},
             {validator: checkClassNO, trigger: 'change'}
           ],
@@ -306,25 +308,11 @@
           if (data.msg && data.msg !== '') {
             Message.error(data.msg);
           }
-          this.list = [];
-          if (data.data) {
-            for (let i = 0; i < data.data.length; i++) {
-              let tempData = {};
-              tempData.id = data.data[i][0];
-              tempData.classNO = data.data[i][1];
-              tempData.gradeid = data.data[i][2];
-              tempData.schoolid = data.data[i][3];
-              tempData.schoolName = data.data[i][4];
-              tempData.teacherid = data.data[i][5];
-              tempData.head = data.data[i][6];
-              tempData.head2 = data.data[i][7];
-              tempData.flag = data.data[i][8];
-              tempData.flagName = data.data[i][9];
-              tempData.descr = data.data[i][10];
-              this.list.push(tempData);
-            }
+          if(data.data){
+            this.list = data.data;
             this.total = data.total;
-          } else {
+          }else {
+            this.list = [];
             this.total = 0;
           }
         })
@@ -408,18 +396,33 @@
             })
         }
       },
+      //远程搜索数据
+      teacherRemoteMethod(query) {
+        if(query !== '') {
+          this.teacherIDOption = [];
+        }else {
+          this.teacherIDOption = [];
+        }
+      },
+      schoolRemoteMethod(query) {
+        if(query !== '') {
+          this.schoolIDOption = [];
+        }else {
+          this.schoolIDOption = [];
+        }
+      },
       resetTemp() {
         this.temp = {
           id: '',
-          classNO: '',
+          classno: '',
           gradeid: new Date().getFullYear().toString(),
           schoolid: '',
-          schoolName: '',
+          schoolname: '',
           teacherid: '',
           head: '',
           head2: '',
           flag: '',
-          flagName: '',
+          flagname: '',
           descr: ''
         }
       },
@@ -437,11 +440,11 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.flagName = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.teacherid;
-            delete temp.schoolName;
-            delete temp.flagName;
+            delete temp.schoolname;
+            delete temp.flagname;
             SubmitTable('/classHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -465,9 +468,9 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
-        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -476,11 +479,11 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.flageName = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.teacherid;
-            delete temp.schoolName;
-            delete temp.flagName;
+            delete temp.schoolname;
+            delete temp.flagname;
             SubmitTable('/classHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {

@@ -90,10 +90,10 @@
           <el-table-column prop="contact" :show-overflow-tooltip="true" label="联系方式" width="100px"></el-table-column>
           <el-table-column prop="contact2" :show-overflow-tooltip="true" label="联系方式2"></el-table-column>
           <el-table-column prop="address" :show-overflow-tooltip="true" label="联系住址" width="110px"></el-table-column>
-          <el-table-column prop="schoolName" :show-overflow-tooltip="true" label="学校名称" width="160px"></el-table-column>
-          <el-table-column prop="flagName" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
+          <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校名称" width="160px"></el-table-column>
+          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
           <el-table-column prop="validity" :show-overflow-tooltip="true" label="合同效期" width="75px"></el-table-column>
-          <el-table-column prop="id_type_name" :show-overflow-tooltip="true" label="证件类型"
+          <el-table-column prop="id_typename" :show-overflow-tooltip="true" label="证件类型"
                            width="65px"></el-table-column>
           <el-table-column prop="id_number" :show-overflow-tooltip="true" label="证件号" width="100px"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
@@ -178,7 +178,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="证件号码" prop="id_number">
-              <el-input v-model="temp.ID_number" placeholder="请输入证件号码" :maxlength="18"></el-input>
+              <el-input v-model="temp.id_number" placeholder="请输入证件号码" :maxlength="18"></el-input>
             </el-form-item>
             <el-form-item label="合同效期" prop="validity">
               <el-date-picker v-model="temp.validity" placeholder="请选择合同期限"
@@ -301,16 +301,16 @@
           name: '',
           sex: '',
           id_type: '',
-          id_type_name: '',
+          id_typename: '',
           id_number: '',
           contact: '',
           contact2: '',
           address: '',
           schoolid: '',
-          schoolName: '',
+          schoolname: '',
           validity: '',
           flag: '',
-          flagName: '',
+          flagname: '',
           descr: ''
         },
         sexOption: [
@@ -365,29 +365,11 @@
           if (data.msg && data.msg !== '') {
             Message.error(data.msg);
           }
-          this.list = [];
-          if (data.data) {
-            for (let i = 0; i < data.data.length; i++) {
-              let tempData = {};
-              tempData.id = data.data[i][0];
-              tempData.name = data.data[i][1];
-              tempData.sex = data.data[i][2];
-              tempData.id_type = data.data[i][3];
-              tempData.id_type_name = data.data[i][4];
-              tempData.id_number = data.data[i][5];
-              tempData.contact = data.data[i][6];
-              tempData.contact2 = data.data[i][7];
-              tempData.address = data.data[i][8];
-              tempData.schoolid = data.data[i][9];
-              tempData.schoolName = data.data[i][10];
-              tempData.validity = data.data[i][11];
-              tempData.flag = data.data[i][12];
-              tempData.flagName = data.data[i][13];
-              tempData.descr = data.data[i][14];
-              this.list.push(tempData);
-            }
+          if(data.data){
+            this.list = data.data;
             this.total = data.total;
-          } else {
+          }else {
+            this.list = [];
             this.total = 0;
           }
         })
@@ -479,16 +461,16 @@
           name: '',
           sex: '男',
           id_type: 0,
-          id_type_name: '',
+          id_typename: '',
           id_number: '',
           contact: '',
           contact2: '',
           address: '',
           schoolid: 0,
-          schoolName: '',
+          schoolname: '',
           validity: '',
           flag: 0,
-          flagName: '',
+          flagname: '',
           descr: ''
         }
       },
@@ -506,13 +488,13 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.id_type_name = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.schoolName = valueToLabel(this.schoolidOption, this.temp.schoolid);
-            this.temp.flagName = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
+            this.temp.schoolname = valueToLabel(this.schoolidOption, this.temp.schoolid);
+            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
-            delete temp.id_type_name;
-            delete temp.schoolName;
-            delete temp.flagName;
+            delete temp.id_typename;
+            delete temp.schoolname;
+            delete temp.flagname;
             SubmitTable('/teacherHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -547,13 +529,13 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.id_type_name = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.schoolName = valueToLabel(this.schoolidOption, this.temp.schoolid);
-            this.temp.flagName = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
+            this.temp.schoolname = valueToLabel(this.schoolidOption, this.temp.schoolid);
+            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
-            delete temp.id_type_name;
-            delete temp.schoolName;
-            delete temp.flagName;
+            delete temp.id_typename;
+            delete temp.schoolname;
+            delete temp.flagname;
             SubmitTable('/teacherHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {

@@ -86,10 +86,10 @@
                   @row-dblclick="handleUpdate">
           <el-table-column prop="id" :show-overflow-tooltip="true" label="学校代码" width="110px"></el-table-column>
           <el-table-column prop="name" :show-overflow-tooltip="true" label="名称" width="230px"></el-table-column>
-          <el-table-column prop="levelsName" :show-overflow-tooltip="true" label="教育程度" width="65px"></el-table-column>
+          <el-table-column prop="levelsname" :show-overflow-tooltip="true" label="教育程度" width="65px"></el-table-column>
           <el-table-column prop="address" :show-overflow-tooltip="true" label="地址"></el-table-column>
           <el-table-column prop="master" :show-overflow-tooltip="true" label="负责人" width="120px"></el-table-column>
-          <el-table-column prop="flagName" :show-overflow-tooltip="true" label="状态" width="65px"></el-table-column>
+          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="65px"></el-table-column>
           <el-table-column prop="director" :show-overflow-tooltip="true" label="主管部门" width="160px"></el-table-column>
           <el-table-column prop="eqpid" :show-overflow-tooltip="true" label="设备编号">
             <template slot-scope="scope">
@@ -269,12 +269,12 @@
           id: '',
           name: '',
           levels: '',
-          levelsName: '',
+          levelsname: '',
           address: '',
           master: '',
           director: '',
           flag: '',
-          flagName: '',
+          flagname: '',
           eqpid: [],
           descr: ''
         },
@@ -319,25 +319,11 @@
           if(data.msg && data.msg !== ''){
             Message.error(data.msg);
           }
-          this.list = [];
           if(data.data){
-            for(let i = 0; i < data.data.length; i++){
-              let tempData = {};
-              tempData.id = data.data[i][0];
-              tempData.name = data.data[i][1];
-              tempData.levels = data.data[i][2];
-              tempData.levelsName = data.data[i][3];
-              tempData.address = data.data[i][4];
-              tempData.master = data.data[i][5];
-              tempData.director = data.data[i][6];
-              tempData.flag = data.data[i][7];
-              tempData.flagName = data.data[i][8];
-              tempData.eqpid = data.data[i][9];
-              tempData.descr = data.data[i][10];
-              this.list.push(tempData);
-            }
+            this.list = data.data;
             this.total = data.total;
           }else {
+            this.list = [];
             this.total = 0;
           }
         })
@@ -462,12 +448,12 @@
           id: '',
           name: '',
           levels: 0,
-          levelsName: '',
+          levelsname: '',
           address: '',
           master: '',
           director: '',
           flag: 0,
-          flagName: '',
+          flagname: '',
           eqpid: [],
           descr: ''
         }
@@ -486,11 +472,11 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.levelsName = valueToLabel(this.levelsOption, this.temp.levels);
-            this.temp.flagName = valueToLabel(this.statusOption, this.temp.flag);
+            this.temp.levelsname = valueToLabel(this.levelsOption, this.temp.levels);
+            this.temp.flagname = valueToLabel(this.statusOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
-            delete temp.levelsName;
-            delete temp.flagName;
+            delete temp.levelsname;
+            delete temp.flagname;
             SubmitTable('/schoolHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
@@ -529,11 +515,11 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.levelsName = valueToLabel(this.levelsOption, this.temp.levels);
-            this.temp.flagName = valueToLabel(this.statusOption, this.temp.flag);
+            this.temp.levelsname = valueToLabel(this.levelsOption, this.temp.levels);
+            this.temp.flagname = valueToLabel(this.statusOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
-            delete temp.levelsName;
-            delete temp.flagName;
+            delete temp.levelsname;
+            delete temp.flagname;
             SubmitTable('/schoolHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
