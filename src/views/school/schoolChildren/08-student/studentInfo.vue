@@ -2,7 +2,7 @@
   <div>
     <el-row class="el-table-margin">
       <el-col :span="16" :offset="5">
-        <el-select v-model="listQuery.key"
+        <el-select v-model.trim="listQuery.key"
                    style="width: 14%"
                    @focus="handleFocus"
                    placeholder="查询对象">
@@ -17,7 +17,7 @@
                   style="width: 30%;"
                   clearable
                   :disabled="listQuery.key === ''"
-                  v-model.trim="listQuery.value"
+                  v-model.trim.trim="listQuery.value"
                   @clear="getList()"
                   @keyup.enter.native="handleFilter(1)">
         </el-input>
@@ -132,18 +132,18 @@
               </el-form>
             </template>
           </el-table-column>
-          <el-table-column prop="ID" :show-overflow-tooltip="true" label="学生编号（证件号码）" width="150px"></el-table-column>
-          <el-table-column prop="name" :show-overflow-tooltip="true" label="姓名"></el-table-column>
-          <el-table-column prop="d_of_b" :show-overflow-tooltip="true" label="出生日期"></el-table-column>
-          <el-table-column prop="sex" :show-overflow-tooltip="true" label="性别"></el-table-column>
-          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"></el-table-column>
-          <el-table-column prop="address" :show-overflow-tooltip="true" label="住址"></el-table-column>
-          <el-table-column prop="id_type_name" :show-overflow-tooltip="true" label="证件类型"></el-table-column>
-          <el-table-column prop="master" :show-overflow-tooltip="true" label="责任人"></el-table-column>
-          <el-table-column prop="relationname" :show-overflow-tooltip="true" label="与责任人关系"></el-table-column>
-          <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"></el-table-column>
-          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"></el-table-column>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+          <el-table-column prop="ID" :show-overflow-tooltip="true" label="学生编号（证件号码）" width="150px"/>
+          <el-table-column prop="name" :show-overflow-tooltip="true" label="姓名"/>
+          <el-table-column prop="d_of_b" :show-overflow-tooltip="true" label="出生日期"/>
+          <el-table-column prop="sex" :show-overflow-tooltip="true" label="性别"/>
+          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"/>
+          <el-table-column prop="address" :show-overflow-tooltip="true" label="住址"/>
+          <el-table-column prop="id_type_name" :show-overflow-tooltip="true" label="证件类型"/>
+          <el-table-column prop="master" :show-overflow-tooltip="true" label="责任人"/>
+          <el-table-column prop="relationname" :show-overflow-tooltip="true" label="与责任人关系"/>
+          <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"/>
+          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"/>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"/>
         </el-table>
         <!--分页条-->
         <el-pagination
@@ -181,21 +181,21 @@
           <el-row>
             <el-col :sm="24" :md="12">
               <el-form-item label="姓名" prop="name">
-                <el-input v-model="temp.name" :maxlength="16"
-                          style="float: left;margin-right:10px;width:50%;min-width: 87px"></el-input>
-                <el-radio-group v-model="temp.sex">
+                <el-input v-model.trim="temp.name" :maxlength="16"
+                          style="float: left;margin-right:10px;width:50%;min-width: 87px"/>
+                <el-radio-group v-model.trim="temp.sex">
                   <el-radio-button label="男">男</el-radio-button>
                   <el-radio-button label="女">女</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="出生日期" prop="d_of_b">
-                <el-date-picker v-model="temp.d_of_b" placeholder="请选择出生日期"
+                <el-date-picker v-model.trim="temp.d_of_b" placeholder="请选择出生日期"
                                 align="right" style="width: 100%"
                                 type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="证件类别" prop="id_type">
-                <el-select v-model="temp.id_type"
+                <el-select v-model.trim="temp.id_type"
                            placeholder="请选择证件类别"
                            style="width: 100%">
                   <el-option v-for="item in id_typeOption "
@@ -207,21 +207,21 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="证件号码" prop="id">
-                <el-input v-model="temp.id" :maxlength="18"></el-input>
+                <el-input v-model.trim="temp.id" :maxlength="18"/>
               </el-form-item>
               <el-form-item label="住址" prop="address">
-                <el-input v-model="temp.address" :maxlength="64"></el-input>
+                <el-input v-model.trim="temp.address" :maxlength="64"/>
               </el-form-item>
             </el-col>
             <el-col :sm="24" :md="12">
               <el-form-item label="责任人" prop="master">
-                <el-input v-model="temp.master" :maxlength="16"></el-input>
+                <el-input v-model.trim="temp.master" :maxlength="16"/>
               </el-form-item>
               <el-form-item label="证件号码" prop="masterid">
-                <el-input v-model="temp.masterid" :maxlength="18"></el-input>
+                <el-input v-model.trim="temp.masterid" :maxlength="18"/>
               </el-form-item>
               <el-form-item label="关系" prop="relation">
-                <el-select v-model="temp.relation"
+                <el-select v-model.trim="temp.relation"
                            placeholder="请选择学生与责任人关系"
                            style="width: 100%">
                   <el-option v-for="item in relationOption"
@@ -233,7 +233,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="状态" prop="flag">
-                <el-select v-model="temp.flag"
+                <el-select v-model.trim="temp.flag"
                            placeholder="请选择学生状态"
                            style="width: 100%">
                   <el-option v-for="item in flagOption"
@@ -245,13 +245,13 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="学号" prop="code">
-                <el-input v-model="temp.code" :maxlength="20"></el-input>
+                <el-input v-model.trim="temp.code" :maxlength="20"/>
               </el-form-item>
             </el-col>
           </el-row>
           <el-form-item label="说明" prop="descr">
-            <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"
-                      :autosize="{ minRows: 1, maxRows: 4 }"></el-input>
+            <el-input type="textarea" :maxlength="128" v-model.trim.trim="temp.descr"
+                      :autosize="{ minRows: 1, maxRows: 4 }"/>
             <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
           </el-form-item>
         </template>
@@ -259,10 +259,10 @@
           <el-row>
             <el-col :sm="24" :md="12">
               <el-form-item label="父亲" prop="father">
-                <el-input v-model="temp.father" :maxlength="16"></el-input>
+                <el-input v-model.trim="temp.father" :maxlength="16"/>
               </el-form-item>
               <el-form-item label="证件类别" prop="fa_id_type">
-                <el-select v-model="temp.fa_id_type" placeholder="请选择" style="width: 100%">
+                <el-select v-model.trim="temp.fa_id_type" placeholder="请选择" style="width: 100%">
                   <el-option v-for="item in id_typeOption "
                              :key="item.key"
                              :label="item.label"
@@ -272,21 +272,21 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="证件号码" prop="fa_id_number">
-                <el-input v-model="temp.fa_id_number" :maxlength="18"></el-input>
+                <el-input v-model.trim="temp.fa_id_number" :maxlength="18"/>
               </el-form-item>
               <el-form-item label="联系" prop="fa_contact">
-                <el-input v-model="temp.fa_contact" :maxlength="24"></el-input>
+                <el-input v-model.trim="temp.fa_contact" :maxlength="24"/>
               </el-form-item>
               <el-form-item label="单位" prop="fa_company">
-                <el-input v-model="temp.fa_company" :maxlength="24"></el-input>
+                <el-input v-model.trim="temp.fa_company" :maxlength="24"/>
               </el-form-item>
             </el-col>
             <el-col :sm="24" :md="12">
               <el-form-item label="母亲" prop="mother">
-                <el-input v-model="temp.mother" :maxlength="16"></el-input>
+                <el-input v-model.trim="temp.mother" :maxlength="16"/>
               </el-form-item>
               <el-form-item label="证件类别" prop="mo_id_type">
-                <el-select v-model="temp.mo_id_type" placeholder="请选择" style="width: 100%">
+                <el-select v-model.trim="temp.mo_id_type" placeholder="请选择" style="width: 100%">
                   <el-option v-for="item in id_typeOption "
                              :key="item.key"
                              :label="item.label"
@@ -296,13 +296,13 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="证件号码" prop="mo_id_number">
-                <el-input v-model="temp.mo_id_number" :maxlength="18"></el-input>
+                <el-input v-model.trim="temp.mo_id_number" :maxlength="18"/>
               </el-form-item>
               <el-form-item label="联系" prop="mo_contact">
-                <el-input v-model="temp.mo_contact" :maxlength="24"></el-input>
+                <el-input v-model.trim="temp.mo_contact" :maxlength="24"/>
               </el-form-item>
               <el-form-item label="单位" prop="mo_company">
-                <el-input v-model="temp.mo_company" :maxlength="24"></el-input>
+                <el-input v-model.trim="temp.mo_company" :maxlength="24"/>
               </el-form-item>
             </el-col>
           </el-row>
