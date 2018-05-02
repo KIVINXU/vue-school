@@ -33,7 +33,8 @@
           type="info" plain
           @click="handleExtFilter(1)"
           :disabled="listQuery.key === ''
-            || listQuery.value === ''">相似</el-button>
+            || listQuery.value === ''">相似
+        </el-button>
       </el-col>
       <el-col :span="2">
         <el-dropdown>
@@ -96,54 +97,42 @@
                     </el-form-item>
                   </el-col>
                   <el-col :sm="5">
-                    <el-form-item label="单位" style="margin-bottom: 0;"><span>{{ props.row.fa_company }}</span>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :sm="3">
-                    <el-form-item label="证件" style="margin-bottom: 0;"><span>{{ props.row.fa_id_type_name }}</span>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :sm="6">
-                    <el-form-item label="证件号" style="margin-bottom: 0;"><span>{{ props.row.fa_id_number }}</span>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :sm="5">
                     <el-form-item label="母亲" style="margin-bottom: 0;"><span>{{ props.row.mother}}</span></el-form-item>
                   </el-col>
                   <el-col :sm="4">
                     <el-form-item label="电话" style="margin-bottom: 0;"><span>{{ props.row.mo_contact }}</span>
                     </el-form-item>
                   </el-col>
+                </el-row>
+                <el-row>
                   <el-col :sm="5">
-                    <el-form-item label="单位" style="margin-bottom: 0;"><span>{{ props.row.mo_company }}</span>
+                    <el-form-item label="学校" style="margin-bottom: 0;"><span>{{ props.row.schoolname}}</span>
                     </el-form-item>
                   </el-col>
-                  <el-col :sm="3">
-                    <el-form-item label="证件" style="margin-bottom: 0;"><span>{{ props.row.mo_id_type_name }}</span>
+                  <el-col :sm="4">
+                    <el-form-item label="班级" style="margin-bottom: 0;"><span>{{ props.row.classname}}</span>
                     </el-form-item>
                   </el-col>
-                  <el-col :sm="6">
-                    <el-form-item label="证件号" style="margin-bottom: 0;"><span>{{ props.row.fa_id_number }}</span>
+                  <el-col :sm="5">
+                    <el-form-item label="班主任" style="margin-bottom: 0;"><span>{{ props.row.adviser}}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
               </el-form>
             </template>
           </el-table-column>
-          <el-table-column prop="ID" :show-overflow-tooltip="true" label="学生编号（证件号码）" width="150px"/>
-          <el-table-column prop="name" :show-overflow-tooltip="true" label="姓名"/>
-          <el-table-column prop="d_of_b" :show-overflow-tooltip="true" label="出生日期"/>
-          <el-table-column prop="sex" :show-overflow-tooltip="true" label="性别"/>
-          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"/>
-          <el-table-column prop="address" :show-overflow-tooltip="true" label="住址"/>
-          <el-table-column prop="id_type_name" :show-overflow-tooltip="true" label="证件类型"/>
-          <el-table-column prop="master" :show-overflow-tooltip="true" label="责任人"/>
-          <el-table-column prop="relationname" :show-overflow-tooltip="true" label="与责任人关系"/>
-          <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"/>
-          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"/>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"/>
+          <el-table-column prop="ID" :show-overflow-tooltip="true" label="学生编号（证件号码）" width="150px"></el-table-column>
+          <el-table-column prop="name" :show-overflow-tooltip="true" label="姓名"></el-table-column>
+          <el-table-column prop="d_of_b" :show-overflow-tooltip="true" label="出生日期"></el-table-column>
+          <el-table-column prop="sex" :show-overflow-tooltip="true" label="性别"></el-table-column>
+          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"></el-table-column>
+          <el-table-column prop="address" :show-overflow-tooltip="true" label="住址"></el-table-column>
+          <el-table-column prop="id_type_name" :show-overflow-tooltip="true" label="证件类型"></el-table-column>
+          <el-table-column prop="guarder" :show-overflow-tooltip="true" label="主监护人"></el-table-column>
+          <el-table-column prop="relationname" :show-overflow-tooltip="true" label="与学生人关系"></el-table-column>
+          <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"></el-table-column>
+          <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
         </el-table>
         <!--分页条-->
         <el-pagination
@@ -177,141 +166,97 @@
                style="margin-top: -30px"
                label-position="right"
                label-width="100px">
-        <template v-if="!parentDialogVisible">
-          <el-row>
-            <el-col :sm="24" :md="12">
-              <el-form-item label="姓名" prop="name">
-                <el-input v-model.trim="temp.name" :maxlength="16"
-                          style="float: left;margin-right:10px;width:50%;min-width: 87px"/>
-                <el-radio-group v-model.trim="temp.sex">
-                  <el-radio-button label="男">男</el-radio-button>
-                  <el-radio-button label="女">女</el-radio-button>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="出生日期" prop="d_of_b">
-                <el-date-picker v-model.trim="temp.d_of_b" placeholder="请选择出生日期"
-                                align="right" style="width: 100%"
-                                type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy">
-                </el-date-picker>
-              </el-form-item>
-              <el-form-item label="证件类别" prop="id_type">
-                <el-select v-model.trim="temp.id_type"
-                           placeholder="请选择证件类别"
-                           style="width: 100%">
-                  <el-option v-for="item in id_typeOption "
-                             :key="item.key"
-                             :label="item.label"
-                             :value="item.key">
+        <el-row>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model.trim="temp.name" :maxlength="16"
+                        style="float: left;margin-right:10px;width:50%;min-width: 87px"></el-input>
+              <el-radio-group v-model.trim="temp.sex">
+                <el-radio-button label="男">男</el-radio-button>
+                <el-radio-button label="女">女</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="出生日期" prop="d_of_b">
+              <el-date-picker v-model.trim="temp.d_of_b" placeholder="请选择出生日期"
+                              align="right" style="width: 100%"
+                              type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="证件类别" prop="id_type">
+              <el-select v-model.trim="temp.id_type"
+                         placeholder="请选择证件类别"
+                         style="width: 100%">
+                <el-option v-for="item in id_typeOption "
+                           :key="item.key"
+                           :label="item.label"
+                           :value="item.key">
 
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="证件号码" prop="id">
-                <el-input v-model.trim="temp.id" :maxlength="18"/>
-              </el-form-item>
-              <el-form-item label="住址" prop="address">
-                <el-input v-model.trim="temp.address" :maxlength="64"/>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="12">
-              <el-form-item label="责任人" prop="master">
-                <el-input v-model.trim="temp.master" :maxlength="16"/>
-              </el-form-item>
-              <el-form-item label="证件号码" prop="masterid">
-                <el-input v-model.trim="temp.masterid" :maxlength="18"/>
-              </el-form-item>
-              <el-form-item label="关系" prop="relation">
-                <el-select v-model.trim="temp.relation"
-                           placeholder="请选择学生与责任人关系"
-                           style="width: 100%">
-                  <el-option v-for="item in relationOption"
-                             :key="item.key"
-                             :label="item.label"
-                             :value="item.key">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="证件号码" prop="id">
+              <el-input v-model.trim="temp.id" :maxlength="18"></el-input>
+            </el-form-item>
+            <el-form-item label="住址" prop="address">
+              <el-input v-model.trim="temp.address" :maxlength="64"></el-input>
+            </el-form-item>
+            <el-form-item label="父亲" prop="father">
+              <el-input v-model.trim="temp.father" :maxlength="16"></el-input>
+            </el-form-item>
+            <el-form-item label="联系" prop="fa_contact">
+              <el-input v-model.trim="temp.fa_contact" :maxlength="24"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="主监护人" prop="guarder">
+              <el-input v-model.trim="temp.guarder" :maxlength="16"></el-input>
+            </el-form-item>
+            <el-form-item label="主监护人编号" prop="guarderid">
+              <el-input v-model.trim="temp.guarderid" :maxlength="18"></el-input>
+            </el-form-item>
+            <el-form-item label="与学生关系" prop="relation">
+              <el-select v-model.trim="temp.relation"
+                         placeholder="请选择学生与主监护人关系"
+                         style="width: 100%">
+                <el-option v-for="item in relationOption"
+                           :key="item.key"
+                           :label="item.label"
+                           :value="item.key">
 
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="状态" prop="flag">
-                <el-select v-model.trim="temp.flag"
-                           placeholder="请选择学生状态"
-                           style="width: 100%">
-                  <el-option v-for="item in flagOption"
-                             :key="item.key"
-                             :label="item.label"
-                             :value="item.key">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <!--<el-form-item label="状态" prop="flag">-->
+            <!--<el-select v-model.trim="temp.flag"-->
+            <!--placeholder="请选择学生状态"-->
+            <!--style="width: 100%">-->
+            <!--<el-option v-for="item in flagOption"-->
+            <!--:key="item.key"-->
+            <!--:label="item.label"-->
+            <!--:value="item.key">-->
 
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="学号" prop="code">
-                <el-input v-model.trim="temp.code" :maxlength="20"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-form-item label="说明" prop="descr">
-            <el-input type="textarea" :maxlength="128" v-model.trim.trim="temp.descr"
-                      :autosize="{ minRows: 1, maxRows: 4 }"/>
-            <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
-          </el-form-item>
-        </template>
-        <template v-else>
-          <el-row>
-            <el-col :sm="24" :md="12">
-              <el-form-item label="父亲" prop="father">
-                <el-input v-model.trim="temp.father" :maxlength="16"/>
-              </el-form-item>
-              <el-form-item label="证件类别" prop="fa_id_type">
-                <el-select v-model.trim="temp.fa_id_type" placeholder="请选择" style="width: 100%">
-                  <el-option v-for="item in id_typeOption "
-                             :key="item.key"
-                             :label="item.label"
-                             :value="item.key">
-
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="证件号码" prop="fa_id_number">
-                <el-input v-model.trim="temp.fa_id_number" :maxlength="18"/>
-              </el-form-item>
-              <el-form-item label="联系" prop="fa_contact">
-                <el-input v-model.trim="temp.fa_contact" :maxlength="24"/>
-              </el-form-item>
-              <el-form-item label="单位" prop="fa_company">
-                <el-input v-model.trim="temp.fa_company" :maxlength="24"/>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="12">
-              <el-form-item label="母亲" prop="mother">
-                <el-input v-model.trim="temp.mother" :maxlength="16"/>
-              </el-form-item>
-              <el-form-item label="证件类别" prop="mo_id_type">
-                <el-select v-model.trim="temp.mo_id_type" placeholder="请选择" style="width: 100%">
-                  <el-option v-for="item in id_typeOption "
-                             :key="item.key"
-                             :label="item.label"
-                             :value="item.key">
-
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="证件号码" prop="mo_id_number">
-                <el-input v-model.trim="temp.mo_id_number" :maxlength="18"/>
-              </el-form-item>
-              <el-form-item label="联系" prop="mo_contact">
-                <el-input v-model.trim="temp.mo_contact" :maxlength="24"/>
-              </el-form-item>
-              <el-form-item label="单位" prop="mo_company">
-                <el-input v-model.trim="temp.mo_company" :maxlength="24"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </template>
+            <!--</el-option>-->
+            <!--</el-select>-->
+            <!--</el-form-item>-->
+            <el-form-item label="学号" prop="code">
+              <el-input v-model.trim="temp.code" :maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="母亲" prop="mother">
+              <el-input v-model.trim="temp.mother" :maxlength="16"></el-input>
+            </el-form-item>
+            <el-form-item label="联系" prop="mo_contact">
+              <el-input v-model.trim="temp.mo_contact" :maxlength="24"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="说明" prop="descr">
+          <el-input type="textarea" :maxlength="128" v-model.trim.trim="temp.descr"
+                    :autosize="{ minRows: 1, maxRows: 4 }"></el-input>
+          <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
+        </el-form-item>
       </el-form>
       <div slot="footer" style="height: 0; margin-top: -50px">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" v-if="parentDialogVisible" @click="nextStep">主要信息</el-button>
-        <el-button type="primary" v-else @click="nextStep">附加信息</el-button>
         <el-button type="primary" v-if="dialogStatus === 'create'" @click="createData">保 存</el-button>
         <el-button type="primary" v-else @click="updateData">保 存</el-button>
       </div>
@@ -359,6 +304,17 @@
           }
         }
       };
+      //主监护人验证，如果主监护人证件号码不为空，则名称和关系不能空
+      checkGuarder = (rule, value, callback) => {
+        if (this.temp.guarderid && !value) {
+          callback(new Error('主监护人名称不能为空'));
+        }
+      };
+      checkRelation = (rule, value, callback) => {
+        if (this.temp.guarderid && !value) {
+          callback(new Error('与学生关系不能为空'));
+        }
+      };
       return {
         //搜索内容
         listQuery: {
@@ -374,14 +330,36 @@
         searchOption: [],
         //加载图标
         listLoading: true,
-        list: [],
+        list: {
+          id: '23456789123456789',
+          name: '汪涵爱新觉罗',
+          d_of_b: '12/28/2012',
+          sex: '男',
+          address: '温州啊科幻大师的啦大家阿里山可见度',
+          id_type: '0',
+          id_type_name: '身份证',
+          father: '',
+          fa_contact: '13245678900',
+          mother: '',
+          mo_contact: '13245678900',
+          guarderid: '1',
+          guarder: '谢娜',
+          relation: 1,
+          relationname: '父母',
+          relnum: '2',
+          code: '201833033018',
+          // flag: '',
+          flagname: '在读',
+          descr: '特别好的学生',
+          schoolname: '温州市鹿城区第三小学',
+          classname: '2014级1班',
+          adviser: '王渣渣',
+        },
         //行数
         currentRowIndex: -1,
         //-----添加/修改对话框--------
         //对话框状态
         dialogVisible: false,
-        //父母亲信息对话框状态
-        parentDialogVisible: false,
         //对话框状态
         dialogStatus: '',
         //对话框标题
@@ -399,26 +377,21 @@
           id_type: '',
           id_type_name: '',
           father: '',
-          fa_id_type: '',
-          fa_id_type_name: '',
-          fa_id_number: '',
           fa_contact: '',
-          fa_company: '',
           mother: '',
-          mo_id_type: '',
-          mo_id_type_name: '',
-          mo_id_number: '',
           mo_contact: '',
-          mo_company: '',
-          masterid: '',
-          master: '',
+          guarderid: '',
+          guarder: '',
           relation: '',
           relnum: '',
           relationname: '',
           code: '',
-          flag: '',
+          // flag: '',
           flagname: '',
-          descr: ''
+          descr: '',
+          schoolname: '',
+          classname: '',
+          adviser: '',
         },
         sexOption: [
           {
@@ -433,7 +406,7 @@
         //证件类型
         id_typeOption: [],
         //标志选项
-        flagOption: [],
+        // flagOption: [],
         //关系选项
         relationOption: [],
         //-----删除对话框----
@@ -448,20 +421,15 @@
           id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
           id: [{required: true, message: '请输入正确的证件号码', trigger: 'blur'},
             {validator: checkID_number, trigger: 'change'}],
-          fa_id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
-          fa_id_number: [{validator: checkID_number, trigger: 'change'}],
-          mo_id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
-          mo_id_number: [{validator: checkID_number, trigger: 'change'}],
-          masterid: {required: true, message: '请输入责任人证件号码', trigger: 'blur'},
-          master: {required: true, message: '请输入责任人姓名', trigger: 'blur'},
-          relation: {required: true, message: '请选择与责任人关系', trigger: 'blur'},
-          flag: {required: true, message: '请选择学生状态', trigger: 'blur'},
+          guarder: {validator: checkGuarder, trigger: 'blur'},
+          relation: {validator: checkRelation, trigger: 'blur'},
+          // flag: {required: true, message: '请选择学生状态', trigger: 'blur'},
 
         },
       }
     },
     created() {
-      this.getList();
+      // this.getList();
     },
     watch: {
       $route() {
@@ -476,10 +444,10 @@
           if (data.msg && data.msg !== '') {
             Message.error(data.msg);
           }
-          if(data.data){
+          if (data.data) {
             this.list = data.data;
             this.total = data.total;
-          }else {
+          } else {
             this.list = [];
             this.total = 0;
           }
@@ -561,7 +529,7 @@
               if (data.data) {
                 this.id_typeOption = data.data.ID_TYPE;
                 this.relationOption = data.data.RELATION;
-                this.flagOption = data.data.FLAG;
+                // this.flagOption = data.data.FLAG;
               }
             });
         }
@@ -576,24 +544,16 @@
           id_type: '0',
           id_type_name: '',
           father: '',
-          fa_id_type: '0',
-          fa_id_type_name: '',
-          fa_id_number: '',
           fa_contact: '',
-          fa_company: '',
           mother: '',
-          mo_id_type: '0',
-          mo_id_type_name: '',
-          mo_id_number: '',
           mo_contact: '',
-          mo_company: '',
-          masterid: '',
-          master: '',
+          guarderid: '',
+          guarder: '',
           relation: '',
           relnum: '0',
           relationname: '',
           code: '',
-          flag: '',
+          // flag: '',
           flagname: '',
           descr: ''
         }
@@ -604,8 +564,6 @@
         this.dialogStatus = 'create';
         this.dialogVisible = true;
         this.handleOption();
-        //默认父母信息对话框隐藏
-        this.parentDialogVisible = false;
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -616,11 +574,15 @@
           if (valid) {
             this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
             this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
-            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
-            var temp = Object.assign({method: 'Insert'}, this.temp);
+            // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            let temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.id_typename;
             delete temp.relationname;
             delete temp.flagname;
+            delete temp.schoolname;
+            delete temp.classnamel;
+            delete temp.adviser;
+            delete temp.relnum;
             SubmitTable('/studentHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -644,8 +606,6 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
-        //默认父母信息对话框隐藏
-        this.parentDialogVisible = false;
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.handleOption();
@@ -659,11 +619,15 @@
           if (valid) {
             this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
             this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
-            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.id_typename;
             delete temp.relationname;
             delete temp.flagname;
+            delete temp.schoolname;
+            delete temp.classnamel;
+            delete temp.adviser;
+            delete temp.relnum;
             SubmitTable('/studentHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
