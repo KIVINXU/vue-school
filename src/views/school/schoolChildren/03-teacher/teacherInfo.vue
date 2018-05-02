@@ -132,41 +132,42 @@
         <el-row>
           <el-col :sm="24" :md="12">
             <el-form-item label="教师编号" prop="id">
-              <el-input v-model="temp.id" :maxlength="18" :readonly="dialogStatus=='update'"></el-input>
+              <el-input v-model.trim="temp.id" :maxlength="18" :readonly="dialogStatus=='update'"></el-input>
             </el-form-item>
             <el-form-item label="姓名" prop="name">
-              <el-input v-model="temp.name" :maxlength="16"
+              <el-input v-model.trim="temp.name" :maxlength="8"
                         style="float: left;margin-right:10px;width:50%;min-width: 87px"></el-input>
-              <el-radio-group v-model="temp.sex">
+              <el-radio-group v-model.trim="temp.sex">
                 <el-radio-button label="男">男</el-radio-button>
                 <el-radio-button label="女">女</el-radio-button>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="联系方式" prop="contact">
-              <el-input v-model="temp.contact" :maxlength="11"></el-input>
+              <el-input v-model.trim="temp.contact" :maxlength="11"></el-input>
             </el-form-item>
             <el-form-item label="联系方式2" prop="contact2">
-              <el-input v-model="temp.contact2" :maxlength="32"></el-input>
+              <el-input v-model.trim="temp.contact2" :maxlength="24"></el-input>
             </el-form-item>
             <el-form-item label="联系住址" prop="address">
-              <el-input v-model="temp.address" :maxlength="64"></el-input>
+              <el-input v-model.trim="temp.address" :maxlength="64"></el-input>
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
             <el-form-item label="学校名称" prop="schoolid">
-              <el-select v-model="temp.schoolid"
-                         filterable
-                         placeholder="请选择学校名称"
-                         style="width: 100%">
-                <el-option v-for="item in schoolidOption"
-                           :key="item.key"
-                           :label="item.label"
-                           :value="item.key">
-                </el-option>
-              </el-select>
+              <!--<el-select v-model.trim="temp.schoolid"-->
+                         <!--filterable-->
+                         <!--placeholder="请选择学校名称"-->
+                         <!--style="width: 100%">-->
+                <!--<el-option v-for="item in schoolidOption"-->
+                           <!--:key="item.key"-->
+                           <!--:label="item.label"-->
+                           <!--:value="item.key">-->
+                <!--</el-option>-->
+              <!--</el-select>-->
+              <el-input v-model.trim="temp.schoolid" :maxlength="64"></el-input>
             </el-form-item>
             <el-form-item label="证件类别" prop="id_type">
-              <el-select v-model="temp.id_type"
+              <el-select v-model.trim="temp.id_type"
                          placeholder="请选择证件类别"
                          style="width: 100%">
                 <el-option v-for="item in id_typeOption"
@@ -178,17 +179,17 @@
               </el-select>
             </el-form-item>
             <el-form-item label="证件号码" prop="id_number">
-              <el-input v-model="temp.id_number" placeholder="请输入证件号码" :maxlength="18"></el-input>
+              <el-input v-model.trim="temp.id_number" placeholder="请输入证件号码" :maxlength="18"></el-input>
             </el-form-item>
             <el-form-item label="合同效期" prop="validity">
-              <el-date-picker v-model="temp.validity" placeholder="请选择合同期限"
+              <el-date-picker v-model.trim="temp.validity" placeholder="请选择合同期限"
                               align="right" style="width: 100%"
                               type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy"
                               :editable="false">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="状态" prop="flag">
-              <el-select v-model="temp.flag"
+              <el-select v-model.trim="temp.flag"
                          placeholder="请选择状态"
                          style="width: 100%">
                 <el-option v-for="item in flagOption"
@@ -219,7 +220,6 @@
 <script>
   import {fetchList, SubmitTable, fetchSearchOption, valueToLabel} from '@/api/table';
   import {validateTel, validateIdentity18, validatePassport, validateOther} from "../../../../utils/validate";
-  import { Message } from 'element-ui'
   import ElRow from "element-ui/packages/row/src/row";
   import ElRadioButton from "element-ui/packages/radio/src/radio-button";
 
@@ -363,7 +363,11 @@
         fetchList('/teacherHome', List).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
-            Message.error(data.msg);
+            this.$message({
+              message: data.msg,
+              type: 'error',
+              duration: 2000
+            });
           }
           if(data.data){
             this.list = data.data;
@@ -423,7 +427,11 @@
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.error(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
               }
               if (data.data) {
                 let keys = Object.keys(data.data);
@@ -445,11 +453,14 @@
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.error(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
               }
               if (data.data) {
                 this.id_typeOption = data.data.ID_TYPE;
-                this.schoolidOption = data.data.SCHOOLID;
                 this.flagOption = data.data.FLAG;
               }
             });
@@ -498,7 +509,11 @@
             SubmitTable('/teacherHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'info',
+                  duration: 2000
+                });
               }
               if (data.id === '00000') {
                 this.list.unshift(this.temp);
@@ -539,7 +554,11 @@
             SubmitTable('/teacherHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'info',
+                  duration: 2000
+                });
               }
               if (data.id === '00000') {
                 for (const v of this.list) {
@@ -583,7 +602,11 @@
         SubmitTable('/teacherHome', deleteData).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
-            Message.info(data.msg);
+            this.$message({
+              message: data.msg,
+              type: 'info',
+              duration: 2000
+            });
           }
           if (data.id === '00000') {
             this.$notify({

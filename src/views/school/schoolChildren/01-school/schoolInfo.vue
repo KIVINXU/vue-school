@@ -132,14 +132,14 @@
         <el-row>
           <el-col :sm="24" :md="12">
             <el-form-item label="学校代码" prop="id">
-              <el-input v-model="temp.id" :maxlength="12"
+              <el-input v-model.trim="temp.id" :maxlength="12"
                         :readonly="dialogStatus == 'update'"></el-input>
             </el-form-item>
             <el-form-item label="名称" prop="name">
-              <el-input v-model="temp.name" :maxlength="24"></el-input>
+              <el-input v-model.trim="temp.name" :maxlength="24"></el-input>
             </el-form-item>
             <el-form-item label="教育程度" prop="levels">
-              <el-select v-model="temp.levels"
+              <el-select v-model.trim="temp.levels"
                          placeholder="请选择教育程度"
                          style="width: 100%">
                 <el-option v-for="item in levelsOption"
@@ -152,13 +152,13 @@
           </el-col>
           <el-col :sm="24" :md="12">
             <el-form-item label="负责人" prop="master">
-              <el-input v-model="temp.master" :maxlength="8"></el-input>
+              <el-input v-model.trim="temp.master" :maxlength="8"></el-input>
             </el-form-item>
             <el-form-item label="主管部门" prop="director">
-              <el-input v-model="temp.director" :maxlength="24"></el-input>
+              <el-input v-model.trim="temp.director" :maxlength="24"></el-input>
             </el-form-item>
             <el-form-item label="状态" prop="flag">
-              <el-select v-model="temp.flag"
+              <el-select v-model.trim="temp.flag"
                          placeholder="请选择学校状态"
                          style="width: 100%">
                 <el-option v-for="item in statusOption"
@@ -169,7 +169,7 @@
           </el-col>
         </el-row>
         <el-form-item label="地址" prop="address">
-          <el-input v-model="temp.address" :maxlength="64"></el-input>
+          <el-input v-model.trim="temp.address" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="设备编号" prop="eqpid">
           <!--<el-select v-model="temp.eqpid"-->
@@ -190,7 +190,7 @@
           </el-tag>
           <el-input
             v-if="inputVisible"
-            v-model="eqpInput"
+            v-model.trim="eqpInput"
             ref="saveTagInput"
             style="width: 110px"
             @keyup.enter.native="handleInputConfirm"
@@ -224,7 +224,6 @@
 <script>
   import {fetchList, SubmitTable, fetchSearchOption, valueToLabel } from '@/api/table'
   import {validateOther} from "../../../../utils/validate";
-  import { Message } from 'element-ui'
 
   export default {
     data() {
@@ -317,7 +316,11 @@
         fetchList('/schoolHome', List).then( response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
-            Message.error(data.msg);
+            this.$message({
+              message: data.msg,
+              type: 'error',
+              duration: 2000
+            });
           }
           if(data.data){
             this.list = data.data;
@@ -377,7 +380,11 @@
             .then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
-                Message.error(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
               }
               if(data.data){
                 let keys = Object.keys(data.data);
@@ -399,7 +406,11 @@
             .then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
-                Message.error(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
               }
               if(data.data){
                 this.levelsOption = data.data.LEVELS;
@@ -428,14 +439,22 @@
             SubmitTable('/schoolHome', eqpData).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
               }
               if(data.id === '00000') {
                 this.temp.eqpid.push(eqpInput)
               }
             });
           }else {
-            Message.info('该设备编号已被使用，请重新输入');
+            this.$message({
+              message: '该设备编号已被使用，请重新输入',
+              type: 'info',
+              duration: 2000
+            });
           }
           
         }
@@ -480,7 +499,11 @@
             SubmitTable('/schoolHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'info',
+                  duration: 2000
+                });
               }
               if(data.id === '00000') {
                 this.list.unshift(this.temp);
@@ -523,7 +546,11 @@
             SubmitTable('/schoolHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'info',
+                  duration: 2000
+                });
               }
               if(data.id === '00000') {
                 for (const v of this.list) {
@@ -567,7 +594,11 @@
         SubmitTable('/schoolHome', deleteData).then(response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
-            Message.info(data.msg);
+            this.$message({
+              message: data.msg,
+              type: 'info',
+              duration: 2000
+            });
           }
           if(data.id === '00000') {
             this.$notify({

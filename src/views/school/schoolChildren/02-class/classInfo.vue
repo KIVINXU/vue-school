@@ -90,8 +90,8 @@
           <el-table-column prop="classno" :show-overflow-tooltip="true" label="班级号" width="65px"></el-table-column>
           <el-table-column prop="gradeid" :show-overflow-tooltip="true" label="年级号" width="70px"></el-table-column>
           <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校名称" width="230px"></el-table-column>
-          <el-table-column prop="head" :show-overflow-tooltip="true" label="班主任" width="120px"></el-table-column>
-          <el-table-column prop="head2" :show-overflow-tooltip="true" label="班主任(前/代)" width="120px"></el-table-column>
+          <el-table-column prop="adviser" :show-overflow-tooltip="true" label="班主任" width="120px"></el-table-column>
+          <el-table-column prop="adviser2" :show-overflow-tooltip="true" label="班主任(前/代)" width="120px"></el-table-column>
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
         </el-table>
@@ -129,53 +129,58 @@
         <el-row>
           <el-col :sm="24" :md="12">
             <el-form-item label="班级编号" prop="id" v-if="dialogStatus=='update'">
-              <el-input v-model="temp.id" readonly></el-input>
+              <el-input v-model.trim="temp.id" readonly></el-input>
             </el-form-item>
             <el-form-item label="班级号" prop="classno">
-              <el-input v-model="temp.classno" :maxlength="2"></el-input>
+              <el-input v-model.trim="temp.classno" :maxlength="2"></el-input>
             </el-form-item>
             <el-form-item label="班主任" prop="teacherid">
-              <el-select v-model="temp.teacherid"
-                         placeholder="请选择班主任"
-                         filterable remote
-                         :remote-method="teacherRemoteMethod"
-                         style="width: 100%">
-                <el-option v-for="item in teacherIDOption"
-                           :key="item.key"
-                           :label="item.label"
-                           :value="item.key">
-                  <span style="float: left">{{ item.label }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.key }}</span>
-                </el-option>
-              </el-select>
+              
+              <el-tooltip class="item" effect="dark"
+                          content="点击回车搜索" placement="top">
+                <el-select v-model.trim="temp.teacherid"
+                           placeholder="请输入班主任编号"
+                           filterable remote
+                           @keyup.enter.native="handleSelectOption"
+                           style="width: 100%">
+                  <el-option v-for="item in teacherIDOption"
+                             :key="item.key"
+                             :label="item.label"
+                             :value="item.key">
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.key }}</span>
+                  </el-option>
+                </el-select>
+              </el-tooltip>
             </el-form-item>
-            <el-form-item label="班主任(前/代)" prop="head2">
-              <el-input v-model="temp.head2" :maxlength="16"></el-input>
+            <el-form-item label="班主任(前/代)" prop="adviser2">
+              <el-input v-model.trim="temp.adviser2" :maxlength="8"></el-input>
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
             <el-form-item label="年级号" prop="gradeid">
-              <el-date-picker v-model="temp.gradeid" placeholder="选择年级号"
+              <el-date-picker v-model.trim="temp.gradeid" placeholder="选择年级号"
                               align="right" style="width: 100%"
                               type="year" format="yyyy" value-format="yyyy"
                               :picker-options="gradeIDScope">
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="学校名称" prop="schoolid">
-              <el-select v-model="temp.schoolid"
-                         placeholder="请选择学校名称"
-                         filterable remote
-                         :remote-method="schoolRemoteMethod"
-                         style="width: 100%">
-                <el-option v-for="item in schoolIDOption"
-                           :key="item.key"
-                           :label="item.label"
-                           :value="item.key">
-                </el-option>
-              </el-select>
+            <el-form-item label="学校名称" prop="schoolname">
+              <!--<el-select v-model.trim="temp.schoolid"-->
+                         <!--placeholder="请选择学校名称"-->
+                         <!--filterable remote-->
+                         <!--:remote-method="schoolRemoteMethod"-->
+                         <!--style="width: 100%">-->
+                <!--<el-option v-for="item in schoolIDOption"-->
+                           <!--:key="item.key"-->
+                           <!--:label="item.label"-->
+                           <!--:value="item.key">-->
+                <!--</el-option>-->
+              <!--</el-select>-->
+              <el-input v-model.trim="temp.schoolid" :maxlength="12"></el-input>
             </el-form-item>
             <el-form-item label="状态" prop="flag">
-              <el-select v-model="temp.flag"
+              <el-select v-model.trim="temp.flag"
                          placeholder="请选择班级状态"
                          style="width: 100%">
                 <el-option v-for="item in flagOption"
@@ -206,7 +211,6 @@
 <script>
   import {fetchList, SubmitTable, fetchSearchOption, valueToLabel} from '@/api/table'
   import {validateNum} from "../../../../utils/validate";
-  import { Message } from 'element-ui'
 
   export default {
     data() {
@@ -257,8 +261,8 @@
           schoolid: '',
           schoolname: '',
           teacherid: '',
-          head: '',
-          head2: '',
+          adviser: '',
+          adviser2: '',
           flag: '',
           flagname: '',
           descr: ''
@@ -306,7 +310,11 @@
         fetchList('/classHome', List).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
-            Message.error(data.msg);
+            this.$message({
+              message: data.msg,
+              type: 'error',
+              duration: 2000
+            });
           }
           if(data.data){
             this.list = data.data;
@@ -366,7 +374,11 @@
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.error(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
               }
               if (data.data) {
                 let keys = Object.keys(data.data);
@@ -388,7 +400,11 @@
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.error(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
               }
               if (data.data) {
                 this.flagOption = data.data.FLAG;
@@ -397,19 +413,8 @@
         }
       },
       //远程搜索数据
-      teacherRemoteMethod(query) {
-        if(query !== '') {
-          this.teacherIDOption = [];
-        }else {
-          this.teacherIDOption = [];
-        }
-      },
-      schoolRemoteMethod(query) {
-        if(query !== '') {
-          this.schoolIDOption = [];
-        }else {
-          this.schoolIDOption = [];
-        }
+      handleSelectOption() {
+        console.log('开始搜索')
       },
       resetTemp() {
         this.temp = {
@@ -419,8 +424,8 @@
           schoolid: '',
           schoolname: '',
           teacherid: '',
-          head: '',
-          head2: '',
+          adviser: '',
+          adviser2: '',
           flag: '',
           flagname: '',
           descr: ''
@@ -442,13 +447,17 @@
           if (valid) {
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
-            delete temp.teacherid;
+            delete temp.adviser;
             delete temp.schoolname;
             delete temp.flagname;
             SubmitTable('/classHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'info',
+                  duration: 2000
+                });
               }
               if (data.id === '00000') {
                 this.list.unshift(this.temp);
@@ -468,6 +477,7 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        this.temp.gradeid = this.temp.gradeid.toString();
         this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
@@ -481,13 +491,17 @@
           if (valid) {
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
-            delete temp.teacherid;
+            delete temp.adviser;
             delete temp.schoolname;
             delete temp.flagname;
             SubmitTable('/classHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'info',
+                  duration: 2000
+                });
               }
               if (data.id === '00000') {
                 for (const v of this.list) {
@@ -531,7 +545,11 @@
         SubmitTable('/classHome', deleteData).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
-            Message.info(data.msg);
+            this.$message({
+              message: data.msg,
+              type: 'info',
+              duration: 2000
+            });
           }
           if (data.id === '00000') {
             this.$notify({

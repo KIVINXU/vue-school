@@ -136,28 +136,28 @@
         <el-row>
         <el-col :sm="24" :md="12">
           <el-form-item label="设备编号" prop="id">
-            <el-input v-model="temp.id" :maxlength="16"
+            <el-input v-model.trim="temp.id" :maxlength="16"
                       :readonly="dialogStatus == 'update'"></el-input>
           </el-form-item>
           <el-form-item label="设备名称" prop="name">
-            <el-input v-model="temp.name" :maxlength="16"></el-input>
+            <el-input v-model.trim="temp.name" :maxlength="16"></el-input>
           </el-form-item>
           <el-form-item label="访问用户" prop="username">
-            <el-input v-model="temp.username" :maxlength="16"></el-input>
+            <el-input v-model.trim="temp.username" :maxlength="16"></el-input>
           </el-form-item>
           <el-form-item label="访问密码" prop="passwd">
-            <el-input type="password" v-model="temp.passwd"  :maxlength="64" @keyup.native="handlePasswd"></el-input>
+            <el-input type="password" v-model.trim="temp.passwd"  :maxlength="64" @keyup.native="handlePasswd"></el-input>
           </el-form-item>
         </el-col>
         <el-col :sm="24" :md="12">
           <el-form-item label="地 址" prop="ip">
-            <el-input v-model="temp.ip"></el-input>
+            <el-input v-model.trim="temp.ip"></el-input>
           </el-form-item>
           <el-form-item label="端 口" prop="port">
-            <el-input v-model="temp.port" :maxlength="5"></el-input>
+            <el-input v-model.trim="temp.port" :maxlength="5"></el-input>
           </el-form-item>
           <el-form-item label="型 号" prop="model">
-            <el-input v-model="temp.model"  :maxlength="32"></el-input>
+            <el-input v-model.trim="temp.model"  :maxlength="32"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" plain @click="handleTest">设备连接测试</el-button>
@@ -165,13 +165,13 @@
         </el-col>
         </el-row>
         <el-form-item label="安装位置" prop="place">
-          <el-input v-model="temp.place" :maxlength="32"></el-input>
+          <el-input v-model.trim="temp.place" :maxlength="32"></el-input>
         </el-form-item>
         <el-form-item label="基本参数" prop="basepram">
-          <el-input type="textarea" v-model="temp.param" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+          <el-input type="textarea" v-model.trim="temp.param" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="扩展参数" prop="exparam">
-          <el-input type="textarea" v-model="temp.exparam" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+          <el-input type="textarea" v-model.trim="temp.exparam" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="备注说明" prop="descr">
           <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"
@@ -192,7 +192,6 @@
   import { fetchList, SubmitTable, fetchSearchOption } from '@/api/table'
   import { cryptoPass } from '@/api/login'
   import { isvalidUsername, isvalidPassword, validateOther, validateNum } from '@/utils/validate'
-  import { Message } from 'element-ui'
   export default {
 
     data() {
@@ -331,7 +330,11 @@
         fetchList('/deviceHome', List).then( response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
-            Message.error(data.msg);
+            this.$message({
+              message: data.msg,
+              type: 'error',
+              duration: 2000
+            });
           }
           if(data.data){
             this.list = data.data;
@@ -391,7 +394,11 @@
             .then(response => {
             const data = response.data;
             if(data.msg && data.msg !== ''){
-              Message.error(data.msg);
+              this.$message({
+                message: data.msg,
+                type: 'error',
+                duration: 2000
+              });
             }
             if(data.data){
               let keys = Object.keys(data.data);
@@ -409,7 +416,11 @@
       handleTest() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            Message.info('正在连接设备，请稍等');
+            this.$message({
+              message: '正在连接设备，请稍等',
+              type: 'info',
+              duration: 2000
+            });
             if(this.temp.passwd.length <= 16) {
               this.temp.passwd = cryptoPass(this.temp.passwd);
             }
@@ -426,7 +437,11 @@
             SubmitTable('/deviceHome', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
               }
             });
           }
@@ -472,7 +487,11 @@
             SubmitTable('/deviceHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'info',
+                  duration: 2000
+                });
               }
               if(data.id === '00000') {
                 this.list.unshift(this.temp);
@@ -517,7 +536,11 @@
             SubmitTable('/deviceHome', temp).then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
-                Message.info(data.msg);
+                this.$message({
+                  message: data.msg,
+                  type: 'info',
+                  duration: 2000
+                });
               }
               if(data.id === '00000') {
                 for (const v of this.list) {
@@ -561,7 +584,11 @@
         SubmitTable('/deviceHome', deleteData).then(response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
-            Message.info(data.msg);
+            this.$message({
+              message: data.msg,
+              type: 'info',
+              duration: 2000
+            });
           }
           if(data.id === '00000') {
             this.$notify({
