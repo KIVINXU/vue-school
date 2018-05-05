@@ -1,12 +1,41 @@
 <template>
   <el-form ref="parentForm" :rules="parentRules" :model="parentForm" label-width="100px">
-    <el-row style="margin-bottom: 10px">
-      <el-col :xs="20" :sm="12" :md="9" :lg="7">
-        <el-input placeholder="请输入证件号码">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
+        <el-select v-model="listQuery.key"
+                   style="width: 14%"
+                   @focus="handleFocus"
+                   placeholder="查询对象">
+          <el-option
+            v-for="item in searchOption"
+            :key="item.key"
+            :label="item.label"
+            :value="item.key">
+          </el-option>
+        </el-select>
+        <el-input placeholder="请输入查询内容"
+                  style="width: 30%;"
+                  clearable
+                  :disabled="listQuery.key === ''"
+                  v-model.trim="listQuery.value"
+                  @clear="getList()"
+                  @keyup.enter.native="handleFilter(1)">
         </el-input>
+        <el-button
+          type="info" plain
+          @click="handleFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''"
+          icon="el-icon-search">查询
+        </el-button>
+        <el-button
+          icon="el-icon-search"
+          type="info" plain
+          @click="handleExtFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''">相似</el-button>
       </el-col>
-      <el-col :span="2" :offset="1">
+      <el-col :span="2">
         <el-button type="primary" @click="submitForm('parentForm')">确认录入</el-button>
       </el-col>
     </el-row>
@@ -21,7 +50,7 @@
                         @crop-success="cropSuccess" :no-circle="true" :width="300" :height="420">
           </image-upload>
         </el-form-item>
-        <el-form-item label="责任人姓名：">
+        <el-form-item label="主监护人：">
           <el-input v-model="parentForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
           <template>
             <el-radio-group v-model="parentForm.gender">
@@ -47,7 +76,7 @@
         <el-table :data="stuInfo" class="tab2">
           <el-table-column label="序号" width="30px" type="index"></el-table-column>
           <el-table-column label="学生姓名" width="80px" prop="stuName"></el-table-column>
-          <el-table-column label="与责任人关系" width="90px">
+          <el-table-column label="与学生关系" width="90px">
             <template slot-scope="scope">
               <el-button type="text" @click="selectShow(scope.row)" v-if="!scope.row.clickshow"
                          style="font-size: 14px;color: #606266" title="点击可修改关系">
@@ -116,6 +145,16 @@
         }
       };
       return {
+        //搜索内容
+        listQuery: {
+          method: '',
+          page: 1,
+          limit: 20,
+          ext: undefined,
+          key: '',  //查询对象的key值
+          value: ''  //查询对象内容
+        },
+        searchOption: [],
         //学生数据
         stuInfo: [
           {
@@ -169,7 +208,7 @@
             clickshow: false,
           },
         ],
-        //责任人数据
+        //主监护人数据
         parentForm: {
           name: '',
           gender: 'M',
@@ -224,7 +263,7 @@
         console.log('-------- 裁剪成功 --------');
         this.avatarUrl = avatarUrl;
       },
-      //上传责任人信息
+      //上传主监护人信息
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -246,7 +285,11 @@
       //添加接送人跳转
       trans(stuName, responseName) {
         this.$router.push({name: 'consigners', params: {stuName: stuName, responseName: responseName}})
-      }
+      },
+      //select获取焦点后请求数据
+      handleFocus() {
+        console.log('搜索-select');
+        },
     }
   }
 </script>

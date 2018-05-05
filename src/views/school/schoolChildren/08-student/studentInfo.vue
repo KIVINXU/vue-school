@@ -307,11 +307,15 @@
       var checkGuarder = (rule, value, callback) => {
         if (this.temp.guarderid && !value) {
           callback(new Error('主监护人名称不能为空'));
+        } else {
+          callback();
         }
       };
       var checkRelation = (rule, value, callback) => {
         if (this.temp.guarderid && !value) {
           callback(new Error('与学生关系不能为空'));
+        } else {
+          callback();
         }
       };
       return {
@@ -418,6 +422,7 @@
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'error',
               duration: 2000
@@ -480,11 +485,12 @@
       //select获取焦点后请求数据
       handleFocus() {
         if (this.searchOption.length === 0) {
-          fetchSearchOption('/studentHome', {method: 'FieldSelect'})
+          fetchSearchOption('/studentHome', {method: 'FieldQuery'})
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -511,6 +517,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -551,9 +558,9 @@
       //添加对话框
       handleCreate() {
         this.resetTemp();
+        this.handleOption();
         this.dialogStatus = 'create';
         this.dialogVisible = true;
-        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -577,6 +584,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -594,8 +602,6 @@
                 this.total += 1;
               }
             });
-          }else {
-            console.log(valid)
           }
         })
       },
@@ -628,6 +634,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -676,6 +683,7 @@
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'info',
               duration: 2000

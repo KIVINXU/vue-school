@@ -1,13 +1,42 @@
 <template>
-  <el-form ref="visitorForm" :rules="parentRules" :model="visitorForm" label-width="100px">
-    <el-row style="margin-bottom: 10px">
-      <el-col :xs="20" :sm="12" :md="9" :lg="7">
-        <el-input placeholder="请输入证件号码">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+  <el-form ref="visitorForm" :rules="visitorRules" :model="visitorForm" label-width="100px">
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
+        <el-select v-model="listQuery.key"
+                   style="width: 14%"
+                   @focus="handleFocus"
+                   placeholder="查询对象">
+          <el-option
+            v-for="item in searchOption"
+            :key="item.key"
+            :label="item.label"
+            :value="item.key">
+          </el-option>
+        </el-select>
+        <el-input placeholder="请输入查询内容"
+                  style="width: 30%;"
+                  clearable
+                  :disabled="listQuery.key === ''"
+                  v-model.trim="listQuery.value"
+                  @clear="getList()"
+                  @keyup.enter.native="handleFilter(1)">
         </el-input>
+        <el-button
+          type="info" plain
+          @click="handleFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''"
+          icon="el-icon-search">查询
+        </el-button>
+        <el-button
+          icon="el-icon-search"
+          type="info" plain
+          @click="handleExtFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''">相似</el-button>
       </el-col>
-      <el-col :span="2" :offset="1">
-        <el-button type="primary" @click="submitForm('parentForm')">确认录入</el-button>
+      <el-col :span="2">
+        <el-button type="primary" @click="submitForm('visitorForm')">确认录入</el-button>
       </el-col>
     </el-row>
     <el-row>
@@ -23,10 +52,10 @@
         </el-form-item>
         <el-form-item label="访客姓名：">
           <el-input v-model="visitorForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
-            <el-radio-group v-model="visitorForm.gender">
-              <el-radio-button label="M">男</el-radio-button>
-              <el-radio-button label="F">女</el-radio-button>
-            </el-radio-group>
+          <el-radio-group v-model="visitorForm.gender">
+            <el-radio-button label="M">男</el-radio-button>
+            <el-radio-button label="F">女</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="证件号码：">
           <el-input v-model="visitorForm.id" readonly></el-input>
@@ -42,33 +71,33 @@
         </el-form-item>
       </el-col>
       <el-col :xs="22" :sm="20" :md="14" :lg="16" :offset="1">
-          <div class="tab">
-            <el-form-item label="访问对象：">
-              <el-input v-model="visitorForm.visitTo"
-                        placeholder="请输入模糊查询内容"
-                        :disabled="visitorForm.select !== '3'">
-                <el-select v-model="visitorForm.select" slot="prepend" placeholder="请选择查询对象" style="width: 100px">
-                  <el-option v-for="item in visitOption"
-                             :key="item.value"
-                             :label="item.label"
-                             :value="item.value"></el-option>
-                </el-select>
-                <el-button slot="append"
-                           :disabled="visitorForm.select !== '3'"
-                           @click="dialogVisible = true">查询
-                </el-button>
-              </el-input>
-            </el-form-item>
-            <el-form-item label="访问姓名：" prop="visitTel" style="float: left">
-              <el-input v-model="visitorForm.visitName" readonly></el-input>
-            </el-form-item>
-            <el-form-item label="手机号码：" prop="visitTel" style="float: left">
-              <el-input v-model.number="visitorForm.visitTel" readonly></el-input>
-            </el-form-item>
-            <el-form-item label="访问原因：" prop="visitTel" style="clear: left">
-              <el-input v-model.number="visitorForm.visitReason"></el-input>
-            </el-form-item>
-          </div>
+        <div class="tab">
+          <el-form-item label="访问对象：">
+            <el-input v-model="visitorForm.visitTo"
+                      placeholder="请输入模糊查询内容"
+                      :disabled="visitorForm.select !== '3'">
+              <el-select v-model="visitorForm.select" slot="prepend" placeholder="请选择查询对象" style="width: 100px">
+                <el-option v-for="item in visitOption"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value"></el-option>
+              </el-select>
+              <el-button slot="append"
+                         :disabled="visitorForm.select !== '3'"
+                         @click="dialogVisible = true">查询
+              </el-button>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="访问姓名：" prop="visitTel" style="float: left">
+            <el-input v-model="visitorForm.visitName" readonly></el-input>
+          </el-form-item>
+          <el-form-item label="手机号码：" prop="visitTel" style="float: left">
+            <el-input v-model.number="visitorForm.visitTel" readonly></el-input>
+          </el-form-item>
+          <el-form-item label="访问原因：" prop="visitTel" style="clear: left">
+            <el-input v-model.number="visitorForm.visitReason"></el-input>
+          </el-form-item>
+        </div>
         <el-table :data="teacherInfo" class="tab">
           <el-table-column label="序号" width="30px" type="index"></el-table-column>
           <el-table-column label="姓名" width="80px" prop="teacherName" ></el-table-column>
@@ -113,6 +142,16 @@
         }
       };
       return {
+        //搜索内容
+        listQuery: {
+          method: '',
+          page: 1,
+          limit: 20,
+          ext: undefined,
+          key: '',  //查询对象的key值
+          value: ''  //查询对象内容
+        },
+        searchOption: [],
         //访客数据
         visitorForm: {
           Name: '',
@@ -142,7 +181,7 @@
             teacherPhone:'12345678900',
           },
         ],
-        parentRules: {
+        visitorRules: {
           tel: [
             {required: true, message: '请输入有效电话', trigger: 'blur'},
             {validator: checkTel, trigger: 'change'}
@@ -199,6 +238,10 @@
             return false;
           }
         })
+      },
+      //select获取焦点后请求数据
+      handleFocus() {
+        console.log('搜索-select');
       },
     }
   }

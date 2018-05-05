@@ -317,6 +317,7 @@
           const data = response.data;
           if(data.msg && data.msg !== ''){
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'error',
               duration: 2000
@@ -376,11 +377,12 @@
       //select获取焦点后请求数据
       handleFocus() {
         if(this.searchOption.length === 0) {
-          fetchSearchOption('/schoolHome',{method: 'FieldSelect'})
+          fetchSearchOption('/schoolHome',{method: 'FieldQuery'})
             .then(response => {
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -407,6 +409,7 @@
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -440,6 +443,7 @@
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -451,6 +455,7 @@
             });
           }else {
             this.$message({
+              showClose: true,
               message: '该设备编号已被使用，请重新输入',
               type: 'info',
               duration: 2000
@@ -500,6 +505,7 @@
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -547,6 +553,7 @@
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -595,6 +602,7 @@
           const data = response.data;
           if(data.msg && data.msg !== ''){
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'info',
               duration: 2000

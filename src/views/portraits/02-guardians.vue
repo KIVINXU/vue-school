@@ -1,13 +1,42 @@
 <template>
-  <el-form ref="guardianForm" :rules="parentRules" :model="guardianForm" label-width="100px">
-    <el-row style="margin-bottom: 10px">
-      <el-col :xs="20" :sm="12" :md="9" :lg="7">
-        <el-input placeholder="请输入证件号码" >
-          <el-button slot="append" icon="el-icon-search"></el-button>
+  <el-form ref="guardianForm" :rules="guardianRules" :model="guardianForm" label-width="100px">
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
+        <el-select v-model="listQuery.key"
+                   style="width: 14%"
+                   @focus="handleFocus"
+                   placeholder="查询对象">
+          <el-option
+            v-for="item in searchOption"
+            :key="item.key"
+            :label="item.label"
+            :value="item.key">
+          </el-option>
+        </el-select>
+        <el-input placeholder="请输入查询内容"
+                  style="width: 30%;"
+                  clearable
+                  :disabled="listQuery.key === ''"
+                  v-model.trim="listQuery.value"
+                  @clear="getList()"
+                  @keyup.enter.native="handleFilter(1)">
         </el-input>
+        <el-button
+          type="info" plain
+          @click="handleFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''"
+          icon="el-icon-search">查询
+        </el-button>
+        <el-button
+          icon="el-icon-search"
+          type="info" plain
+          @click="handleExtFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''">相似</el-button>
       </el-col>
-      <el-col :span="2" :offset="1">
-        <el-button type="primary" @click="submitForm('parentForm')">确认录入</el-button>
+      <el-col :span="2">
+        <el-button type="primary" @click="submitForm('guardianForm')">确认录入</el-button>
       </el-col>
     </el-row>
     <el-row>
@@ -21,7 +50,7 @@
                         @crop-success="cropSuccess" :no-circle="true" :width="300" :height="420">
           </image-upload>
         </el-form-item>
-        <el-form-item label="接送人姓名：">
+        <el-form-item label="委托人姓名：">
           <el-input v-model="guardianForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
           <template>
             <el-radio-group v-model="guardianForm.gender">
@@ -46,8 +75,8 @@
       <el-col :xs="22" :sm="12" :md="14" :lg="16" :offset="1">
         <el-table :data="ing" class="tab">
           <el-table-column label="正在进行绑定的信息" width="150px"></el-table-column>
-          <el-table-column label="责任人" width="80px" prop="responseName"></el-table-column>
-          <el-table-column label="与责任人关系" width="100px" property="请选择">
+          <el-table-column label="主监护人" width="80px" prop="responseName"></el-table-column>
+          <el-table-column label="与学生关系" width="100px" property="请选择">
             <template slot-scope="scope">
               <el-select v-model="scope.row.guardianRela" value="guardianRela" size="mini" style="width: 100px">
                 <el-option
@@ -60,8 +89,8 @@
         </el-table>
         <el-table :data="stuInfo" class="tab" >
           <el-table-column label="序号" width="30px" type="index"></el-table-column>
-          <el-table-column label="责任人" width="80px" prop="responseName"></el-table-column>
-          <el-table-column label="与责任人关系" width="90px" prop="guardianRela"></el-table-column>
+          <el-table-column label="主监护人" width="80px" prop="responseName"></el-table-column>
+          <el-table-column label="与学生关系" width="90px" prop="guardianRela"></el-table-column>
           <el-table-column label="学生姓名" width="80px" prop="stuName"></el-table-column>
           <el-table-column label="所属学校" width="160px" prop="stuSchool"></el-table-column>
           <el-table-column label="所属班级" width="80px" prop="stuClass"></el-table-column>
@@ -95,6 +124,16 @@
         }
       };
       return {
+        //搜索内容
+        listQuery: {
+          method: '',
+          page: 1,
+          limit: 20,
+          ext: undefined,
+          key: '',  //查询对象的key值
+          value: ''  //查询对象内容
+        },
+        searchOption: [],
         //正在进行绑定的接送人信息
         ing:[
           {
@@ -136,7 +175,7 @@
           addr: '',
           desc: '',
         },
-        parentRules: {
+        guardianRules: {
           tel: [
             {required: true, message: '请输入有效电话', trigger: 'blur'},
             {validator: checkTel, trigger: 'change'}
@@ -202,6 +241,10 @@
             return false;
           }
         })
+      },
+      //select获取焦点后请求数据
+      handleFocus() {
+        console.log('搜索-select');
       },
     }
   }

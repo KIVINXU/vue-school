@@ -1,13 +1,42 @@
 <template>
   <el-form ref="staffForm" :rules="staffRules" :model="staffForm" label-width="100px">
-    <el-row style="margin-bottom: 10px">
-      <el-col :xs="20" :sm="12" :md="9" :lg="7">
-        <el-input placeholder="请输入证件号码">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
+        <el-select v-model="listQuery.key"
+                   style="width: 14%"
+                   @focus="handleFocus"
+                   placeholder="查询对象">
+          <el-option
+            v-for="item in searchOption"
+            :key="item.key"
+            :label="item.label"
+            :value="item.key">
+          </el-option>
+        </el-select>
+        <el-input placeholder="请输入查询内容"
+                  style="width: 30%;"
+                  clearable
+                  :disabled="listQuery.key === ''"
+                  v-model.trim="listQuery.value"
+                  @clear="getList()"
+                  @keyup.enter.native="handleFilter(1)">
         </el-input>
+        <el-button
+          type="info" plain
+          @click="handleFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''"
+          icon="el-icon-search">查询
+        </el-button>
+        <el-button
+          icon="el-icon-search"
+          type="info" plain
+          @click="handleExtFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''">相似</el-button>
       </el-col>
-      <el-col :span="2" :offset="1">
-        <el-button type="primary" @click="submitForm('parentForm')">确认录入</el-button>
+      <el-col :span="2">
+        <el-button type="primary" @click="submitForm('staffForm')">确认录入</el-button>
       </el-col>
     </el-row>
     <el-row>
@@ -69,7 +98,17 @@
         }
       };
       return {
-        //访客数据
+        //搜索内容
+        listQuery: {
+          method: '',
+          page: 1,
+          limit: 20,
+          ext: undefined,
+          key: '',  //查询对象的key值
+          value: ''  //查询对象内容
+        },
+        searchOption: [],
+        //员工数据
         staffForm: {
           Name: '',
           gender: 'M',
@@ -78,7 +117,7 @@
           addr: '',
           school:'',
         },
-        parentRules: {
+        staffRules: {
           tel: [
             {required: true, message: '请输入有效电话', trigger: 'blur'},
             {validator: checkTel, trigger: 'change'}
@@ -119,6 +158,10 @@
             return false;
           }
         })
+      },
+      //select获取焦点后请求数据
+      handleFocus() {
+        console.log('搜索-select');
       },
     }
   }

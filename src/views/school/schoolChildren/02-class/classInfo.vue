@@ -128,20 +128,24 @@
                label-width="100px">
         <el-row>
           <el-col :sm="24" :md="12">
-            <el-form-item label="班级编号" prop="id" v-if="dialogStatus=='update'">
-              <el-input v-model.trim="temp.id" readonly></el-input>
+            <el-form-item
+              label="班级编号" prop="id"
+              v-if="dialogStatus=='update'">
+              <el-input v-model.trim="temp.id" disabled></el-input>
             </el-form-item>
             <el-form-item label="班级号" prop="classno">
-              <el-input v-model.trim="temp.classno" :maxlength="2"></el-input>
+              <el-input v-model.trim="temp.classno"
+                        :maxlength="2"
+                        :disabled="dialogStatus=='update'"></el-input>
             </el-form-item>
             <el-form-item label="班主任" prop="teacherid">
               
               <el-tooltip class="item" effect="dark"
                           content="点击回车搜索" placement="top">
                 <el-select v-model.trim="temp.teacherid"
-                           placeholder="请输入班主任编号"
+                           placeholder="请输入班主任编号搜索"
                            filterable remote
-                           @keyup.enter.native="handleSelectOption"
+                           @keyup.enter.native="handleTeacherOption"
                            style="width: 100%">
                   <el-option v-for="item in teacherIDOption"
                              :key="item.key"
@@ -161,26 +165,34 @@
             <el-form-item label="年级号" prop="gradeid">
               <el-date-picker v-model.trim="temp.gradeid" placeholder="选择年级号"
                               align="right" style="width: 100%"
+                              :disabled="dialogStatus=='update'"
                               type="year" format="yyyy" value-format="yyyy"
                               :picker-options="gradeIDScope">
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="学校名称" prop="schoolname">
-              <!--<el-select v-model.trim="temp.schoolid"-->
-                         <!--placeholder="请选择学校名称"-->
-                         <!--filterable remote-->
-                         <!--:remote-method="schoolRemoteMethod"-->
-                         <!--style="width: 100%">-->
-                <!--<el-option v-for="item in schoolIDOption"-->
-                           <!--:key="item.key"-->
-                           <!--:label="item.label"-->
-                           <!--:value="item.key">-->
-                <!--</el-option>-->
-              <!--</el-select>-->
-              <el-input v-model.trim="temp.schoolid" :maxlength="12"></el-input>
-            </el-form-item>
+              <el-form-item label="学校名称" prop="schoolid">
+                <el-tooltip class="item" effect="dark"
+                            :disabled="dialogStatus=='update'"
+                            content="点击回车搜索" placement="top">
+                  <el-select v-model.trim="temp.schoolid"
+                             placeholder="请输入学校编号搜索"
+                             filterable remote
+                             :disabled="dialogStatus=='update'"
+                             @keyup.enter.native="handleSchoolOption"
+                             style="width: 100%">
+                    <el-option v-for="item in schoolIDOption"
+                               :key="item.key"
+                               :label="item.label"
+                               :value="item.key">
+                      <span style="float: left">{{ item.label }}</span>
+                      <span style="float: right; color: #8492a6; font-size: 13px">{{ item.key }}</span>
+                    </el-option>
+                  </el-select>
+                </el-tooltip>
+              </el-form-item>
             <el-form-item label="状态" prop="flag">
               <el-select v-model.trim="temp.flag"
+                         filterable remote
                          placeholder="请选择班级状态"
                          style="width: 100%">
                 <el-option v-for="item in flagOption"
@@ -215,7 +227,7 @@
   export default {
     data() {
       //班级号验证
-      var checkClassNO = (rule, value, callback) => {
+      let checkClassNO = (rule, value, callback) => {
         if (!validateNum(value)) {
           callback(new Error('只能输入纯数字'));
         } else if (value < 1 || value > 99) {
@@ -269,6 +281,8 @@
         },
         //学校ID选项
         schoolIDOption: [],
+        //学校ID搜索框数据
+        schoolTemp: '',
         //年级号范围限制2000年到2099年
         gradeIDScope: {
           disabledDate(time) {
@@ -277,6 +291,8 @@
         },
         //班主任选项
         teacherIDOption: [],
+        //班主任ID搜索框数据
+        teacherTemp: '',
         //标志选项
         flagOption: [],
         //-----删除对话框----
@@ -311,6 +327,7 @@
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'error',
               duration: 2000
@@ -370,11 +387,12 @@
       //select获取焦点后请求数据
       handleFocus() {
         if (this.searchOption.length === 0) {
-          fetchSearchOption('/classHome', {method: 'FieldSelect'})
+          fetchSearchOption('/classHome', {method: 'FieldQuery'})
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -401,6 +419,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -412,9 +431,63 @@
             })
         }
       },
-      //远程搜索数据
-      handleSelectOption() {
-        console.log('开始搜索')
+      //远程搜索教师数据
+      handleTeacherOption(e) {
+        let query = e.target.value;
+        if(query !== ''){
+          if(query !== this.teacherTemp) {
+            let teacherData = Object.assign({method: 'FieldTeacher'}, {teacherid: query});
+            fetchSearchOption('/classHome', teacherData)
+              .then(response => {
+                const data = response.data;
+                if (data.msg && data.msg !== '') {
+                  this.$message({
+                    showClose: true,
+                    message: data.msg,
+                    type: 'error',
+                    duration: 2000
+                  });
+                }
+                if (data.data) {
+                  this.teacherIDOption = data.data.teacherid.filter(item => {
+                    return item.key.toLowerCase().indexOf(query.toLowerCase()) > -1
+                  });
+                }
+              });
+            this.teacherTemp = query;
+          }
+        }else {
+          this.teacherIDOption = [];
+        }
+      },
+      //远程搜索学校数据
+      handleSchoolOption(e) {
+        let query = e.target.value;
+        if(query !== ''){
+          if(query !== this.schoolTemp) {
+            let schoolData = Object.assign({method: 'FieldSchool'}, {schoolid: query});
+            fetchSearchOption('/classHome', schoolData)
+              .then(response => {
+                const data = response.data;
+                if (data.msg && data.msg !== '') {
+                  this.$message({
+                    showClose: true,
+                    message: data.msg,
+                    type: 'error',
+                    duration: 2000
+                  });
+                }
+                if (data.data) {
+                  this.schoolIDOption = data.data.schoolid.filter(item => {
+                    return item.key.toLowerCase().indexOf(query.toLowerCase()) > -1
+                  });
+                }
+              });
+            this.schoolTemp = query;
+          }
+        }else {
+          this.schoolIDOption = [];
+        }
       },
       resetTemp() {
         this.temp = {
@@ -426,7 +499,7 @@
           teacherid: '',
           adviser: '',
           adviser2: '',
-          flag: '',
+          flag: 0,
           flagname: '',
           descr: ''
         }
@@ -435,6 +508,9 @@
       handleCreate() {
         this.handleOption();
         this.resetTemp();
+        //打开对话框先清空select选择框
+        this.schoolIDOption = [];
+        this.teacherIDOption = [];
         this.dialogStatus = 'create';
         this.dialogVisible = true;
         this.$nextTick(() => {
@@ -446,7 +522,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
-            var temp = Object.assign({method: 'Insert'}, this.temp);
+            let temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.adviser;
             delete temp.schoolname;
             delete temp.flagname;
@@ -454,6 +530,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -478,6 +555,11 @@
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
         this.temp.gradeid = this.temp.gradeid.toString();
+        //打开对话框先清空，再把当前项插入select选择框
+        this.schoolIDOption = [];
+        this.teacherIDOption = [];
+        this.schoolIDOption.push({key: this.temp.schoolid, label: this.temp.schoolname});
+        this.teacherIDOption.push({key: this.temp.teacherid, label: this.temp.adviser});
         this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
@@ -490,6 +572,8 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
+            this.temp.adviser = valueToLabel(this.teacherIDOption, this.temp.teacherid);
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.adviser;
             delete temp.schoolname;
@@ -498,6 +582,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -541,11 +626,12 @@
         this.deleteName = this.list[index].name
       },
       rowDelete(index, row) {
-        var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
+        let deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
         SubmitTable('/classHome', deleteData).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'info',
               duration: 2000

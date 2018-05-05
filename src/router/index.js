@@ -46,7 +46,7 @@ export const constantRouterMap = [
         path: 'deviceHome',
         component: () => import('@/views/device/deviceChildren/01-deviceHome'),
         name: 'deviceHome',
-        meta: { title: '设备信息'}
+        meta: { title: '设  备'}
       },
       {
         path: 'facePics',
@@ -76,25 +76,25 @@ export const constantRouterMap = [
         path: 'schoolInfo',
         component: () => import('@/views/school/schoolChildren/01-school/schoolInfo'),
         name: 'schoolInfo',
-        meta: { title: '学校信息' }
+        meta: { title: '学  校' }
       },
       {
         path: 'classInfo',
         component: () => import('@/views/school/schoolChildren/02-class/classInfo'),
         name: 'classInfo',
-        meta: { title: '学校班级' }
+        meta: { title: '班  级' }
       },
       {
         path: 'teacherInfo',
         component: () => import('@/views/school/schoolChildren/03-teacher/teacherInfo'),
         name: 'teacherInfo',
-        meta: { title: '教师信息' }
+        meta: { title: '教 职 工' }
       },
       {
         path: 'studentInfo',
         component: () => import('@/views/school/schoolChildren/08-student/studentInfo'),
         name: 'studentInfo',
-        meta: { title: '学生信息' }
+        meta: { title: '学  生' }
       },
     ]
   },
@@ -142,44 +142,38 @@ export const constantRouterMap = [
         path: 'masters',
         component: () => import('@/views/portraits/01-responsibles'),
         name: 'masters',
-        meta: { title: '责任人信息' }
+        meta: { title: '主监护人' }
       },
       {
         path: 'consigners',
         component: () => import('@/views/portraits/02-guardians'),
         name: 'consigners',
-        meta: { title: '委托人信息' }
+        meta: { title: '委托人' }
       },
       {
         path: 'visitors',
         component: () => import('@/views/portraits/03-visitors'),
         name: 'visitors',
-        meta: { title: '访客信息' }
+        meta: { title: '访  客' }
       },
       {
         path: 'staffs',
         component: () => import('@/views/portraits/04-staffs'),
         name: 'staffs',
-        meta: { title: '员工信息' }
+        meta: { title: '教职工' }
       },
     ]
   },
   {
     path: '/permission',
     component: Layout,
-    redirect: '/permission/managerMenu',
+    redirect: '/permission/visitPermission',
     name: 'permission',
     meta: {
       title: '系统设置',
       icon: 'permission'
     },
     children: [
-      {
-        path: 'managerMenu',
-        component: () => import('@/views/permission/perChildren/01-managerMenu'),
-        name: 'managerMenu',
-        meta: { title: '后台菜单' }
-      },
       {
         path: 'visitPermission',
         component: () => import('@/views/permission/perChildren/02-visitPermission'),

@@ -331,6 +331,7 @@
           const data = response.data;
           if(data.msg && data.msg !== ''){
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'error',
               duration: 2000
@@ -390,11 +391,12 @@
       //select获取焦点后请求数据
       handleFocus() {
         if(this.searchOption.length === 0) {
-          fetchSearchOption('/deviceHome',{method: 'FieldSelect'})
+          fetchSearchOption('/deviceHome',{method: 'FieldQuery'})
             .then(response => {
             const data = response.data;
             if(data.msg && data.msg !== ''){
               this.$message({
+                showClose: true,
                 message: data.msg,
                 type: 'error',
                 duration: 2000
@@ -417,6 +419,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$message({
+              showClose: true,
               message: '正在连接设备，请稍等',
               type: 'info',
               duration: 2000
@@ -438,6 +441,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -488,6 +492,7 @@
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -537,6 +542,7 @@
               const data = response.data;
               if(data.msg && data.msg !== ''){
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -585,6 +591,7 @@
           const data = response.data;
           if(data.msg && data.msg !== ''){
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'info',
               duration: 2000

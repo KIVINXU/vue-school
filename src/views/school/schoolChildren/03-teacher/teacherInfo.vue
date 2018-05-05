@@ -154,17 +154,24 @@
           </el-col>
           <el-col :sm="24" :md="12">
             <el-form-item label="学校名称" prop="schoolid">
-              <!--<el-select v-model.trim="temp.schoolid"-->
-                         <!--filterable-->
-                         <!--placeholder="请选择学校名称"-->
-                         <!--style="width: 100%">-->
-                <!--<el-option v-for="item in schoolidOption"-->
-                           <!--:key="item.key"-->
-                           <!--:label="item.label"-->
-                           <!--:value="item.key">-->
-                <!--</el-option>-->
-              <!--</el-select>-->
-              <el-input v-model.trim="temp.schoolid" :maxlength="64"></el-input>
+              <el-tooltip class="item" effect="dark"
+                          :disabled="dialogStatus=='update'"
+                          content="点击回车搜索" placement="top">
+                <el-select v-model.trim="temp.schoolid"
+                           placeholder="请输入学校编号搜索"
+                           filterable remote
+                           :disabled="dialogStatus=='update'"
+                           @keyup.enter.native="handleSchoolOption"
+                           style="width: 100%">
+                  <el-option v-for="item in schoolIDOption"
+                             :key="item.key"
+                             :label="item.label"
+                             :value="item.key">
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.key }}</span>
+                  </el-option>
+                </el-select>
+              </el-tooltip>
             </el-form-item>
             <el-form-item label="证件类别" prop="id_type">
               <el-select v-model.trim="temp.id_type"
@@ -247,19 +254,19 @@
       };
       //证件号码验证
       var checkID_number = (rule, value, callback) => {
-        if (this.temp.id_type === '0') {
+        if (this.temp.id_type === 0) {
           if (!validateIdentity18(value)) {
             callback(new Error('请输入正确的18位身份证号码'))
           } else {
             callback()
           }
-        } else if (this.temp.id_type === '1') {
+        } else if (this.temp.id_type === 1) {
           if (!validatePassport(value)) {
             callback(new Error('请输入正确的护照号码'));
           } else {
             callback();
           }
-        } else if (this.temp.id_type === '2') {
+        } else if (this.temp.id_type === 2) {
           if (!validateOther(value)) {
             callback(new Error('只能输入数字和英文字母'));
           } else {
@@ -327,6 +334,7 @@
         id_typeOption: [],
         //学校ID选项
         schoolidOption: [],
+        schoolTemp: '',
         //标志选项
         flagOption: [],
         //-----删除对话框----
@@ -364,6 +372,7 @@
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'error',
               duration: 2000
@@ -423,11 +432,12 @@
       //select获取焦点后请求数据
       handleFocus() {
         if (this.searchOption.length === 0) {
-          fetchSearchOption('/teacherHome', {method: 'FieldSelect'})
+          fetchSearchOption('/teacherHome', {method: 'FieldQuery'})
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -454,6 +464,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'error',
                   duration: 2000
@@ -464,6 +475,35 @@
                 this.flagOption = data.data.FLAG;
               }
             });
+        }
+      },
+      //远程搜索学校数据
+      handleSchoolOption(e) {
+        let query = e.target.value;
+        if(query !== ''){
+          if(query !== this.schoolTemp) {
+            let schoolData = Object.assign({method: 'FieldSchool'}, {schoolid: query});
+            fetchSearchOption('/teacherHome', schoolData)
+              .then(response => {
+                const data = response.data;
+                if (data.msg && data.msg !== '') {
+                  this.$message({
+                    showClose: true,
+                    message: data.msg,
+                    type: 'error',
+                    duration: 2000
+                  });
+                }
+                if (data.data) {
+                  this.schoolIDOption = data.data.schoolid.filter(item => {
+                    return item.key.toLowerCase().indexOf(query.toLowerCase()) > -1
+                  });
+                }
+              });
+            this.schoolTemp = query;
+          }
+        }else {
+          this.schoolIDOption = [];
         }
       },
       resetTemp() {
@@ -488,9 +528,11 @@
       //添加对话框
       handleCreate() {
         this.resetTemp();
+        this.handleOption();
+        //打开对话框先清空select选择框
+        this.schoolIDOption = [];
         this.dialogStatus = 'create';
         this.dialogVisible = true;
-        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -510,6 +552,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -533,9 +576,12 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        //打开对话框先清空，再把当前项插入select选择框
+        this.schoolIDOption = [];
+        this.schoolIDOption.push({key: this.temp.schoolid, label: this.temp.schoolname});
+        this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
-        this.handleOption();
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
@@ -555,6 +601,7 @@
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
+                  showClose: true,
                   message: data.msg,
                   type: 'info',
                   duration: 2000
@@ -603,6 +650,7 @@
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
+              showClose: true,
               message: data.msg,
               type: 'info',
               duration: 2000
