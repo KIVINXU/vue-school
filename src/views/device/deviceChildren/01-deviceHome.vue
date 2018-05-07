@@ -93,9 +93,7 @@
           <el-table-column prop="pictotal" :show-overflow-tooltip="true" label="图片数" width="50px"></el-table-column>
           <el-table-column prop="ip" :show-overflow-tooltip="true" label="IP地址" width="120px"></el-table-column>
           <el-table-column prop="port" :show-overflow-tooltip="true" label="端口" width="50px"></el-table-column>
-          <el-table-column prop="username" :show-overflow-tooltip="true" label="访问用户"></el-table-column>
           <el-table-column prop="param" :show-overflow-tooltip="true" label="基本参数"></el-table-column>
-          <el-table-column prop="exparam" :show-overflow-tooltip="true" label="扩展参数"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
         </el-table>
       </el-col>
@@ -196,7 +194,7 @@
 
     data() {
       //编号验证
-      var checkID = (rule, value, callback) => {
+      const checkID = (rule, value, callback) => {
         if (!validateOther(value)) {
           callback(new Error('只能输入数字、英文字母和下划线'));
         } else {
@@ -210,7 +208,7 @@
         } else {
           callback()
         }
-      }
+      };
       //密码验证
       const validatePass = (rule, value, callback) => {
         if (value.length < 32) {
@@ -224,16 +222,17 @@
         }
       };
       //IP地址验证
-      var validateIP = (rule, value, callback) => {
-        const IPReg = /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/;
-        if(!IPReg.test(value)) {
-          callback(new Error('请输入正确的IP地址'));
-        }else {
+      const validateIP = (rule, value, callback) => {
+        const IPReg = /^(([0-9]|([1-9]\d)|(1\d{2})|(2[0-4]\d)|25[0-5])\.){3}([0-9]|([1-9]\d)|(1\d{2})|(2[0-4]\d)|25[0-5])$/;
+        const IPIlleg = /^0|127|224|240/;
+        if (!IPReg.test(value)||IPIlleg.test(value)) {
+          callback(new Error('请输入有效的IP地址'));
+        } else {
           callback();
         }
       };
       //端口限制
-      var checkPort = (rule, value, callback) => {
+      const checkPort = (rule, value, callback) => {
         if (!validateNum(value)) {
           callback(new Error('只能输入纯数字'));
         } else if(value < 10 || value > 65535){
@@ -523,6 +522,7 @@
         });
       },
       handlePasswd(e) {
+        //按回退键和delete键就清空密码框
         if(this.temp.passwd.length > 16 ||
           e.keyCode === 8 || e.keyCode === 46) {
           this.temp.passwd = '';

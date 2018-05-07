@@ -92,9 +92,6 @@
           <el-table-column prop="address" :show-overflow-tooltip="true" label="联系住址" width="110px"></el-table-column>
           <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校名称" width="160px"></el-table-column>
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
-          <el-table-column prop="validity" :show-overflow-tooltip="true" label="合同效期" width="75px"></el-table-column>
-          <el-table-column prop="id_typename" :show-overflow-tooltip="true" label="证件类型"
-                           width="65px"></el-table-column>
           <el-table-column prop="id_number" :show-overflow-tooltip="true" label="证件号" width="100px"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
         </el-table>
@@ -188,13 +185,6 @@
             <el-form-item label="证件号码" prop="id_number">
               <el-input v-model.trim="temp.id_number" placeholder="请输入证件号码" :maxlength="18"></el-input>
             </el-form-item>
-            <el-form-item label="合同效期" prop="validity">
-              <el-date-picker v-model.trim="temp.validity" placeholder="请选择合同期限"
-                              align="right" style="width: 100%"
-                              type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy"
-                              :editable="false">
-              </el-date-picker>
-            </el-form-item>
             <el-form-item label="状态" prop="flag">
               <el-select v-model.trim="temp.flag"
                          placeholder="请选择状态"
@@ -254,25 +244,30 @@
       };
       //证件号码验证
       var checkID_number = (rule, value, callback) => {
-        if (this.temp.id_type === 0) {
-          if (!validateIdentity18(value)) {
-            callback(new Error('请输入正确的18位身份证号码'))
-          } else {
-            callback()
+        if(value !== null){
+          if (this.temp.id_type === 0) {
+            if (!validateIdentity18(value)) {
+              callback(new Error('请输入正确的18位身份证号码'))
+            } else {
+              callback()
+            }
+          } else if (this.temp.id_type === 1) {
+            if (!validatePassport(value)) {
+              callback(new Error('请输入正确的护照号码'));
+            } else {
+              callback();
+            }
+          } else if (this.temp.id_type === 2) {
+            if (!validateOther(value)) {
+              callback(new Error('只能输入数字和英文字母'));
+            } else {
+              callback();
+            }
           }
-        } else if (this.temp.id_type === 1) {
-          if (!validatePassport(value)) {
-            callback(new Error('请输入正确的护照号码'));
-          } else {
-            callback();
-          }
-        } else if (this.temp.id_type === 2) {
-          if (!validateOther(value)) {
-            callback(new Error('只能输入数字和英文字母'));
-          } else {
-            callback();
-          }
+        }else {
+          callback();
         }
+        
       };
       return {
         //搜索内容
@@ -315,7 +310,6 @@
           address: '',
           schoolid: '',
           schoolname: '',
-          validity: '',
           flag: '',
           flagname: '',
           descr: ''
@@ -519,7 +513,6 @@
           address: '',
           schoolid: 0,
           schoolname: '',
-          validity: '',
           flag: 0,
           flagname: '',
           descr: ''

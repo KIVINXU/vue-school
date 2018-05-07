@@ -126,9 +126,10 @@
           <el-table-column prop="d_of_b" :show-overflow-tooltip="true" label="出生日期"></el-table-column>
           <el-table-column prop="sex" :show-overflow-tooltip="true" label="性别"></el-table-column>
           <el-table-column prop="address" :show-overflow-tooltip="true" label="住址"></el-table-column>
-          <el-table-column prop="id_typename" :show-overflow-tooltip="true" label="证件类型"></el-table-column>
           <el-table-column prop="guarder" :show-overflow-tooltip="true" label="主监护人"></el-table-column>
           <el-table-column prop="relationname" :show-overflow-tooltip="true" label="与学生人关系"></el-table-column>
+          <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校"></el-table-column>
+          <el-table-column prop="classname" :show-overflow-tooltip="true" label="班级"></el-table-column>
           <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"></el-table-column>
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
@@ -176,9 +177,11 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="出生日期" prop="d_of_b">
-              <el-date-picker v-model.trim="temp.d_of_b" placeholder="请选择出生日期"
+              <el-date-picker v-model.trim="temp.d_of_b"
+                              placeholder="请选择出生日期"
                               align="right" style="width: 100%"
-                              type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy">
+                              type="date" format="MM/dd/yyyy"
+                              value-format="MM/dd/yyyy">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="证件类别" prop="id_type">
@@ -349,6 +352,7 @@
         //对话框内容
         temp: {
           id: '',
+          old_id: '', //修改之前的id
           name: '',
           d_of_b: '',
           sex: '',
@@ -431,7 +435,9 @@
           if(data.data){
             this.list = data.data;
             this.list.forEach(item => {
-              item.d_of_b = new Date(item.d_of_b).toLocaleDateString();
+              //传过来是秒
+              let newDate = new Date(item.d_of_b * 1000);
+              item.d_of_b = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
             });
             this.total = data.total;
           }else {
@@ -534,6 +540,7 @@
       resetTemp() {
         this.temp = {
           id: '',
+          old_id: '',
           name: '',
           d_of_b: new Date().toLocaleDateString(),
           sex: '男',
@@ -573,6 +580,7 @@
             this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
             // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Insert'}, this.temp);
+            delete temp.old_id;
             delete temp.id_typename;
             delete temp.relationname;
             delete temp.flagname;
@@ -608,6 +616,7 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        this.temp.old_id = this.temp.id;//打开对话框，存储已有的id
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.handleOption();
@@ -642,7 +651,7 @@
               }
               if (data.id === '00000') {
                 for (const v of this.list) {
-                  if (v.id === this.temp.id) {
+                  if (v.id === this.temp.old_id) {
                     const index = this.list.indexOf(v);
                     this.list.splice(index, 1, this.temp);
                     break;

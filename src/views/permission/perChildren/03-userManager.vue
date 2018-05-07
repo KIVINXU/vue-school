@@ -132,9 +132,10 @@
               <el-input v-model="temp.username" :maxlength="16"></el-input>
             </el-form-item>
             <el-form-item label="登陆密码" prop="passwd">
-              <el-input v-model="temp.passwd" :maxlength="16" type="password"></el-input>
+              <el-input v-model="temp.passwd" :maxlength="16"
+                        type="password" @keyup.native="handlePasswd"></el-input>
             </el-form-item>
-            <el-form-item label="确认密码" prop="passwd2">
+            <el-form-item label="确认密码" prop="passwd2" :disabled="temp.passwd.length > 16">
               <el-input v-model="temp.passwd2" :maxlength="16" type="password"></el-input>
             </el-form-item>
             <el-form-item label="最大连接数" prop="maxcon">
@@ -152,7 +153,7 @@
               <el-input v-model="temp.way" :maxlength="32"></el-input>
             </el-form-item>
             <el-form-item label="状态" prop="flagValue">
-              <el-select v-model="temp.flag"
+              <el-select v-model="temp.flagValue"
                          placeholder="请选择学校状态"
                          filterable remote
                          style="width: 100%">
@@ -191,6 +192,7 @@
 
 <script>
   import {fetchList, SubmitTable, fetchSearchOption, valueToLabel} from '@/api/table';
+  import { cryptoPass } from '@/api/login'
   import {
     isvalidPassword,
     isvalidUsername,
@@ -212,10 +214,14 @@
       };
       //登陆密码验证
       const checkPassword = (rule, value, callback) => {
-        if (!isvalidPassword(value)) {
-          callback(new Error('3-16位,特殊字符,字母,数字都至少一位'))
+        if (value.length <= 16) {
+          if (!isvalidPassword(value)) {
+            callback(new Error('至少有1位英文、数字和特殊字符，3到16位'))
+          } else {
+            callback()
+          }
         } else {
-          callback();
+          callback()
         }
       };
       //二次密码验证
@@ -261,7 +267,7 @@
       };
       //状态修改    flagValue
       const checkFlagValue = (rule, value, callback) => {
-        if (this.flagValue == '1' && this.temp.flag > 0) {
+        if (this.flagValue === '1' && this.temp.flag > 0) {
           //当状态为禁止，且flag大于0的时候使两者值相等
           callback();
         } else {
@@ -315,12 +321,12 @@
         listLoading: true,
         list: [{
           username: 'adva',
-          passwd: 'sdasdasdasdax',
+          passwd: 'sdasdasdasdaxINHOSHX+',
           maxcon: '1',
           curcon: '2',
           idle: '3',
           alive: '1',
-          flag: '1',
+          flag: '0',
           flagName: 'sdasd',
           way: 'weixin',
           descr: '',
@@ -529,6 +535,9 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
+            if(this.temp.passwd.length <= 16) {
+              this.temp.passwd = cryptoPass(this.temp.passwd);
+            }
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.levelsname;
@@ -562,6 +571,9 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        if(this.temp.passwd.length <= 16) {
+          this.temp.passwd = cryptoPass(this.temp.passwd);
+        }
         this.temp.flag > 0 ? this.flagValue = '1' : this.flagValue = this.temp.flag;
         this.handleOption();
         this.dialogStatus = 'update';
@@ -569,6 +581,14 @@
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate();
         })
+      },
+  
+      handlePasswd(e) {
+        //按回退键和delete键就清空密码框
+        if(this.temp.passwd.length > 16 ||
+          e.keyCode === 8 || e.keyCode === 46) {
+          this.temp.passwd = '';
+        }
       },
       //修改完毕上传
       updateData() {

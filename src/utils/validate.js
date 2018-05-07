@@ -39,7 +39,7 @@ export function validatAlphabets(str) {
 
 /* 电话号码验证 */
 export function validateTel(str) {
-  const reg = /^$|(1[3|4|5|6|7|8|9][0-9]\d{8}$)/
+  const reg = /^$|(1[3-9]\d{9}$)/
   return reg.test(str)
 }
 
@@ -59,22 +59,20 @@ export function validateWehat(str) {
 export function validateIdentity18(str) {//18位数身份证验证正则表达式 ：
   const reg = /^$|((1[1-5]|2[1-3]|3[1-7]|4[1-6]|5[0-4]|6|[1-5]|71|8[1-2]|91)\d{4}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$)/;
   //ISO 7064:1983.MOD11-2校验码
-  var q = [7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2];
-  var r = [1,0,"X",9,8,7,6,5,4,3,2];
-  var sum = 0, t = -1, flag = false;
+  const q = [7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2];
+  const r = [1,0,"X",9,8,7,6,5,4,3,2];
+  let sum = 0, t = -1, flag = false;
   if(reg.test(str)){
-    var arr = str.split("");
-    // console.log(arr.length);
-    if(arr.length == 0){
+    let arr = str.split("");
+    if(arr.length === 0){
       flag=true;
-    }else if(arr.length == 18){
-      for(var k = 0; k < 17; k ++){
+    }else if(arr.length === 18){
+      for(let k = 0; k < 17; k ++){
         sum += q[k]*arr[k];
       }
       t = sum % 11;
-      if(r[t] == arr[17]){
+      if(r[t] === arr[17]){
         flag = true;
-        // console.log(r[t]);
       }
     }
   }

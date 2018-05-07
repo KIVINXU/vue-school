@@ -138,16 +138,17 @@
                         :maxlength="2"
                         :disabled="dialogStatus=='update'"></el-input>
             </el-form-item>
-            <el-form-item label="班主任" prop="teacherid">
-              
+            <el-form-item label="学校名称" prop="schoolid">
               <el-tooltip class="item" effect="dark"
+                          :disabled="dialogStatus=='update'"
                           content="点击回车搜索" placement="top">
-                <el-select v-model.trim="temp.teacherid"
-                           placeholder="请输入班主任编号搜索"
+                <el-select v-model.trim="temp.schoolid"
+                           placeholder="请输入学校编号搜索"
                            filterable remote
-                           @keyup.enter.native="handleTeacherOption"
+                           :disabled="dialogStatus=='update'"
+                           @keyup.enter.native="handleSchoolOption"
                            style="width: 100%">
-                  <el-option v-for="item in teacherIDOption"
+                  <el-option v-for="item in schoolIDOption"
                              :key="item.key"
                              :label="item.label"
                              :value="item.key">
@@ -170,26 +171,24 @@
                               :picker-options="gradeIDScope">
               </el-date-picker>
             </el-form-item>
-              <el-form-item label="学校名称" prop="schoolid">
-                <el-tooltip class="item" effect="dark"
-                            :disabled="dialogStatus=='update'"
-                            content="点击回车搜索" placement="top">
-                  <el-select v-model.trim="temp.schoolid"
-                             placeholder="请输入学校编号搜索"
-                             filterable remote
-                             :disabled="dialogStatus=='update'"
-                             @keyup.enter.native="handleSchoolOption"
-                             style="width: 100%">
-                    <el-option v-for="item in schoolIDOption"
-                               :key="item.key"
-                               :label="item.label"
-                               :value="item.key">
-                      <span style="float: left">{{ item.label }}</span>
-                      <span style="float: right; color: #8492a6; font-size: 13px">{{ item.key }}</span>
-                    </el-option>
-                  </el-select>
-                </el-tooltip>
-              </el-form-item>
+            <el-form-item label="班主任" prop="teacherid">
+              <el-tooltip class="item" effect="dark"
+                          content="点击回车搜索" placement="top">
+                <el-select v-model.trim="temp.teacherid"
+                           placeholder="请输入班主任编号搜索"
+                           filterable remote
+                           @keyup.enter.native="handleTeacherOption"
+                           style="width: 100%">
+                  <el-option v-for="item in teacherIDOption"
+                             :key="item.key"
+                             :label="item.label"
+                             :value="item.key">
+                    <span style="float: left">{{ item.label }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.key }}</span>
+                  </el-option>
+                </el-select>
+              </el-tooltip>
+            </el-form-item>
             <el-form-item label="状态" prop="flag">
               <el-select v-model.trim="temp.flag"
                          filterable remote
