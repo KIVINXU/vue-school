@@ -63,7 +63,7 @@ export function validateIdentity18(str) {//18位数身份证验证正则表达�
   const r = [1,0,"X",9,8,7,6,5,4,3,2];
   let sum = 0, t = -1, flag = false;
   if(reg.test(str)){
-    let arr = str.split("");
+    const arr = str.split("");
     if(arr.length === 0){
       flag=true;
     }else if(arr.length === 18){
@@ -71,7 +71,7 @@ export function validateIdentity18(str) {//18位数身份证验证正则表达�
         sum += q[k]*arr[k];
       }
       t = sum % 11;
-      if(r[t] === arr[17]){
+      if(r[t] == arr[17]){
         flag = true;
       }
     }

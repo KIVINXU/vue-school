@@ -132,7 +132,7 @@
           <el-table-column prop="classname" :show-overflow-tooltip="true" label="班级"></el-table-column>
           <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"></el-table-column>
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"></el-table-column>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>
         </el-table>
         <!--分页条-->
         <el-pagination

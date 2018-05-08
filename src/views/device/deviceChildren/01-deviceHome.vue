@@ -94,7 +94,7 @@
           <el-table-column prop="ip" :show-overflow-tooltip="true" label="IP地址" width="120px"></el-table-column>
           <el-table-column prop="port" :show-overflow-tooltip="true" label="端口" width="50px"></el-table-column>
           <el-table-column prop="param" :show-overflow-tooltip="true" label="基本参数"></el-table-column>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>
         </el-table>
       </el-col>
       <!-- /.表格结束 -->
@@ -222,10 +222,10 @@
         }
       };
       //IP地址验证
-      const validateIP = (rule, value, callback) => {
-        const IPReg = /^(([0-9]|([1-9]\d)|(1\d{2})|(2[0-4]\d)|25[0-5])\.){3}([0-9]|([1-9]\d)|(1\d{2})|(2[0-4]\d)|25[0-5])$/;
-        const IPIlleg = /^0|127|224|240/;
-        if (!IPReg.test(value)||IPIlleg.test(value)) {
+      var validateIP = (rule, value, callback) => {
+        const IPReg = /^(([0-9]|([1-9]\d)|(1\d{2})|(2[0-1]\d)|22[0-3]))(\.([0-9]|([1-9]\d)|(1\d{2})|(2[0-4]\d)|25[0-5])){3}$/;
+        const IPIlleg = /^0|127/;
+        if (!IPReg.test(value) || IPIlleg.test(value)) {
           callback(new Error('请输入有效的IP地址'));
         } else {
           callback();

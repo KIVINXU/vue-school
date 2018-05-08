@@ -91,9 +91,9 @@
           <el-table-column prop="gradeid" :show-overflow-tooltip="true" label="年级号" width="70px"></el-table-column>
           <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校名称" width="230px"></el-table-column>
           <el-table-column prop="adviser" :show-overflow-tooltip="true" label="班主任" width="120px"></el-table-column>
-          <el-table-column prop="adviser2" :show-overflow-tooltip="true" label="班主任(前/代)" width="120px"></el-table-column>
+          <el-table-column prop="adviser2" :show-overflow-tooltip="true" label="班主任(备)" width="120px"></el-table-column>
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>
         </el-table>
         <!--分页条-->
         <el-pagination
@@ -158,7 +158,7 @@
                 </el-select>
               </el-tooltip>
             </el-form-item>
-            <el-form-item label="班主任(前/代)" prop="adviser2">
+            <el-form-item label="班主任(备)" prop="adviser2">
               <el-input v-model.trim="temp.adviser2" :maxlength="8"></el-input>
             </el-form-item>
           </el-col>
@@ -521,6 +521,8 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
+            this.temp.adviser = valueToLabel(this.teacherIDOption, this.temp.teacherid);
             let temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.adviser;
             delete temp.schoolname;

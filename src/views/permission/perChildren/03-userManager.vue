@@ -85,7 +85,7 @@
                   border highlight-current-row
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
-          <el-table-column prop="username" :show-overflow-tooltip="true" label="登陆用户" width="120px"></el-table-column>
+          <el-table-column prop="username" :show-overflow-tooltip="true" label="登录用户" width="120px"></el-table-column>
           <el-table-column prop="maxcon" :show-overflow-tooltip="true" label="最大连接数" width="75px"></el-table-column>
           <el-table-column prop="curcon" :show-overflow-tooltip="true" label="当前连接数" width="100px"></el-table-column>
           <el-table-column prop="idle" :show-overflow-tooltip="true" label="空闲期/s" width="70px"></el-table-column>
@@ -93,7 +93,7 @@
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="120px">
           </el-table-column>
           <el-table-column prop="way" :show-overflow-tooltip="true" label="找回密码方式"></el-table-column>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>
         </el-table>
         <!--分页条-->
         <el-pagination
@@ -128,34 +128,34 @@
                label-width="100px">
         <el-row>
           <el-col :sm="24" :md="12">
-            <el-form-item label="登陆用户" prop="username">
+            <el-form-item label="登录用户" prop="username">
               <el-input v-model="temp.username" :maxlength="16"></el-input>
             </el-form-item>
-            <el-form-item label="登陆密码" prop="passwd">
+            <el-form-item label="登录密码" prop="passwd">
               <el-input v-model="temp.passwd" :maxlength="16"
                         type="password" @keyup.native="handlePasswd"></el-input>
             </el-form-item>
-            <el-form-item label="确认密码" prop="passwd2" :disabled="temp.passwd.length > 16">
-              <el-input v-model="temp.passwd2" :maxlength="16" type="password"></el-input>
+            <el-form-item label="确认密码" prop="passwd2">
+              <el-input v-model="temp.passwd2" :maxlength="16" type="password"
+                        :disabled="temp.passwd.length > 16"></el-input>
             </el-form-item>
             <el-form-item label="最大连接数" prop="maxcon">
               <el-input v-model="temp.maxcon" :maxlength="2"></el-input>
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
-            <el-form-item label="空闲期/s" prop="idle">
+            <el-form-item label="空闲期/秒" prop="idle">
               <el-input v-model="temp.idle" :maxlength="4"></el-input>
             </el-form-item>
-            <el-form-item label="生存期/s" prop="alive">
+            <el-form-item label="生存期/秒" prop="alive">
               <el-input v-model="temp.alive" :maxlength="5"></el-input>
             </el-form-item>
             <el-form-item label="找回密码方式" prop="way">
               <el-input v-model="temp.way" :maxlength="32"></el-input>
             </el-form-item>
             <el-form-item label="状态" prop="flagValue">
-              <el-select v-model="temp.flagValue"
+              <el-select v-model="flagValue"
                          placeholder="请选择学校状态"
-                         filterable remote
                          style="width: 100%">
                 <el-option v-for="item in flagOption"
                            :key="item.key"
@@ -164,8 +164,8 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="禁止时间/m" prop="flag" v-if="flagValue >= 1">
-              <el-input v-model="temp.flag" placeholder="输入禁止时间" :maxlength="5" type="number"></el-input>
+            <el-form-item label="禁止时间/分" prop="flag" v-if="flagValue >= 1">
+              <el-input v-model.number="temp.flag" placeholder="输入禁止时间" :maxlength="5" type="number"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -267,17 +267,19 @@
       };
       //状态修改    flagValue
       const checkFlagValue = (rule, value, callback) => {
-        if (this.flagValue === '1' && this.temp.flag > 0) {
+        console.log(this.flagValue);
+        if (this.flagValue === 1 && this.temp.flag > 0) {
           //当状态为禁止，且flag大于0的时候使两者值相等
           callback();
         } else {
           this.temp.flag = this.flagValue;
           callback();
         }
+        console.log(this.flagValue);
       };
       //禁止时间限制 flag
       const checkFlag = (rule, value, callback) => {
-        if (this.flagValue === '1') {
+        if (this.flagValue === 1) {
           //当状态为禁止时要求flag在1-43200之间
           if (!validateNum(value)) {
             callback(new Error('只能输入纯数字'));
@@ -322,12 +324,12 @@
         list: [{
           username: 'adva',
           passwd: 'sdasdasdasdaxINHOSHX+',
-          maxcon: '1',
-          curcon: '2',
-          idle: '3',
-          alive: '1',
-          flag: '0',
-          flagName: 'sdasd',
+          maxcon: 2,
+          curcon: 1,
+          idle: 1800,
+          alive: 28800,
+          flag: 0,
+          flagname: '正常',
           way: 'weixin',
           descr: '',
         }],
@@ -346,19 +348,29 @@
         //对话框内容
         temp: {
           username: '',
+          old_username: '', //修改之前的username
           passwd: '',
           maxcon: '',
           curcon: '',
           idle: '',
           alive: '',
           flag: '',
-          flagName: '',
+          flagname: '',
           // changer: '',
           way: '',
           descr: '',
         },
         //状态选项
-        flagOption: [],
+        flagOption: [{
+          key: -1,
+          label: '注销'
+        },{
+          key: 0,
+          label: '正常'
+        },{
+          key: 1,
+          label: '禁用'
+        }],
         //-----删除对话框----
         //对话框状态
         deleteDialogVisible: false,
@@ -506,16 +518,17 @@
         }
       },
       resetTemp() {
-        this.flagValue = '0';
+        this.flagValue = 0;
         this.temp = {
           username: '',
+          old_username: '',
           passwd: '',
-          maxcon: '2',
-          curcon: '0',
-          idle: '1800',
-          alive: '28800',
-          flag: '0',
-          flagName: '正常',
+          maxcon: 2,
+          curcon: 0,
+          idle: 1800,
+          alive: 28800,
+          flag: 0,
+          flagname: '正常',
           // changer: '0',
           way: '',
           descr: '',
@@ -538,8 +551,10 @@
             if(this.temp.passwd.length <= 16) {
               this.temp.passwd = cryptoPass(this.temp.passwd);
             }
-            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.flagname = valueToLabel(this.flagOption, this.flagValue);
             var temp = Object.assign({method: 'Insert'}, this.temp);
+            delete temp.old_username;
+            delete temp.passwd2;
             delete temp.levelsname;
             delete temp.flagname;
             SubmitTable('/SuserHome', temp).then(response => {
@@ -571,11 +586,9 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
-        if(this.temp.passwd.length <= 16) {
-          this.temp.passwd = cryptoPass(this.temp.passwd);
-        }
-        this.temp.flag > 0 ? this.flagValue = '1' : this.flagValue = this.temp.flag;
         this.handleOption();
+        this.temp.flag > 0 ? this.flagValue = 1 : this.flagValue = this.temp.flag;
+        this.temp.old_username = this.temp.username;//打开对话框，存储已有的username
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.$nextTick(() => {
@@ -594,8 +607,12 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            this.temp.flagname = valueToLabel(this.flagOption, this.flagValue);
+            if(this.temp.passwd.length <= 16) {
+              this.temp.passwd = cryptoPass(this.temp.passwd);
+            }
             let temp = Object.assign({method: 'Update'}, this.temp);
+            delete temp.passwd2;
             delete temp.levelsname;
             delete temp.flagname;
             SubmitTable('/SuserHome', temp).then(response => {
@@ -609,8 +626,12 @@
                 });
               }
               if (data.id === '00000') {
+                //修改之前判断flag是否大于1
+                if(this.temp.flag >= 1) {
+                  this.temp.flagname = '禁用' + this.temp.flag + '(M)'
+                }
                 for (const v of this.list) {
-                  if (v.id === this.temp.id) {
+                  if (v.username === this.temp.old_username) {
                     const index = this.list.indexOf(v);
                     this.list.splice(index, 1, this.temp);
                     break;

@@ -88,7 +88,7 @@ export const constantRouterMap = [
         path: 'teacherInfo',
         component: () => import('@/views/school/schoolChildren/03-teacher/teacherInfo'),
         name: 'teacherInfo',
-        meta: { title: '教 职 工' }
+        meta: { title: '教职工' }
       },
       {
         path: 'studentInfo',

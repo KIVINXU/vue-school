@@ -84,7 +84,7 @@
                   border highlightCurrentRow
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
-          <el-table-column prop="id" :show-overflow-tooltip="true" label="教师编号" width="100px"></el-table-column>
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="教职工编号" width="100px"></el-table-column>
           <el-table-column prop="name" :show-overflow-tooltip="true" label="姓名" width="120px"></el-table-column>
           <el-table-column prop="sex" :show-overflow-tooltip="true" label="性别" width="50px"></el-table-column>
           <el-table-column prop="contact" :show-overflow-tooltip="true" label="联系方式" width="100px"></el-table-column>
@@ -93,7 +93,7 @@
           <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校名称" width="160px"></el-table-column>
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
           <el-table-column prop="id_number" :show-overflow-tooltip="true" label="证件号" width="100px"></el-table-column>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>
         </el-table>
         <!--分页条-->
         <el-pagination
@@ -327,7 +327,7 @@
         //证件类型
         id_typeOption: [],
         //学校ID选项
-        schoolidOption: [],
+        schoolIDOption: [],
         schoolTemp: '',
         //标志选项
         flagOption: [],
@@ -511,7 +511,7 @@
           contact: '',
           contact2: '',
           address: '',
-          schoolid: 0,
+          schoolid: '',
           schoolname: '',
           flag: 0,
           flagname: '',
@@ -535,7 +535,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.schoolname = valueToLabel(this.schoolidOption, this.temp.schoolid);
+            this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.id_typename;
@@ -584,7 +584,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.schoolname = valueToLabel(this.schoolidOption, this.temp.schoolid);
+            this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.id_typename;

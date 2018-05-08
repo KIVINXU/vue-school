@@ -96,7 +96,7 @@
               <span v-for="eq in scope.row.eqpid">{{eq}} </span>
             </template>
           </el-table-column>
-          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>
         </el-table>
         <!--分页条-->
         <el-pagination
@@ -172,19 +172,10 @@
           <el-input v-model.trim="temp.address" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="设备编号" prop="eqpid">
-          <!--<el-select v-model="temp.eqpid"-->
-                     <!--placeholder="请选择设备编号"-->
-                     <!--multiple style="width: 100%">-->
-            <!--<el-option v-for="item in eqpidOption"-->
-                       <!--:key="item.key" :label="item.label" :value="item.key">-->
-              <!--<span style="float: left">{{ item.key }}</span>-->
-              <!--<span style="float: right; color: #8492a6; font-size: 13px; margin-right: 15px">{{ item.label }}</span>-->
-            <!--</el-option>-->
-          <!--</el-select>-->
           <el-tag
             :key="tag" closable
             size="medium"
-            v-for="tag in temp.eqpid"
+            v-for="tag in eqpidTemp"
             @close="handleCloseTag(tag)">
             {{tag}}
           </el-tag>
@@ -281,8 +272,8 @@
         levelsOption: [],
         //学校状态选项
         statusOption: [],
-        //设备编号选项
-        eqpidOption: [],
+        //设备编号临时数据
+        eqpidTemp: [],
         //标签输入框状态
         inputVisible: false,
         //标签输入框内容
@@ -424,7 +415,7 @@
       },
       //关闭删除标签
       handleCloseTag(tag) {
-        this.temp.eqpid.splice(this.temp.eqpid.indexOf(tag), 1);
+        this.eqpidTemp.splice(this.eqpidTemp.indexOf(tag), 1);
       },
       //显示关闭输入框
       showEqpInput() {
@@ -437,7 +428,7 @@
       handleInputConfirm() {
         let eqpInput = this.eqpInput;
         if(eqpInput) {
-          if(this.temp.eqpid.indexOf(eqpInput) === -1){
+          if(this.eqpidTemp.indexOf(eqpInput) === -1){
             let eqpData = Object.assign({method: 'FieldVerify'}, {eqpid: eqpInput});
             SubmitTable('/schoolHome', eqpData).then(response => {
               const data = response.data;
@@ -450,7 +441,7 @@
                 });
               }
               if(data.id === '00000') {
-                this.temp.eqpid.push(eqpInput)
+                this.eqpidTemp.push(eqpInput)
               }
             });
           }else {
@@ -533,6 +524,7 @@
         if(this.temp.eqpid === null) {
           this.temp.eqpid = [];
         }
+        this.eqpidTemp = this.temp.eqpid; //打开对话框保存临时eqpid
         this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
@@ -546,6 +538,8 @@
           if (valid) {
             this.temp.levelsname = valueToLabel(this.levelsOption, this.temp.levels);
             this.temp.flagname = valueToLabel(this.statusOption, this.temp.flag);
+            //提交时才改动真实的eqpid
+            this.temp.eqpid = this.eqpidTemp;
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.levelsname;
             delete temp.flagname;
