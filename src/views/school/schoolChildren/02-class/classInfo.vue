@@ -131,21 +131,18 @@
             <el-form-item
               label="班级编号" prop="id"
               v-if="dialogStatus=='update'">
-              <el-input v-model.trim="temp.id" disabled></el-input>
+              <el-input v-model.trim="temp.id" readonly></el-input>
             </el-form-item>
             <el-form-item label="班级号" prop="classno">
               <el-input v-model.trim="temp.classno"
-                        :maxlength="2"
-                        :disabled="dialogStatus=='update'"></el-input>
+                        :maxlength="2"></el-input>
             </el-form-item>
             <el-form-item label="学校名称" prop="schoolid">
               <el-tooltip class="item" effect="dark"
-                          :disabled="dialogStatus=='update'"
                           content="点击回车搜索" placement="top">
                 <el-select v-model.trim="temp.schoolid"
                            placeholder="请输入学校编号搜索"
                            filterable remote
-                           :disabled="dialogStatus=='update'"
                            @keyup.enter.native="handleSchoolOption"
                            style="width: 100%">
                   <el-option v-for="item in schoolIDOption"
@@ -166,7 +163,6 @@
             <el-form-item label="年级号" prop="gradeid">
               <el-date-picker v-model.trim="temp.gradeid" placeholder="选择年级号"
                               align="right" style="width: 100%"
-                              :disabled="dialogStatus=='update'"
                               type="year" format="yyyy" value-format="yyyy"
                               :picker-options="gradeIDScope">
               </el-date-picker>
@@ -434,26 +430,34 @@
       handleTeacherOption(e) {
         let query = e.target.value;
         if(query !== ''){
-          if(query !== this.teacherTemp) {
-            let teacherData = Object.assign({method: 'FieldTeacher'}, {teacherid: query});
-            fetchSearchOption('/classHome', teacherData)
-              .then(response => {
-                const data = response.data;
-                if (data.msg && data.msg !== '') {
-                  this.$message({
-                    showClose: true,
-                    message: data.msg,
-                    type: 'error',
-                    duration: 2000
-                  });
-                }
-                if (data.data) {
-                  this.teacherIDOption = data.data.teacherid.filter(item => {
-                    return item.key.toLowerCase().indexOf(query.toLowerCase()) > -1
-                  });
-                }
-              });
-            this.teacherTemp = query;
+          //如果未搜过学校 则弹出提示
+          if(this.temp.schoolid === '') {
+            this.$message({
+              showClose: true,
+              message: '请先选择学校',
+              type: 'error',
+              duration: 2000
+            });
+          }else {
+            if(query !== this.teacherTemp) {
+              let teacherData = Object.assign({method: 'FieldTeacher'} ,{schoolid: this.temp.schoolid}, {teacherid: query});
+              fetchSearchOption('/classHome', teacherData)
+                .then(response => {
+                  const data = response.data;
+                  if (data.msg && data.msg !== '') {
+                    this.$message({
+                      showClose: true,
+                      message: data.msg,
+                      type: 'error',
+                      duration: 2000
+                    });
+                  }
+                  if (data.data.teacherid) {
+                    this.teacherIDOption = data.data.teacherid;
+                  }
+                });
+              this.teacherTemp = query;
+            }
           }
         }else {
           this.teacherIDOption = [];
@@ -476,12 +480,11 @@
                     duration: 2000
                   });
                 }
-                if (data.data) {
-                  this.schoolIDOption = data.data.schoolid.filter(item => {
-                    return item.key.toLowerCase().indexOf(query.toLowerCase()) > -1
-                  });
+                if (data.data.schoolid) {
+                  this.schoolIDOption = data.data.schoolid;
                 }
               });
+            //搜索完后存储搜索内容
             this.schoolTemp = query;
           }
         }else {
@@ -491,6 +494,7 @@
       resetTemp() {
         this.temp = {
           id: '',
+          old_id: '',//修改之前的id
           classno: '',
           gradeid: new Date().getFullYear().toString(),
           schoolid: '',
@@ -523,7 +527,10 @@
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.adviser = valueToLabel(this.teacherIDOption, this.temp.teacherid);
+            //自动更改id
+            this.temp.id = this.temp.schoolid + this.temp.gradeid + this.temp.classno;
             let temp = Object.assign({method: 'Insert'}, this.temp);
+            delete temp.old_id;
             delete temp.adviser;
             delete temp.schoolname;
             delete temp.flagname;
@@ -556,6 +563,7 @@
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
         this.temp.gradeid = this.temp.gradeid.toString();
+        this.temp.old_id = this.temp.id;//打开对话框，存储已有的id
         //打开对话框先清空，再把当前项插入select选择框
         this.schoolIDOption = [];
         this.teacherIDOption = [];
@@ -575,6 +583,8 @@
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.adviser = valueToLabel(this.teacherIDOption, this.temp.teacherid);
+            //自动更改id
+            this.temp.id = this.temp.schoolid + this.temp.gradeid + this.temp.classno;
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.adviser;
             delete temp.schoolname;
@@ -591,7 +601,7 @@
               }
               if (data.id === '00000') {
                 for (const v of this.list) {
-                  if (v.id === this.temp.id) {
+                  if (v.id === this.temp.old_id) {
                     const index = this.list.indexOf(v);
                     this.list.splice(index, 1, this.temp);
                     break;

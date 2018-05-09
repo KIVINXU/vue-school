@@ -235,8 +235,8 @@
       const checkPort = (rule, value, callback) => {
         if (!validateNum(value)) {
           callback(new Error('只能输入纯数字'));
-        } else if(value < 10 || value > 65535){
-          callback(new Error('限制10-65535,默认10'))
+        } else if(value < 80 || value > 65535){
+          callback(new Error('限制10-65535,默认80'))
         }else{
           callback();
         }
@@ -460,7 +460,7 @@
           belong: '',
           pictotal: 0,
           ip: '',
-          port: 10,
+          port: 80,
           username: '',
           passwd: '',
           param: '',

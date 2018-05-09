@@ -90,7 +90,8 @@
           <el-table-column prop="contact" :show-overflow-tooltip="true" label="联系方式" width="100px"></el-table-column>
           <el-table-column prop="contact2" :show-overflow-tooltip="true" label="联系方式2"></el-table-column>
           <el-table-column prop="address" :show-overflow-tooltip="true" label="联系住址" width="110px"></el-table-column>
-          <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校名称" width="160px"></el-table-column>
+          <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校" width="160px"></el-table-column>
+          <el-table-column prop="classname" :show-overflow-tooltip="true" label="班级" width="120px"></el-table-column>
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态" width="70px"></el-table-column>
           <el-table-column prop="id_number" :show-overflow-tooltip="true" label="证件号" width="100px"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>
@@ -150,14 +151,13 @@
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
-            <el-form-item label="学校名称" prop="schoolid">
+            <el-form-item label="学校" prop="schoolid">
               <el-tooltip class="item" effect="dark"
                           :disabled="dialogStatus=='update'"
                           content="点击回车搜索" placement="top">
                 <el-select v-model.trim="temp.schoolid"
                            placeholder="请输入学校编号搜索"
                            filterable remote
-                           :disabled="dialogStatus=='update'"
                            @keyup.enter.native="handleSchoolOption"
                            style="width: 100%">
                   <el-option v-for="item in schoolIDOption"
@@ -310,6 +310,7 @@
           address: '',
           schoolid: '',
           schoolname: '',
+          classname: '',
           flag: '',
           flagname: '',
           descr: ''
@@ -488,10 +489,8 @@
                     duration: 2000
                   });
                 }
-                if (data.data) {
-                  this.schoolIDOption = data.data.schoolid.filter(item => {
-                    return item.key.toLowerCase().indexOf(query.toLowerCase()) > -1
-                  });
+                if (data.data.schoolid) {
+                  this.schoolIDOption = data.data.schoolid;
                 }
               });
             this.schoolTemp = query;
@@ -540,6 +539,7 @@
             var temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.id_typename;
             delete temp.schoolname;
+            delete temp.classname;
             delete temp.flagname;
             SubmitTable('/teacherHome', temp).then(response => {
               const data = response.data;
@@ -589,6 +589,7 @@
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.id_typename;
             delete temp.schoolname;
+            delete temp.classname;
             delete temp.flagname;
             SubmitTable('/teacherHome', temp).then(response => {
               const data = response.data;

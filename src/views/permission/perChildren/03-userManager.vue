@@ -321,18 +321,7 @@
         searchOption: [],
         //加载图标
         listLoading: true,
-        list: [{
-          username: 'adva',
-          passwd: 'sdasdasdasdaxINHOSHX+',
-          maxcon: 2,
-          curcon: 1,
-          idle: 1800,
-          alive: 28800,
-          flag: 0,
-          flagname: '正常',
-          way: 'weixin',
-          descr: '',
-        }],
+        list: [],
         //行数
         currentRowIndex: -1,
         //-----添加/修改对话框--------
@@ -361,16 +350,7 @@
           descr: '',
         },
         //状态选项
-        flagOption: [{
-          key: -1,
-          label: '注销'
-        },{
-          key: 0,
-          label: '正常'
-        },{
-          key: 1,
-          label: '禁用'
-        }],
+        flagOption: [],
         //-----删除对话框----
         //对话框状态
         deleteDialogVisible: false,

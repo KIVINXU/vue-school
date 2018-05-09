@@ -128,8 +128,6 @@
           <el-table-column prop="address" :show-overflow-tooltip="true" label="住址"></el-table-column>
           <el-table-column prop="guarder" :show-overflow-tooltip="true" label="主监护人"></el-table-column>
           <el-table-column prop="relationname" :show-overflow-tooltip="true" label="与学生人关系"></el-table-column>
-          <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校"></el-table-column>
-          <el-table-column prop="classname" :show-overflow-tooltip="true" label="班级"></el-table-column>
           <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"></el-table-column>
           <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"></el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>

@@ -93,7 +93,7 @@
           <el-table-column prop="director" :show-overflow-tooltip="true" label="主管部门" width="160px"></el-table-column>
           <el-table-column prop="eqpid" :show-overflow-tooltip="true" label="设备编号">
             <template slot-scope="scope">
-              <span v-for="eq in scope.row.eqpid">{{eq}} </span>
+              <span v-for="eq in scope.row.eqpid">{{eq}},</span>
             </template>
           </el-table-column>
           <el-table-column prop="descr" :show-overflow-tooltip="true" label="说 明"></el-table-column>
@@ -175,7 +175,7 @@
           <el-tag
             :key="tag" closable
             size="medium"
-            v-for="tag in eqpidTemp"
+            v-for="tag in temp.eqpid"
             @close="handleCloseTag(tag)">
             {{tag}}
           </el-tag>
@@ -241,7 +241,19 @@
         searchOption: [],
         //加载图标
         listLoading: true,
-        list: [],
+        list: [{
+          address: "浙江省温州市鹿城区锦绣路与龟湖路55弄交叉口西北150米蒲鞋市小学龟湖路校区",
+          descr: "descr1.已取得教师资格的聘用人员的人事关系一律由用人单位委托鹿城区人才开发服务中心教育分中心实行人事代理。",
+          director: "浙江省温州市鹿城区教育局",
+          eqpid: ["16112017W6CR", "16201117V6CR", "20116171D6CR"],
+          flag: 0,
+          flagname: "正常",
+          id: "3133100053",
+          levels: 1,
+          levelsname: "小学",
+          master: "赵某某老师",
+          name: "蒲鞋市小学龟湖路校区",
+        }],
         //行数
         currentRowIndex: -1,
         //-----添加/修改对话框--------
@@ -272,8 +284,7 @@
         levelsOption: [],
         //学校状态选项
         statusOption: [],
-        //设备编号临时数据
-        eqpidTemp: [],
+        
         //标签输入框状态
         inputVisible: false,
         //标签输入框内容
@@ -415,7 +426,7 @@
       },
       //关闭删除标签
       handleCloseTag(tag) {
-        this.eqpidTemp.splice(this.eqpidTemp.indexOf(tag), 1);
+        this.temp.eqpid.splice(this.temp.eqpid.indexOf(tag), 1);
       },
       //显示关闭输入框
       showEqpInput() {
@@ -428,7 +439,7 @@
       handleInputConfirm() {
         let eqpInput = this.eqpInput;
         if(eqpInput) {
-          if(this.eqpidTemp.indexOf(eqpInput) === -1){
+          if(this.temp.eqpid.indexOf(eqpInput) === -1){
             let eqpData = Object.assign({method: 'FieldVerify'}, {eqpid: eqpInput});
             SubmitTable('/schoolHome', eqpData).then(response => {
               const data = response.data;
@@ -441,7 +452,7 @@
                 });
               }
               if(data.id === '00000') {
-                this.eqpidTemp.push(eqpInput)
+                this.temp.eqpid.push(eqpInput)
               }
             });
           }else {
@@ -524,7 +535,6 @@
         if(this.temp.eqpid === null) {
           this.temp.eqpid = [];
         }
-        this.eqpidTemp = this.temp.eqpid; //打开对话框保存临时eqpid
         this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
@@ -538,8 +548,6 @@
           if (valid) {
             this.temp.levelsname = valueToLabel(this.levelsOption, this.temp.levels);
             this.temp.flagname = valueToLabel(this.statusOption, this.temp.flag);
-            //提交时才改动真实的eqpid
-            this.temp.eqpid = this.eqpidTemp;
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.levelsname;
             delete temp.flagname;
