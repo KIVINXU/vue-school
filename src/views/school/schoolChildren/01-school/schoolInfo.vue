@@ -175,7 +175,7 @@
           <el-tag
             :key="tag" closable
             size="medium"
-            v-for="tag in temp.eqpid"
+            v-for="tag in eqpidTemp"
             @close="handleCloseTag(tag)">
             {{tag}}
           </el-tag>
@@ -284,7 +284,8 @@
         levelsOption: [],
         //学校状态选项
         statusOption: [],
-        
+        //设备临时内容
+        eqpidTemp: [],
         //标签输入框状态
         inputVisible: false,
         //标签输入框内容
@@ -426,7 +427,7 @@
       },
       //关闭删除标签
       handleCloseTag(tag) {
-        this.temp.eqpid.splice(this.temp.eqpid.indexOf(tag), 1);
+        this.eqpidTemp.splice(this.eqpidTemp.indexOf(tag), 1);
       },
       //显示关闭输入框
       showEqpInput() {
@@ -439,7 +440,7 @@
       handleInputConfirm() {
         let eqpInput = this.eqpInput;
         if(eqpInput) {
-          if(this.temp.eqpid.indexOf(eqpInput) === -1){
+          if(this.eqpidTemp.indexOf(eqpInput) === -1){
             let eqpData = Object.assign({method: 'FieldVerify'}, {eqpid: eqpInput});
             SubmitTable('/schoolHome', eqpData).then(response => {
               const data = response.data;
@@ -452,7 +453,7 @@
                 });
               }
               if(data.id === '00000') {
-                this.temp.eqpid.push(eqpInput)
+                this.eqpidTemp.push(eqpInput)
               }
             });
           }else {
@@ -470,6 +471,7 @@
       },
       //重置对话框内容
       resetTemp() {
+        this.eqpidTemp = [];
         this.temp = {
           id: '',
           name: '',
@@ -500,6 +502,8 @@
           if (valid) {
             this.temp.levelsname = valueToLabel(this.levelsOption, this.temp.levels);
             this.temp.flagname = valueToLabel(this.statusOption, this.temp.flag);
+            //点击保存按钮的时候，才真正改动eqpid
+            this.temp.eqpid = [].concat(this.eqpidTemp);
             var temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.levelsname;
             delete temp.flagname;
@@ -535,6 +539,8 @@
         if(this.temp.eqpid === null) {
           this.temp.eqpid = [];
         }
+        //存储eqpid
+        this.eqpidTemp = [].concat(this.temp.eqpid);
         this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
@@ -548,6 +554,8 @@
           if (valid) {
             this.temp.levelsname = valueToLabel(this.levelsOption, this.temp.levels);
             this.temp.flagname = valueToLabel(this.statusOption, this.temp.flag);
+            //点击保存按钮的时候，才真正改动eqpid
+            this.temp.eqpid = [].concat(this.eqpidTemp);
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.levelsname;
             delete temp.flagname;

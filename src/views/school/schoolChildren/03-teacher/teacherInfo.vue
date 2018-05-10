@@ -554,6 +554,8 @@
               if (data.id === '00000') {
                 this.list.unshift(this.temp);
                 this.dialogVisible = false;
+                //关闭弹窗时，清除保存的临时搜索内容
+                this.schoolTemp = '';
                 this.$notify({
                   title: '成功',
                   message: '创建成功',
@@ -659,6 +661,8 @@
             });
             row.splice(index, 1);
             this.deleteDialogVisible = false;
+            //关闭弹窗时，清除保存的临时搜索内容
+            this.schoolTemp = '';
             this.total -= 1;
           }
         });

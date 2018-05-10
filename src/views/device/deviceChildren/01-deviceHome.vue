@@ -236,7 +236,7 @@
         if (!validateNum(value)) {
           callback(new Error('只能输入纯数字'));
         } else if(value < 80 || value > 65535){
-          callback(new Error('限制10-65535,默认80'))
+          callback(new Error('限制80-65535,默认80'))
         }else{
           callback();
         }

@@ -52,7 +52,7 @@ export const constantRouterMap = [
         path: 'facePics',
         component: () => import('@/views/device/deviceChildren/06-facePics'),
         name: 'facePics',
-        meta: { title: '图片库'}
+        meta: { title: '人脸库'}
       },
       {
         path: 'callbackMsg',
@@ -134,7 +134,7 @@ export const constantRouterMap = [
     redirect: '/portraits/masters',
     name: 'portraits',
     meta: {
-      title: '照片录入',
+      title: '人脸录入',
       icon: 'portraits'
     },
     children: [
