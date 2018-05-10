@@ -1,61 +1,504 @@
 <template>
-  <div class="col-sm-8">
-    <div class="box">
-      <div class="box-header">
-        <div style="float: right">
-          <el-button type="primary" icon="el-icon-upload">导入</el-button>
-          <el-button type="primary">导出</el-button>
-        </div>
+  <div>
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
+        <el-select v-model.trim="listQuery.key"
+                   style="width: 14%"
+                   @focus="handleFocus"
+                   placeholder="查询对象">
+          <el-option
+            v-for="item in searchOption"
+            :key="item.key"
+            :label="item.label"
+            :value="item.key">
+          </el-option>
+        </el-select>
+        <el-input placeholder="请输入查询内容"
+                  style="width: 30%;"
+                  clearable
+                  :disabled="listQuery.key === ''"
+                  v-model.trim="listQuery.value"
+                  @clear="getList()"
+                  @keyup.enter.native="handleFilter(1)">
+        </el-input>
+        <el-button
+          type="info" plain
+          @click="handleFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''"
+          icon="el-icon-search">查询
+        </el-button>
+        <el-button
+          icon="el-icon-search"
+          type="info" plain
+          @click="handleExtFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''">相似
+        </el-button>
+      </el-col>
+      <el-col :span="2">
+        <el-dropdown>
+          <el-button type="primary">
+            更多操作<i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>
+              <el-button type="text"
+                         icon="el-icon-plus"
+                         @click="handleCreate">
+                添加
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text"
+                         icon="el-icon-edit"
+                         @click="handleUpdate(list[currentRowIndex])"
+                         :disabled="currentRowIndex === -1">
+                修改
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text"
+                         icon="el-icon-delete"
+                         @click="handleDelete(currentRowIndex)"
+                         :disabled="currentRowIndex === -1">
+                删除
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text" icon="el-icon-upload">
+                导入
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text" icon="el-icon-download">
+                导出
+              </el-button>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col>
+        <el-table :data="list" ref="facePicsTable"
+                  border highlightCurrentRow
+                  @current-change="handleCurrentChange"
+                  @row-dblclick="handleUpdate">
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="编号" width="50px"></el-table-column>
+          <el-table-column prop="time" :show-overflow-tooltip="true" label="时间" width="100px"></el-table-column>
+          <el-table-column prop="result" :show-overflow-tooltip="true" label="结果" width="60px"></el-table-column>
+          <el-table-column prop="name" :show-overflow-tooltip="true" label="姓名" width="120px"></el-table-column>
+          <el-table-column prop="sex" :show-overflow-tooltip="true" label="性别" width="50px"></el-table-column>
+          <el-table-column prop="idfent" :show-overflow-tooltip="true" label="身份" width="100px"></el-table-column>
+          <el-table-column prop="visitor" :show-overflow-tooltip="true" label="访问对象"></el-table-column>
+          <el-table-column prop="relation" :show-overflow-tooltip="true" label="关系" width="110px"></el-table-column>
+          <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+        </el-table>
+        <!--分页条-->
+        <el-pagination
+          style="margin-top: 10px;margin-left: -9px;"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange"
+          :current-page.sync="listQuery.page"
+          :page-sizes="[20,50,100]"
+          :page-size="listQuery.limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+      </el-col>
+    </el-row>
+    <!--添加/修改-->
+    <el-dialog :title="textMap[dialogStatus]"
+               :visible.sync="dialogVisible"
+               top="10px">
+      <el-form ref="dataForm" :rules="rules"
+               :model="temp"
+               style="margin-top: -30px"
+               label-position="right"
+               label-width="100px">
+        <el-row>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="编号" prop="ID">
+              <el-input v-model="temp.id" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model="temp.name" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="性别" prop="size">
+              <el-input v-model="temp.sex" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="身份" prop="fdID">
+              <el-input v-model="temp.idfent" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="访问对象" prop="eqpID">
+              <el-input v-model="temp.visitor" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="关系" prop="flag">
+              <el-input v-model="temp.relation" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="说明" prop="descr">
+          <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"
+                    :autosize="{ minRows: 1, maxRows: 4 }">
+          </el-input>
+          <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" style="height: 0; margin-top: -50px">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" v-if="dialogStatus === 'create'" @click="createData">保 存</el-button>
+        <el-button type="primary" v-else @click="updateData">保 存</el-button>
       </div>
-      <!-- /.box-header -->
-      <div class="box-body">
-        <form class="form-inline" style="margin-bottom: 10px">
-          <div class="form-group form-group-sm">
-            <label>识别结果</label>
-            <select name="" class="form-control">
-              <option value="0">--请选择识别结果--</option>
-              <option value="1">教师</option>
-              <option value="2">员工</option>
-              <option value="3">家长</option>
-              <option value="4">访客</option>
-              <option value="5">其他</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <a href="#" class="btn btn-primary" style="float: right">检索</a>
-          </div>
-        </form>
-        <table class="table table-bordered table-hover">
-          <tbody><tr class="warning">
-            <th>序号</th>
-            <th>识别结果</th>
-            <th>反馈信息</th>
-            <th>说明</th>
-            <th>操作</th>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>成功</td>
-            <td>xxxxxx</td>
-            <td>xxxxxx</td>
-            <td>
-              <router-link to="/device/changeCallbackMsg/1" class="btn btn-warning btn-sm">修改</router-link>
-              <a href="#" class="btn btn-danger btn-sm">删除</a>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>成功</td>
-            <td>xxxxxx</td>
-            <td>xxxxxx</td>
-            <td>
-              <router-link to="/device/changeCallbackMsg/2" class="btn btn-warning btn-sm">修改</router-link>
-              <a href="#" class="btn btn-danger btn-sm">删除</a>
-            </td>
-          </tr>
-          </tbody></table>
-      </div>
-      <!-- /.box-body -->
-    </div>
+    </el-dialog>
   </div>
 </template>
+
+<script>
+  import {fetchList, SubmitTable, fetchSearchOption, valueToLabel} from '@/api/table'
+  import ElFormItem from "element-ui/packages/form/src/form-item.vue";
+  import ElDialog from "element-ui/packages/dialog/src/component.vue";
+
+  export default {
+    components: {
+      ElDialog,
+      ElFormItem
+    },
+    data() {
+      return {
+        //搜索内容
+        listQuery: {
+          method: '',
+          page: 1,
+          limit: 20,
+          ext: undefined,
+          key: '',  //查询对象的key值
+          value: ''  //查询对象内容
+        },
+        //总条目数
+        total: 0,
+        searchOption: [],
+        //加载图标
+        listLoading: true,
+        list: [
+          {
+            id: '1101',
+            time: '5/10/2018 10:28:00',
+            result: '成功',
+            name: '卜培林',
+            sex: '男',
+            idfent: '家长',
+            visitor: '卜以立',
+            relation: '主监护人',
+            descr: 'sadas ',
+          }
+        ],
+        //行数
+        currentRowIndex: -1,
+        //-----添加/修改对话框--------
+        //对话框状态
+        dialogVisible: false,
+        //对话框状态
+        dialogStatus: '',
+        //对话框标题
+        textMap: {
+          create: '添加人脸图片',
+          update: '修改人脸图片'
+        },
+        //对话框内容
+        temp: {
+          id: '',
+          time: '',
+          result: '',
+          name: '',
+          sex: '',
+          type: '',
+          object: '',
+          relation: '',
+          descr: '',
+        },
+        //内容验证规则
+        rules: {
+          id: {required: true, message: '编号不能为空', trigger: 'blur'},
+        }
+      }
+    },
+    // created() {
+    //   this.getList();
+    // },
+    // watch: {
+    //   $route() {
+    //     this.getList();
+    //   }
+    // },
+    methods: {
+      //请求后台
+      requestList(List) {
+        fetchList('/deviceFaces', List).then(response => {
+          const data = response.data;
+          if (data.msg && data.msg !== '') {
+            this.$message({
+              message: data.msg,
+              type: 'error',
+              duration: 2000,
+              showClose: true
+            });
+          }
+          if (data.data) {
+            this.list = data.data;
+            this.total = data.total;
+          } else {
+            this.list = [];
+            this.total = 0;
+          }
+        })
+      },
+      //获取列表
+      getList() {
+        this.listQuery.ext = undefined;
+        this.listQuery.method = 'List';
+        this.requestList(this.listQuery);
+      },
+      //直接查询
+      handleFilter(val) {
+        this.listQuery.ext = undefined;
+        this.listQuery.method = 'Query';
+        this.listQuery.page = val;
+        this.requestList(this.listQuery);
+      },
+      //相似查询
+      handleExtFilter(val) {
+        this.listQuery.ext = 'like';
+        this.listQuery.method = 'Query';
+        this.listQuery.page = val;
+        this.requestList(this.listQuery);
+      },
+      //改变显示条目
+      handleSizeChange(size) {
+        this.listQuery.limit = size;
+        if (this.listQuery.ext === 'like') {
+          this.handleExtFilter(1);
+        } else if (this.listQuery.method === 'Query') {
+          this.handleFilter(1);
+        } else if (this.listQuery.method === 'List') {
+          this.listQuery.page = 1;
+          this.getList();
+        }
+      },
+      //改变页面事件
+      handlePageChange(val) {
+        if (this.listQuery.ext === 'like') {
+          this.handleExtFilter(val);
+        } else if (this.listQuery.method === 'Query') {
+          this.handleFilter(val);
+        } else if (this.listQuery.method === 'List') {
+          this.getList();
+        }
+      },
+      //select获取焦点后请求数据
+      handleFocus() {
+        if (this.searchOption.length === 0) {
+          fetchSearchOption('/deviceFaces', {method: 'FieldQuery'})
+            .then(response => {
+              const data = response.data;
+              if (data.msg && data.msg !== '') {
+                this.$message({
+                  showClose: true,
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
+              }
+              if (data.data) {
+                let keys = Object.keys(data.data);
+                let values = Object.values(data.data);
+                for (let i = 0; i < keys.length; i++) {
+                  let optionObj = {};
+                  optionObj.key = keys[i];
+                  optionObj.label = values[i];
+                  this.searchOption.push(optionObj);
+                }
+              }
+            })
+        }
+      },
+      //打开弹出框select请求数据
+      handleOption() {
+        // if (this.flagOption.length === 0) {
+        //   fetchSearchOption('/deviceFaces', {method: 'FieldLabel'})
+        //     .then(response => {
+        //       const data = response.data;
+        //       if (data.msg && data.msg !== '') {
+        //         this.$message({
+        //           showClose: true,
+        //           message: data.msg,
+        //           type: 'error',
+        //           duration: 2000
+        //         });
+        //       }
+        //       if (data.data) {
+        //         this.flagOption = data.data.FLAG;
+        //       }
+        //     });
+        // }
+      },
+      resetTemp() {
+        this.temp = {
+          id: '',
+          time: '',
+          result: '',
+          name: '',
+          sex: '',
+          type: '',
+          object: '',
+          relation: '',
+          descr: '',
+        }
+      },
+      // 添加对话框
+      handleCreate() {
+        // this.resetTemp();
+        // this.handleOption();
+        // //打开对话框先清空select选择框
+        // this.dialogStatus = 'create';
+        // this.dialogVisible = true;
+        // this.$nextTick(() => {
+        //   this.$refs['dataForm'].clearValidate();
+        // })
+      },
+      //添加完毕上传
+      createData() {
+        // this.$refs['dataForm'].validate((valid) => {
+        //   if (valid) {
+        //     this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+        //     var temp = Object.assign({method: 'Insert'}, this.temp);
+        //     delete temp.flagname;
+        //     SubmitTable('/deviceFaces', temp).then(response => {
+        //       const data = response.data;
+        //       if (data.msg && data.msg !== '') {
+        //         this.$message({
+        //           showClose: true,
+        //           message: data.msg,
+        //           type: 'info',
+        //           duration: 2000
+        //         });
+        //       }
+        //       if (data.id === '00000') {
+        //         this.list.unshift(this.temp);
+        //         this.dialogVisible = false;
+        //         this.$notify({
+        //           title: '成功',
+        //           message: '创建成功',
+        //           type: 'success',
+        //           duration: 2000
+        //         });
+        //         this.total += 1;
+        //       }
+        //     });
+        //   }
+        // })
+      },
+      //修改对话框
+      handleUpdate(row) {
+        this.temp = Object.assign({}, row);
+        // //打开对话框先清空，再把当前项插入select选择框
+        // this.schoolIDOption = [];
+        // this.schoolIDOption.push({key: this.temp.schoolid, label: this.temp.schoolname});
+        // this.handleOption();
+        this.dialogStatus = 'update';
+        this.dialogVisible = true;
+        // this.$nextTick(() => {
+        //   this.$refs['dataForm'].clearValidate();
+        // })
+      },
+      //修改完毕上传
+      updateData() {
+        // this.$refs['dataForm'].validate((valid) => {
+        //   if (valid) {
+        //     // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+        //     let temp = Object.assign({method: 'Update'}, this.temp);
+        //     delete temp.id_typename;
+        //     delete temp.schoolname;
+        //     delete temp.flagname;
+        //     SubmitTable('/deviceFaces', temp).then(response => {
+        //       const data = response.data;
+        //       if (data.msg && data.msg !== '') {
+        //         this.$message({
+        //           showClose: true,
+        //           message: data.msg,
+        //           type: 'info',
+        //           duration: 2000,
+        //           showClose:true
+        //         });
+        //       }
+        //       if (data.id === '00000') {
+        //         for (const v of this.list) {
+        //           if (v.id === this.temp.id) {
+        //             const index = this.list.indexOf(v);
+        //             this.list.splice(index, 1, this.temp);
+        //             break;
+        //           }
+        //         }
+        //         this.dialogVisible = false;
+        //         this.$notify({
+        //           title: '成功',
+        //           message: '更新成功',
+        //           type: 'success',
+        //           duration: 2000,
+        //           showClose:true
+        //         });
+        //       }
+        //     });
+        //   }
+        // });
+      },
+
+      //获取index
+      handleCurrentChange(val) {
+        this.currentRowIndex = this.list.indexOf(val);
+      },
+      //descr剩余长度计算
+      leftLength() {
+        if (this.temp.descr === null) {
+          this.temp.descr = '';
+        }
+        return 128 - this.temp.descr.length
+      },
+      //删除行
+      handleDelete(index) {
+        // this.deleteDialogVisible = true;
+        // this.deleteName = this.list[index].name
+      },
+      rowDelete(index, row) {
+        // var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
+        // SubmitTable('/deviceFaces', deleteData).then(response => {
+        //   const data = response.data;
+        //   if (data.msg && data.msg !== '') {
+        //     this.$message({
+        //       showClose: true,
+        //       message: data.msg,
+        //       type: 'info',
+        //       duration: 2000
+        //     });
+        //   }
+        //   if (data.id === '00000') {
+        //     this.$notify({
+        //       title: '成功',
+        //       message: '删除成功',
+        //       type: 'success',
+        //       duration: 2000
+        //     });
+        //     row.splice(index, 1);
+        //     this.deleteDialogVisible = false;
+        //     this.total -= 1;
+        //   }
+        // });
+      },
+    }
+  }
+
+</script>
