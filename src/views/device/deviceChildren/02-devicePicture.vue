@@ -47,7 +47,15 @@
                          icon="el-icon-edit"
                          @click="handleUpdate(list[currentRowIndex])"
                          :disabled="currentRowIndex === -1">
-                修改
+                详情
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text"
+                         icon="el-icon-delete"
+                         @click="handleDelete(currentRowIndex)"
+                         :disabled="currentRowIndex === -1">
+                删除
               </el-button>
             </el-dropdown-item>
             <el-dropdown-item>
@@ -71,7 +79,7 @@
                   @current-change="handleCurrentChange"
                   @row-dblclick="handleUpdate">
           <el-table-column prop="id" :show-overflow-tooltip="true" label="图片编号" width="120px"></el-table-column>
-          <el-table-column prop="name" :show-overflow-tooltip="true" label="名称" width="350px"></el-table-column>
+          <el-table-column prop="name" :show-overflow-tooltip="true" label="标示码" width="350px"></el-table-column>
           <el-table-column prop="size" :show-overflow-tooltip="true" label="大小" width="60px"></el-table-column>
           <el-table-column prop="ctime" :show-overflow-tooltip="true" label="创建时间" width="140px"></el-table-column>
           <el-table-column prop="fdname" :show-overflow-tooltip="true" label="库名称" width="120px"></el-table-column>
@@ -93,6 +101,14 @@
         </el-pagination>
       </el-col>
     </el-row>
+    <!--删除-->
+    <el-dialog title="提示" :visible.sync="deleteDialogVisible" width="30%">
+      <span><i class="el-icon-warning"></i>是否确认删除名称为【{{deleteName}}】的数据？确认删除后，将不能恢复！</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="rowDelete(currentRowIndex, list)">确 定</el-button>
+      </span>
+    </el-dialog>
     <!--添加/修改-->
     <el-dialog :title="textMap[dialogStatus]"
                :visible.sync="dialogVisible"
@@ -206,6 +222,10 @@
           ctime:'',
           descr: ''
         },
+        //-----删除对话框----
+        //对话框状态
+        deleteDialogVisible: false,
+        deleteName: '',
         //内容验证规则
         rules: {}
       }
@@ -234,7 +254,7 @@
       },
       //请求后台
       requestList(List) {
-        fetchList('/deviceFaces', List).then(response => {
+        fetchList('/devicePicture', List).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
@@ -245,6 +265,7 @@
             });
           }
           if (data.data) {
+            this.list = data.data;
             this.list.forEach(item => {
               //传过来是秒
               item.ctime = this.timestampToTime(item.ctime);
@@ -301,7 +322,7 @@
       //select获取焦点后请求数据
       handleFocus() {
         if (this.searchOption.length === 0) {
-          fetchSearchOption('/deviceFaces', {method: 'FieldQuery'})
+          fetchSearchOption('/devicePicture', {method: 'FieldQuery'})
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -328,7 +349,7 @@
       //打开弹出框select请求数据
 //      handleOption() {
 //         if (this.flagOption.length === 0) {
-//           fetchSearchOption('/deviceFaces', {method: 'FieldLabel'})
+//           fetchSearchOption('/devicePicture', {method: 'FieldLabel'})
 //             .then(response => {
 //               const data = response.data;
 //               if (data.msg && data.msg !== '') {
@@ -376,7 +397,7 @@
 //             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
 //             var temp = Object.assign({method: 'Insert'}, this.temp);
 //             delete temp.flagname;
-//             SubmitTable('/deviceFaces', temp).then(response => {
+//             SubmitTable('/devicePicture', temp).then(response => {
 //               const data = response.data;
 //               if (data.msg && data.msg !== '') {
 //                 this.$message({
@@ -416,7 +437,7 @@
           if (valid) {
             // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
-            SubmitTable('/deviceFaces', temp).then(response => {
+            SubmitTable('/devicePicture', temp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
@@ -460,13 +481,13 @@
         return 128 - this.temp.descr.length
       },
       //删除行
-//      handleDelete(index) {
+      handleDelete(index) {
 //         this.deleteDialogVisible = true;
 //         this.deleteName = this.list[index].name
-//      },
-//      rowDelete(index, row) {
+      },
+      rowDelete(index, row) {
 //         var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
-//         SubmitTable('/deviceFaces', deleteData).then(response => {
+//         SubmitTable('/devicePicture', deleteData).then(response => {
 //           const data = response.data;
 //           if (data.msg && data.msg !== '') {
 //             this.$message({
@@ -488,7 +509,7 @@
 //             this.total -= 1;
 //           }
 //         });
-//      },
+      },
     }
   }
   

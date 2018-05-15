@@ -163,13 +163,13 @@
         </el-col>
         </el-row>
         <el-form-item label="安装位置" prop="place">
-          <el-input v-model.trim="temp.place" :maxlength="32"></el-input>
+          <el-input v-model.trim="temp.place" :maxlength="48"></el-input>
         </el-form-item>
         <el-form-item label="基本参数" prop="basepram">
-          <el-input type="textarea" v-model.trim="temp.param" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+          <el-input type="textarea" :maxlength="64" v-model.trim="temp.param" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="扩展参数" prop="exparam">
-          <el-input type="textarea" v-model.trim="temp.exparam" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+          <el-input type="textarea" :maxlength="64" v-model.trim="temp.exparam" :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="备注说明" prop="descr">
           <el-input type="textarea" :maxlength="128" v-model.trim="temp.descr"

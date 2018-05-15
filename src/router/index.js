@@ -49,15 +49,15 @@ export const constantRouterMap = [
         meta: { title: '设  备'}
       },
       {
-        path: 'facePics',
-        component: () => import('@/views/device/deviceChildren/06-facePics'),
-        name: 'facePics',
-        meta: { title: '人脸库'}
+        path: 'devicePicture',
+        component: () => import('@/views/device/deviceChildren/02-devicePicture'),
+        name: 'devicePicture',
+        meta: { title: '图片库'}
       },
       {
-        path: 'callbackMsg',
-        component: () => import('@/views/device/deviceChildren/04-callbackMsg'),
-        name: 'callbackMsg',
+        path: 'deviceShow',
+        component: () => import('@/views/device/deviceChildren/03-deviceShow'),
+        name: 'deviceShow',
         meta: { title: '展示信息'}
       },
     ]
@@ -65,7 +65,7 @@ export const constantRouterMap = [
   {
     path: '/school',
     component: Layout,
-    redirect: '/school/schoolInfo',
+    redirect: '/school/schoolHome',
     name: 'school',
     meta: {
       title: '学校管理',
@@ -73,27 +73,34 @@ export const constantRouterMap = [
     },
     children: [
       {
-        path: 'schoolInfo',
-        component: () => import('@/views/school/schoolChildren/01-school/schoolInfo'),
-        name: 'schoolInfo',
+        path: 'schoolHome',
+        component: () => import('@/views/school/schoolChildren/01-schoolHome'),
+        name: 'schoolHome',
         meta: { title: '学  校' }
       },
       {
-        path: 'classInfo',
-        component: () => import('@/views/school/schoolChildren/02-class/classInfo'),
-        name: 'classInfo',
-        meta: { title: '班  级' }
+        path: 'schoolClass',
+        component: () => import('@/views/school/schoolChildren/02-schoolClass'),
+        name: 'schoolClass',
+        meta: { title: '班  级' },
       },
       {
-        path: 'teacherInfo',
-        component: () => import('@/views/school/schoolChildren/03-teacher/teacherInfo'),
-        name: 'teacherInfo',
+        path: 'classDetail/:class_id',
+        component: () => import('@/views/school/schoolChildren/classDetail'),
+        name: 'classDetail',
+        hidden: true,
+        meta: { title: '班级详情' },
+      },
+      {
+        path: 'schoolTeacher',
+        component: () => import('@/views/school/schoolChildren/03-schoolTeacher'),
+        name: 'schoolTeacher',
         meta: { title: '教职工' }
       },
       {
-        path: 'studentInfo',
-        component: () => import('@/views/school/schoolChildren/08-student/studentInfo'),
-        name: 'studentInfo',
+        path: 'schoolStudent',
+        component: () => import('@/views/school/schoolChildren/04-schoolStudent'),
+        name: 'schoolStudent',
         meta: { title: '学  生' }
       },
     ]
@@ -115,16 +122,10 @@ export const constantRouterMap = [
         meta: { title: '家长信息' }
       },
       {
-        path: 'visitorInfo',
-        component: () => import('@/views/person/personChildren/03-visitorInfo'),
-        name: 'visitorInfo',
-        meta: { title: '访客信息' }
-      },
-      {
-        path: 'visitorLog/:visit_id',
+        path: 'visitorLog',
         component: () => import('@/views/person/personChildren/03-visitorLog'),
         name: 'visitorLog',
-        meta: { title: '访客记录查询' }
+        meta: { title: '访问记录' }
       },
     ]
   },
@@ -176,15 +177,21 @@ export const constantRouterMap = [
     children: [
       {
         path: 'visitPermission',
-        component: () => import('@/views/permission/perChildren/02-visitPermission'),
+        component: () => import('@/views/permission/perChildren/01-visitPermission'),
         name: 'visitPermission',
         meta: { title: '访问权限' }
       },
       {
-        path: 'userManager',
-        component: () => import('@/views/permission/perChildren/03-userManager'),
-        name: 'userManager',
+        path: 'SuserHome',
+        component: () => import('@/views/permission/perChildren/02-SuserHome'),
+        name: 'SuserHome',
         meta: { title: '管理用户' }
+      },
+      {
+        path: 'SuserOnline',
+        component: () => import('@/views/permission/perChildren/03-SuserOnline'),
+        name: 'SuserOnline',
+        meta: { title: '在线用户' }
       }
     ]
   },

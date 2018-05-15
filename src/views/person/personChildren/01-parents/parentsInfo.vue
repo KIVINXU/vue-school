@@ -1,222 +1,320 @@
 <template>
-  <div class="box">
-    <div class="box-header">
-      <div class="inline" style="float: right">
-        <a href="#" class="btn btn-default" style="margin-left: 10px">下载模板</a>
-        <a href="#" class="btn btn-default" style="margin-left: 10px">导入Excel</a>
-        <a href="#" class="btn btn-default" style="margin-left: 10px">导出Excel</a>
-      </div>
-    </div>
-    <!-- /.box-header -->
-    <div class="box-body">
-      <router-link to="/person/addParents" class="btn btn-success">
-        <span class="fa fa-plus"></span> 添加家长</router-link>
-      <router-link
-        v-if="currentRowIndex !== -1"
-        :to="'/person/changeParents/'+(currentRowIndex+1)"
-        class="btn btn-warning">
-        <span class="fa fa-edit"></span> 修改家长
-      </router-link>
-      <button class="btn btn-warning" v-else disabled>
-        <span class="fa fa-edit"></span> 修改家长
-      </button>
-      <a href="#" class="btn btn-danger"
-         @click="deleteRow(currentRowIndex, parentsInfo)"
-         :disabled="currentRowIndex === -1">
-        <span class="fa fa-remove"></span> 删除家长
-      </a>
-      <form class="form-inline" style="margin-bottom: 10px;float: right;">
-        <div class="form-group form-group-sm">
-          <label>查询对象</label>
-          <select name="" class="form-control">
-            <option value="0">--请选择查询对象--</option>
-            <option value="1">家长姓名</option>
-            <option value="2">学生姓名</option>
-            <option value="3">学生学号</option>
-          </select>
-        </div>
-        <div class="form-group form-group-sm">
-          <input type="text" class="form-control" placeholder="--输入查询内容--">
-        </div>
-        <div class="form-group form-group-sm" style="margin-left: 10px">
-          <label>家长身份</label>
-          <select name="" class="form-control">
-            <option value="0">--请选择家长身份--</option>
-            <option value="1">责任人</option>
-            <option value="2">监护人</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <a href="#" class="btn btn-primary btn-sm" style="float: right">检索</a>
-        </div>
-      </form>
-      <el-table :data="parentsInfo"
-                border stripe
-                style="width: 100%"
-                highlightCurrentRow
-                @current-change="handleCurrentChange">
-        <el-table-column
-          prop="ID"
-          :show-overflow-tooltip="true"
-          label="证件编号">
-        </el-table-column>
-        <el-table-column
-          prop="name"
-          :show-overflow-tooltip="true"
-          label="姓名">
-        </el-table-column>
-        <el-table-column
-          prop="sex"
-          :show-overflow-tooltip="true"
-          label="性别">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          :show-overflow-tooltip="true"
-          label="住址">
-        </el-table-column>
-        <el-table-column
-          prop="ID_type"
-          :show-overflow-tooltip="true"
-          label="证件类型">
-        </el-table-column>
-        <el-table-column
-          prop="contact"
-          :show-overflow-tooltip="true"
-          label="联系方式">
-        </el-table-column>
-        <el-table-column
-          prop="relation"
-          :show-overflow-tooltip="true"
-          label="人员关系">
-        </el-table-column>
-        <el-table-column
-          prop="types"
-          :show-overflow-tooltip="true"
-          label="人员分类">
-        </el-table-column>
-        <el-table-column
-          prop="relNum"
-          :show-overflow-tooltip="true"
-          label="关联数">
-        </el-table-column>
-        <el-table-column
-          prop="face_key"
-          :show-overflow-tooltip="true"
-          label="人脸值">
-        </el-table-column>
-        <el-table-column
-          prop="size"
-          :show-overflow-tooltip="true"
-          label="图片大小">
-        </el-table-column>
-        <el-table-column
-          prop="ctime"
-          :show-overflow-tooltip="true"
-          label="图片时间">
-        </el-table-column>
-        <el-table-column
-          prop="identity"
-          width="95"
-          :show-overflow-tooltip="true"
-          label="证件人脸值">
-        </el-table-column>
-        <el-table-column
-          prop="relNum"
-          :show-overflow-tooltip="true"
-          label="关联数">
-        </el-table-column>
-        <el-table-column
-          prop="flag"
-          :show-overflow-tooltip="true"
-          label="标志">
-        </el-table-column>
-        <el-table-column
-          prop="descr"
-          :show-overflow-tooltip="true"
-          label="说明">
-        </el-table-column>
-      </el-table>
-      <!--<table class="table table-bordered table-hover">-->
-        <!--<tbody><tr class="warning">-->
-          <!--<th>序号</th>-->
-          <!--<th>家长姓名</th>-->
-          <!--<th>性别</th>-->
-          <!--<th>学生姓名</th>-->
-          <!--<th>所属学校</th>-->
-          <!--<th>家长身份</th>-->
-          <!--<th>关系</th>-->
-          <!--<th>身份证号码</th>-->
-          <!--<th>联系电话</th>-->
-          <!--<th>联系地址</th>-->
-          <!--<th>说明</th>-->
-          <!--<th>操作</th>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>1</td>-->
-          <!--<td>xxx</td>-->
-          <!--<td>男</td>-->
-          <!--<td>xxx</td>-->
-          <!--<td>xxx</td>-->
-          <!--<td>责任人</td>-->
-          <!--<td>父亲</td>-->
-          <!--<td>xxx</td>-->
-          <!--<td>xxxxxx</td>-->
-          <!--<td>xxxx</td>-->
-          <!--<td>xxxx</td>-->
-          <!--<td>-->
-            <!--<router-link to="/person/changeParents/1" class="btn btn-warning btn-sm">修改</router-link>-->
-            <!--<a href="#" class="btn btn-danger btn-sm">删除</a>-->
-          <!--</td>-->
-        <!--</tr>-->
-        <!--</tbody></table>-->
-    </div>
-    <!-- /.box-body -->
-    <div class="box-footer">
-      <div class="bg-warning">
-        <p>※由于数据量很大，建议优先选择检索条件后查询。默认不直接显示数据。</p>
-      </div>
-    </div>
+  <div>
+    <el-row class="el-table-margin">
+      <el-col :span="16" :offset="5">
+        <el-select v-model.trim="listQuery.key"
+                   style="width: 14%"
+                   @focus="handleFocus"
+                   placeholder="查询对象">
+          <el-option
+            v-for="item in searchOption"
+            :key="item.key"
+            :label="item.label"
+            :value="item.key">
+          </el-option>
+        </el-select>
+        <el-input placeholder="请输入查询内容"
+                  style="width: 30%;"
+                  clearable
+                  :disabled="listQuery.key === ''"
+                  v-model.trim="listQuery.value"
+                  @clear="getList()"
+                  @keyup.enter.native="handleFilter(1)">
+        </el-input>
+        <el-button
+          type="info" plain
+          @click="handleFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''"
+          icon="el-icon-search">查询
+        </el-button>
+        <el-button
+          icon="el-icon-search"
+          type="info" plain
+          @click="handleExtFilter(1)"
+          :disabled="listQuery.key === ''
+            || listQuery.value === ''">相似
+        </el-button>
+      </el-col>
+      <el-col :span="2">
+        <el-dropdown>
+          <el-button type="primary">
+            更多操作<i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>
+              <el-button type="text"
+                         icon="el-icon-plus"
+                         disabled>
+                添加
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text"
+                         icon="el-icon-edit"
+                         disabled>
+                修改
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text"
+                         icon="el-icon-delete"
+                         disabled>
+                删除
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text" icon="el-icon-upload">
+                导入
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text" icon="el-icon-download">
+                导出
+              </el-button>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-col>
+    </el-row>
+    <el-row class="demo-class2">
+      <el-col :md="4" :lg="3">
+        <img class="avatar2" :src="visitorInfo.pic">
+      </el-col>
+      <el-col :span="19">
+        <el-form class="demo-class" inline="">
+          <el-form-item label="访客姓名">{{visitorInfo.name}}</el-form-item>
+          <el-form-item label="性别">{{visitorInfo.sex}}</el-form-item><br>
+          <el-form-item label="证件类别">{{visitorInfo.id_type}}</el-form-item>
+          <el-form-item label="证件号码">{{visitorInfo.id_number}}</el-form-item><br>
+          <el-form-item label="联系方式">{{visitorInfo.contact}}</el-form-item><br>
+          <el-form-item label="联系住址">{{visitorInfo.address}}</el-form-item><br>
+          <el-form-item label="说  明">{{visitorInfo.descr}}</el-form-item><br>
+        </el-form>
+      </el-col>
+    </el-row>
+    <el-table :data="list" border highlightCurrentRow>
+      <el-table-column prop="time" :show-overflow-tooltip="true" label="时间" width="150px"></el-table-column>
+      <el-table-column prop="idfent" :show-overflow-tooltip="true" label="身份" width="100px"></el-table-column>
+      <el-table-column prop="studentid" :show-overflow-tooltip="true" label="学生编号" width="230px"></el-table-column>
+      <el-table-column prop="studentname" :show-overflow-tooltip="true" label="姓名" width="120px"></el-table-column>
+      <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
+    </el-table>
+    <!--分页条-->
+    <el-pagination
+      style="margin-top: 10px;margin-left: -9px;"
+      background
+      @size-change="handleSizeChange"
+      @current-change="handlePageChange"
+      :current-page.sync="listQuery.page"
+      :page-sizes="[20,50,100]"
+      :page-size="listQuery.limit"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </div>
 </template>
+
 <script>
+  import {fetchList, SubmitTable, fetchSearchOption, valueToLabel} from '@/api/table';
+  import {validateTel, validateIdentity18, validatePassport, validateOther} from "@/utils/validate";
+  import ElRow from "element-ui/packages/row/src/row";
+
   export default {
-    data () {
+    components: {
+      ElRow
+    },
+    data() {
       return {
-        parentsInfo: [{
-          ID: '',
-          name: '',
-          sex: '',
-          address: '',
-          ID_type: '',
-          contact: '',
-          relation: '',
-          types: '',
-          relNum: '',
-          face_key: '',
-          size: '',
-          ctime: '',
-          identity: '',
-          flag: '',
-          descr: ''
-        }],
-        currentRowIndex: -1
+        //搜索内容
+        listQuery: {
+          method: '',
+          page: 1,
+          limit: 20,
+          ext: undefined,
+          key: '',  //查询对象的key值
+          value: ''  //查询对象内容
+        },
+        //总条目数
+        total: 1,
+        searchOption: [],
+        //加载图标
+        listLoading: true,
+        //访客信息
+        visitorInfo: {
+          pic:'@/../static/pic.jpg',
+          name: '蒲鞋市',
+          sex: '男',
+          id_type: '身份证',
+          id_number:'330381199912121414',
+          contact: '13000000000',
+          address: '蒲鞋市蒲鞋市蒲鞋市蒲鞋市蒲鞋市蒲鞋市',
+          descr: '蒲鞋市',
+        },
+        //访问信息
+        list: [
+          {
+            time: '5/10/2018 10:28:00',
+            idfent: '主监护人',
+            studentid: '1101',
+            studentname: '卜培林',
+            descr: 'sadas ',
+          },
+        ],
       }
     },
+    // created() {
+    //   this.getList();
+    // },
+    // watch: {
+    //   $route() {
+    //     this.getList();
+    //   }
+    // },
     methods: {
-      handleCurrentChange(val) {
-        this.currentRowIndex = this.parentsInfo.indexOf(val);
+      //请求后台
+      requestList(List) {
+        fetchList('/studentHome', List).then(response => {
+          const data = response.data;
+          if (data.msg && data.msg !== '') {
+            this.$message({
+              showClose: true,
+              message: data.msg,
+              type: 'error',
+              duration: 2000
+            });
+          }
+          if (data.data) {
+            this.list = data.data;
+            this.list.forEach(item => {
+              item.d_of_b = new Date(item.d_of_b).toLocaleDateString();
+            });
+            this.total = data.total;
+          } else {
+            this.list = [];
+            this.total = 0;
+          }
+        })
       },
-      deleteRow(index, row) {
-        if(index !== -1) {
-          row.splice(index, 1);
+      //获取列表
+      getList() {
+        this.listQuery.ext = undefined;
+        this.listQuery.method = 'List';
+        this.requestList(this.listQuery);
+      },
+      //直接查询
+      handleFilter(val) {
+        this.listQuery.ext = undefined;
+        this.listQuery.method = 'Query';
+        this.listQuery.page = val;
+        this.requestList(this.listQuery);
+      },
+      //相似查询
+      handleExtFilter(val) {
+        this.listQuery.ext = 'like';
+        this.listQuery.method = 'Query';
+        this.listQuery.page = val;
+        this.requestList(this.listQuery);
+      },
+      //改变显示条目
+      handleSizeChange(size) {
+        this.listQuery.limit = size;
+        if (this.listQuery.ext === 'like') {
+          this.handleExtFilter(1);
+        } else if (this.listQuery.method === 'Query') {
+          this.handleFilter(1);
+        } else if (this.listQuery.method === 'List') {
+          this.listQuery.page = 1;
+          this.getList();
         }
-      }
+      },
+      //改变页面事件
+      handlePageChange(val) {
+        if (this.listQuery.ext === 'like') {
+          this.handleExtFilter(val);
+        } else if (this.listQuery.method === 'Query') {
+          this.handleFilter(val);
+        } else if (this.listQuery.method === 'List') {
+          this.getList();
+        }
+      },
+      //select获取焦点后请求数据
+      handleFocus() {
+        if (this.searchOption.length === 0) {
+          fetchSearchOption('/studentHome', {method: 'FieldQuery'})
+            .then(response => {
+              const data = response.data;
+              if (data.msg && data.msg !== '') {
+                this.$message({
+                  showClose: true,
+                  message: data.msg,
+                  type: 'error',
+                  duration: 2000
+                });
+              }
+              if (data.data) {
+                let keys = Object.keys(data.data);
+                let values = Object.values(data.data);
+                for (let i = 0; i < keys.length; i++) {
+                  let optionObj = {};
+                  optionObj.key = keys[i];
+                  optionObj.label = values[i];
+                  this.searchOption.push(optionObj);
+                }
+              }
+            })
+        }
+      },
     }
   }
+
 </script>
 <style>
-  .el-table thead {
-    color: #333;
+  .avatar2 {
+    width: 120px;
+    height: 180px;
+  }
+
+  .demo-class2 {
+    border-radius: 8px;
+    border: #EBEEF5 1px solid;
+    padding: 5px;
+    margin-bottom: 10px;
+  }
+
+  .demo-table-expand {
+    font-size: 0;
+  }
+
+  .demo-table-expand label {
+    width: 60px;
+    color: #99a9bf;
+  }
+
+  .demo-table-expand .el-form-item__content {
+    margin-right: 0;
+    margin-bottom: 0;
+    float: left;
+    text-align: left;
+  }
+
+  .el-table__expanded-cell[class*=cell] {
+    padding: 5px;
+  }
+
+  .el-form-item--small .el-form-item__content, .el-form-item--small .el-form-item__label {
+    line-height: 20px;
+  }
+
+  .demo-class label {
+    text-align: center;
+    width: 80px;
+    color: #99a9bf;
+  }
+
+  .demo-class .el-form-item__content {
+    margin-right: 0;
+    margin-bottom: 0;
+    text-align: left;
   }
 </style>

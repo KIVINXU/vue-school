@@ -206,8 +206,8 @@
         dialogStatus: '',
         //对话框标题
         textMap: {
-          create: '添加人脸图片',
-          update: '修改人脸图片'
+          create: '添加展示信息',
+          update: '修改展示信息'
         },
         //对话框内容
         temp: {
@@ -238,7 +238,7 @@
     methods: {
       //请求后台
       requestList(List) {
-        fetchList('/deviceFaces', List).then(response => {
+        fetchList('/deviceShow', List).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
@@ -302,7 +302,7 @@
       //select获取焦点后请求数据
       handleFocus() {
         if (this.searchOption.length === 0) {
-          fetchSearchOption('/deviceFaces', {method: 'FieldQuery'})
+          fetchSearchOption('/deviceShow', {method: 'FieldQuery'})
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -329,7 +329,7 @@
       //打开弹出框select请求数据
       handleOption() {
         // if (this.flagOption.length === 0) {
-        //   fetchSearchOption('/deviceFaces', {method: 'FieldLabel'})
+        //   fetchSearchOption('/deviceShow', {method: 'FieldLabel'})
         //     .then(response => {
         //       const data = response.data;
         //       if (data.msg && data.msg !== '') {
@@ -377,7 +377,7 @@
         //     this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
         //     var temp = Object.assign({method: 'Insert'}, this.temp);
         //     delete temp.flagname;
-        //     SubmitTable('/deviceFaces', temp).then(response => {
+        //     SubmitTable('/deviceShow', temp).then(response => {
         //       const data = response.data;
         //       if (data.msg && data.msg !== '') {
         //         this.$message({
@@ -424,7 +424,7 @@
         //     delete temp.id_typename;
         //     delete temp.schoolname;
         //     delete temp.flagname;
-        //     SubmitTable('/deviceFaces', temp).then(response => {
+        //     SubmitTable('/deviceShow', temp).then(response => {
         //       const data = response.data;
         //       if (data.msg && data.msg !== '') {
         //         this.$message({
@@ -475,7 +475,7 @@
       },
       rowDelete(index, row) {
         // var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
-        // SubmitTable('/deviceFaces', deleteData).then(response => {
+        // SubmitTable('/deviceShow', deleteData).then(response => {
         //   const data = response.data;
         //   if (data.msg && data.msg !== '') {
         //     this.$message({

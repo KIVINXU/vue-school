@@ -44,22 +44,9 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
               <el-button type="text"
-                         icon="el-icon-plus"
-                         disabled>
-                添加
-              </el-button>
-            </el-dropdown-item>
-            <el-dropdown-item>
-              <el-button type="text"
-                         icon="el-icon-edit"
-                         disabled>
-                修改
-              </el-button>
-            </el-dropdown-item>
-            <el-dropdown-item>
-              <el-button type="text"
                          icon="el-icon-delete"
-                         disabled>
+                         @click="handleDelete(currentRowIndex)"
+                         :disabled="currentRowIndex === -1">
                 删除
               </el-button>
             </el-dropdown-item>
@@ -77,54 +64,53 @@
         </el-dropdown>
       </el-col>
     </el-row>
-    <el-row class="demo-class2">
-      <el-col :md="4" :lg="3">
-        <img class="avatar2" :src="visitorInfo.pic">
-      </el-col>
-      <el-col :span="19">
-        <el-form class="demo-class" inline="">
-          <el-form-item label="访客姓名">{{visitorInfo.name}}</el-form-item>
-          <el-form-item label="性别">{{visitorInfo.sex}}</el-form-item><br>
-          <el-form-item label="证件类别">{{visitorInfo.id_type}}</el-form-item>
-          <el-form-item label="证件号码">{{visitorInfo.id_number}}</el-form-item><br>
-          <el-form-item label="联系方式">{{visitorInfo.contact}}</el-form-item><br>
-          <el-form-item label="联系住址">{{visitorInfo.address}}</el-form-item><br>
-          <el-form-item label="说  明">{{visitorInfo.descr}}</el-form-item><br>
-        </el-form>
+    <el-row>
+      <el-col>
+        <el-table :data="list" ref="SuserOnlineTable"
+                  border highlightCurrentRow>
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="编号" width="100px"></el-table-column>
+          <el-table-column prop="host" :show-overflow-tooltip="true" label="服务器IP地址" width="120px"></el-table-column>
+          <el-table-column prop="client" :show-overflow-tooltip="true" label="用户IP地址" width="120px"></el-table-column>
+          <el-table-column prop="username" :show-overflow-tooltip="true" label="用户" width="120px"></el-table-column>
+          <el-table-column prop="useragent" :show-overflow-tooltip="true" label="浏览器信息" width="120px"></el-table-column>
+          <el-table-column prop="reqnum" :show-overflow-tooltip="true" label="请求次数" width="50px"></el-table-column>
+          <el-table-column prop="reqlast" :show-overflow-tooltip="true" label="最后请求时间"></el-table-column>
+          <el-table-column prop="reqfirst" :show-overflow-tooltip="true" label="关系"></el-table-column>
+        </el-table>
+        <!--分页条-->
+        <el-pagination
+          style="margin-top: 10px;margin-left: -9px;"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange"
+          :current-page.sync="listQuery.page"
+          :page-sizes="[20,50,100]"
+          :page-size="listQuery.limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
       </el-col>
     </el-row>
-    <el-table :data="list" border highlightCurrentRow>
-      <el-table-column prop="id" :show-overflow-tooltip="true" label="编号" width="120px"></el-table-column>
-      <el-table-column prop="time" :show-overflow-tooltip="true" label="时间" width="150px"></el-table-column>
-      <el-table-column prop="idfent" :show-overflow-tooltip="true" label="身份" width="100px"></el-table-column>
-      <el-table-column prop="schoolname" :show-overflow-tooltip="true" label="学校" width="230px"></el-table-column>
-      <el-table-column prop="name" :show-overflow-tooltip="true" label="访问对象" width="120px"></el-table-column>
-      <el-table-column prop="dep" :show-overflow-tooltip="true" label="部门" width="120px"></el-table-column>
-      <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
-    </el-table>
-    <!--分页条-->
-    <el-pagination
-      style="margin-top: 10px;margin-left: -9px;"
-      background
-      @size-change="handleSizeChange"
-      @current-change="handlePageChange"
-      :current-page.sync="listQuery.page"
-      :page-sizes="[20,50,100]"
-      :page-size="listQuery.limit"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
+    <!--删除-->
+    <el-dialog title="提示" :visible.sync="deleteDialogVisible" width="30%">
+      <span><i class="el-icon-warning"></i>是否确认删除名称为【{{deleteName}}】的数据？确认删除后，将不能恢复！</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="rowDelete(currentRowIndex, list)">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-  import {fetchList, SubmitTable, fetchSearchOption, valueToLabel} from '@/api/table';
-  import {validateTel, validateIdentity18, validatePassport, validateOther} from "@/utils/validate";
-  import ElRow from "element-ui/packages/row/src/row";
-  
+  import {fetchList, SubmitTable, fetchSearchOption } from '@/api/table'
+  import ElFormItem from "element-ui/packages/form/src/form-item.vue";
+  import ElDialog from "element-ui/packages/dialog/src/component.vue";
+
   export default {
     components: {
-      ElRow
+      ElDialog,
+      ElFormItem
     },
     data() {
       return {
@@ -138,78 +124,63 @@
           value: ''  //查询对象内容
         },
         //总条目数
-        total: 1,
+        total: 0,
         searchOption: [],
-        //加载图标
-        listLoading: true,
-        //访客信息
-        visitorInfo: {
-          pic:'@/../static/pic.jpg',
-          name: '蒲鞋市',
-          sex: '男',
-          id_type: '身份证',
-          id_number:'330381199912121414',
-          contact: '13000000000',
-          address: '蒲鞋市蒲鞋市蒲鞋市蒲鞋市蒲鞋市蒲鞋市',
-          descr: '蒲鞋市',
-        },
-        //访问信息
         list: [
           {
             id: '1101',
-            time: '5/10/2018 10:28:00',
-            schoolname:'蒲鞋市第三实验小学',
-            idfent: '主监护人',
-            name: '卜培林',
-            dep:'六2班',
-            descr: 'sadas ',
-          },
-          {
-            id: '1102',
-            time: '5/10/2018 10:28:00',
-            schoolname:'蒲鞋市第四实验小学',
-            idfent: '老师',
-            name: '',
-            dep:'',
-            descr: 'sadas ',
-          },
-          {
-            id: '1103',
-            time: '5/10/2018 10:28:00',
-            schoolname:'蒲鞋市第五实验小学',
-            idfent: '访客',
-            name: '郑校长',
-            dep:'校长办公室',
-            descr: 'sadas ',
-          },
+            host: '192.1.1.1',
+            client: '192.3.12.1',
+            username: '卜培林',
+            useragent: '火狐',
+            reqnum: 13,
+            reqlast: '05/10/2018 10:28:00',
+            reqfirst: '05/8/2018 06:11:00',
+          }
         ],
+        //行数
+        currentRowIndex: -1,
       }
     },
-    // created() {
-    //   this.getList();
-    // },
-    // watch: {
-    //   $route() {
-    //     this.getList();
-    //   }
-    // },
+     created() {
+       this.getList();
+     },
+     watch: {
+       $route() {
+         this.getList();
+       }
+     },
     methods: {
+      //传过来是微秒
+      timestampToTime(timestamp) {
+        let time = timestamp.toString().split('.');
+        const date = new Date(parseInt(time[0]));
+        const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '/';
+        const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '/';
+        const Y = date.getFullYear() + ' ';
+        const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+        const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+        const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+        const us = '.' + time[1];
+        return M + D + Y + h + m + s + us;
+      },
       //请求后台
       requestList(List) {
-        fetchList('/studentHome', List).then(response => {
+        fetchList('/SuserOnline', List).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
             this.$message({
-              showClose: true,
               message: data.msg,
               type: 'error',
-              duration: 2000
+              duration: 2000,
+              showClose: true
             });
           }
           if (data.data) {
             this.list = data.data;
             this.list.forEach(item => {
-              item.d_of_b = new Date(item.d_of_b).toLocaleDateString();
+              item.reqlast = this.timestampToTime(item.reqlast);
+              item.reqfirst = this.timestampToTime(item.reqfirst);
             });
             this.total = data.total;
           } else {
@@ -263,7 +234,7 @@
       //select获取焦点后请求数据
       handleFocus() {
         if (this.searchOption.length === 0) {
-          fetchSearchOption('/studentHome', {method: 'FieldQuery'})
+          fetchSearchOption('/SuserOnline', {method: 'FieldQuery'})
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -287,56 +258,43 @@
             })
         }
       },
+      
+
+      //获取index
+      handleCurrentChange(val) {
+        this.currentRowIndex = this.list.indexOf(val);
+      },
+      //删除行
+      handleDelete(index) {
+         this.deleteDialogVisible = true;
+         this.deleteName = this.list[index].name
+      },
+      rowDelete(index, row) {
+         var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
+         SubmitTable('/SuserOnline', deleteData).then(response => {
+           const data = response.data;
+           if (data.msg && data.msg !== '') {
+             this.$message({
+               showClose: true,
+               message: data.msg,
+               type: 'info',
+               duration: 2000
+             });
+           }
+           if (data.id === '00000') {
+             this.$notify({
+               title: '成功',
+               message: '删除成功',
+               type: 'success',
+               duration: 2000
+             });
+             row.splice(index, 1);
+             this.deleteDialogVisible = false;
+             this.total -= 1;
+           }
+         });
+      },
     }
   }
 
 </script>
-<style>
-  .avatar2 {
-    width: 120px;
-    height: 180px;
-  }
-  
-  .demo-class2 {
-    border-radius: 8px;
-    border: #EBEEF5 1px solid;
-    padding: 5px;
-    margin-bottom: 10px;
-  }
-  
-  .demo-table-expand {
-    font-size: 0;
-  }
-  
-  .demo-table-expand label {
-    width: 60px;
-    color: #99a9bf;
-  }
-  
-  .demo-table-expand .el-form-item__content {
-    margin-right: 0;
-    margin-bottom: 0;
-    float: left;
-    text-align: left;
-  }
-  
-  .el-table__expanded-cell[class*=cell] {
-    padding: 5px;
-  }
-  
-  .el-form-item--small .el-form-item__content, .el-form-item--small .el-form-item__label {
-    line-height: 20px;
-  }
-  
-  .demo-class label {
-    text-align: center;
-    width: 80px;
-    color: #99a9bf;
-  }
-  
-  .demo-class .el-form-item__content {
-    margin-right: 0;
-    margin-bottom: 0;
-    text-align: left;
-  }
-</style>
