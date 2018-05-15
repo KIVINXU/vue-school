@@ -68,14 +68,14 @@
       <el-col>
         <el-table :data="list" ref="SuserOnlineTable"
                   border highlightCurrentRow>
-          <el-table-column prop="id" :show-overflow-tooltip="true" label="编号" width="100px"></el-table-column>
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="编号" width="140px"></el-table-column>
           <el-table-column prop="host" :show-overflow-tooltip="true" label="服务器IP地址" width="120px"></el-table-column>
           <el-table-column prop="client" :show-overflow-tooltip="true" label="用户IP地址" width="120px"></el-table-column>
           <el-table-column prop="username" :show-overflow-tooltip="true" label="用户" width="120px"></el-table-column>
-          <el-table-column prop="useragent" :show-overflow-tooltip="true" label="浏览器信息" width="120px"></el-table-column>
-          <el-table-column prop="reqnum" :show-overflow-tooltip="true" label="请求次数" width="50px"></el-table-column>
-          <el-table-column prop="reqlast" :show-overflow-tooltip="true" label="最后请求时间"></el-table-column>
-          <el-table-column prop="reqfirst" :show-overflow-tooltip="true" label="关系"></el-table-column>
+          <el-table-column prop="useragent" :show-overflow-tooltip="true" label="浏览器信息" width="180px"></el-table-column>
+          <el-table-column prop="reqnum" :show-overflow-tooltip="true" label="请求次数" width="80px"></el-table-column>
+          <el-table-column prop="reqlast" :show-overflow-tooltip="true" label="最近请求"></el-table-column>
+          <el-table-column prop="reqfirst" :show-overflow-tooltip="true" label="首次请求"></el-table-column>
         </el-table>
         <!--分页条-->
         <el-pagination
