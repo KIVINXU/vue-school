@@ -303,7 +303,8 @@
           method: '',
           ext: undefined,
           key: '',  //查询对象的key值
-          value: ''  //查询对象内容
+          value: '',  //查询对象内容
+          classid: ''
         },
         searchOption: [],
         //加载图标
@@ -445,18 +446,21 @@
       getList() {
         this.listQuery.ext = undefined;
         this.listQuery.method = 'List';
+        this.listQuery.classid = this.classInfo.id;
         this.requestList(this.listQuery);
       },
       //直接查询
       handleFilter(val) {
         this.listQuery.ext = undefined;
         this.listQuery.method = 'Query';
+        this.listQuery.classid = this.classInfo.id;
         this.requestList(this.listQuery);
       },
       //相似查询
       handleExtFilter(val) {
         this.listQuery.ext = 'like';
         this.listQuery.method = 'Query';
+        this.listQuery.classid = this.classInfo.id;
         this.requestList(this.listQuery);
       },
       

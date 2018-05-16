@@ -44,6 +44,20 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
               <el-button type="text"
+                         icon="el-icon-plus"
+                         disabled>
+                添加
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text"
+                         icon="el-icon-edit"
+                         disabled>
+                修改
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text"
                          icon="el-icon-delete"
                          @click="handleDelete(currentRowIndex)"
                          :disabled="currentRowIndex === -1">
@@ -51,12 +65,14 @@
               </el-button>
             </el-dropdown-item>
             <el-dropdown-item>
-              <el-button type="text" icon="el-icon-upload">
+              <el-button type="text"
+                         icon="el-icon-upload" disabled>
                 导入
               </el-button>
             </el-dropdown-item>
             <el-dropdown-item>
-              <el-button type="text" icon="el-icon-download">
+              <el-button type="text"
+                         icon="el-icon-download" disabled>
                 导出
               </el-button>
             </el-dropdown-item>
@@ -67,11 +83,13 @@
     <el-row>
       <el-col>
         <el-table :data="list" ref="SuserOnlineTable"
-                  border highlightCurrentRow>
+                  highlight-current-row
+                  @current-change="handleCurrentChange"
+                  border>
           <el-table-column prop="id" :show-overflow-tooltip="true" label="编号" width="140px"></el-table-column>
           <el-table-column prop="host" :show-overflow-tooltip="true" label="服务器IP地址" width="120px"></el-table-column>
           <el-table-column prop="client" :show-overflow-tooltip="true" label="用户IP地址" width="120px"></el-table-column>
-          <el-table-column prop="username" :show-overflow-tooltip="true" label="用户" width="120px"></el-table-column>
+          <el-table-column prop="username" :show-overflow-tooltip="true" label="登录用户" width="120px"></el-table-column>
           <el-table-column prop="useragent" :show-overflow-tooltip="true" label="浏览器信息" width="180px"></el-table-column>
           <el-table-column prop="reqnum" :show-overflow-tooltip="true" label="请求次数" width="80px"></el-table-column>
           <el-table-column prop="reqlast" :show-overflow-tooltip="true" label="最近请求"></el-table-column>
@@ -154,15 +172,14 @@
       //传过来是微秒
       timestampToTime(timestamp) {
         let time = timestamp.toString().split('.');
-        const date = new Date(parseInt(time[0]));
+        const date = new Date(parseInt(time[0]) * 1000);
         const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '/';
         const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '/';
         const Y = date.getFullYear() + ' ';
         const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
         const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
-        const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
-        const us = '.' + time[1];
-        return M + D + Y + h + m + s + us;
+        const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()) + '.';
+        return M + D + Y + h + m + s + time[1];
       },
       //请求后台
       requestList(List) {

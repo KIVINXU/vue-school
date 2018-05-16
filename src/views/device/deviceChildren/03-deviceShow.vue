@@ -45,7 +45,7 @@
             <el-dropdown-item>
               <el-button type="text"
                          icon="el-icon-plus"
-                         @click="handleCreate">
+                         disabled>
                 添加
               </el-button>
             </el-dropdown-item>
@@ -60,18 +60,19 @@
             <el-dropdown-item>
               <el-button type="text"
                          icon="el-icon-delete"
-                         @click="handleDelete(currentRowIndex)"
-                         :disabled="currentRowIndex === -1">
+                         disabled>
                 删除
               </el-button>
             </el-dropdown-item>
             <el-dropdown-item>
-              <el-button type="text" icon="el-icon-upload">
+              <el-button type="text"
+                         icon="el-icon-upload" disabled>
                 导入
               </el-button>
             </el-dropdown-item>
             <el-dropdown-item>
-              <el-button type="text" icon="el-icon-download">
+              <el-button type="text"
+                         icon="el-icon-download" disabled>
                 导出
               </el-button>
             </el-dropdown-item>
@@ -217,25 +218,36 @@
           name: '',
           sex: '',
           type: '',
-          object: '',
           relation: '',
           descr: '',
         },
         //内容验证规则
-        rules: {
-          id: {required: true, message: '编号不能为空', trigger: 'blur'},
-        }
+        rules: {}
       }
     },
-    // created() {
-    //   this.getList();
-    // },
-    // watch: {
-    //   $route() {
-    //     this.getList();
-    //   }
-    // },
+     created() {
+       this.getList();
+     },
+     watch: {
+       $route() {
+         this.getList();
+       }
+     },
     methods: {
+      //传过来是秒
+      timestampToTime(timestamp) {
+        if(timestamp < 1000000000000) {
+          timestamp = timestamp * 1000;
+        } //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        const date = new Date(timestamp);
+        const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '/';
+        const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '/';
+        const Y = date.getFullYear() + ' ';
+        const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+        const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+        const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+        return M + D + Y + h + m + s;
+      },
       //请求后台
       requestList(List) {
         fetchList('/deviceShow', List).then(response => {
@@ -250,6 +262,9 @@
           }
           if (data.data) {
             this.list = data.data;
+            this.list.forEach(item => {
+              item.time = this.timestampToTime(item.time);
+            });
             this.total = data.total;
           } else {
             this.list = [];
@@ -326,26 +341,6 @@
             })
         }
       },
-      //打开弹出框select请求数据
-      handleOption() {
-        // if (this.flagOption.length === 0) {
-        //   fetchSearchOption('/deviceShow', {method: 'FieldLabel'})
-        //     .then(response => {
-        //       const data = response.data;
-        //       if (data.msg && data.msg !== '') {
-        //         this.$message({
-        //           showClose: true,
-        //           message: data.msg,
-        //           type: 'error',
-        //           duration: 2000
-        //         });
-        //       }
-        //       if (data.data) {
-        //         this.flagOption = data.data.FLAG;
-        //       }
-        //     });
-        // }
-      },
       resetTemp() {
         this.temp = {
           id: '',
@@ -354,107 +349,54 @@
           name: '',
           sex: '',
           type: '',
-          object: '',
           relation: '',
           descr: '',
         }
       },
-      // 添加对话框
-      handleCreate() {
-        // this.resetTemp();
-        // this.handleOption();
-        // //打开对话框先清空select选择框
-        // this.dialogStatus = 'create';
-        // this.dialogVisible = true;
-        // this.$nextTick(() => {
-        //   this.$refs['dataForm'].clearValidate();
-        // })
-      },
-      //添加完毕上传
-      createData() {
-        // this.$refs['dataForm'].validate((valid) => {
-        //   if (valid) {
-        //     this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
-        //     var temp = Object.assign({method: 'Insert'}, this.temp);
-        //     delete temp.flagname;
-        //     SubmitTable('/deviceShow', temp).then(response => {
-        //       const data = response.data;
-        //       if (data.msg && data.msg !== '') {
-        //         this.$message({
-        //           showClose: true,
-        //           message: data.msg,
-        //           type: 'info',
-        //           duration: 2000
-        //         });
-        //       }
-        //       if (data.id === '00000') {
-        //         this.list.unshift(this.temp);
-        //         this.dialogVisible = false;
-        //         this.$notify({
-        //           title: '成功',
-        //           message: '创建成功',
-        //           type: 'success',
-        //           duration: 2000
-        //         });
-        //         this.total += 1;
-        //       }
-        //     });
-        //   }
-        // })
-      },
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
-        // //打开对话框先清空，再把当前项插入select选择框
-        // this.schoolIDOption = [];
-        // this.schoolIDOption.push({key: this.temp.schoolid, label: this.temp.schoolname});
-        // this.handleOption();
         this.dialogStatus = 'update';
         this.dialogVisible = true;
-        // this.$nextTick(() => {
-        //   this.$refs['dataForm'].clearValidate();
-        // })
+         this.$nextTick(() => {
+           this.$refs['dataForm'].clearValidate();
+         })
       },
       //修改完毕上传
       updateData() {
-        // this.$refs['dataForm'].validate((valid) => {
-        //   if (valid) {
-        //     // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
-        //     let temp = Object.assign({method: 'Update'}, this.temp);
-        //     delete temp.id_typename;
-        //     delete temp.schoolname;
-        //     delete temp.flagname;
-        //     SubmitTable('/deviceShow', temp).then(response => {
-        //       const data = response.data;
-        //       if (data.msg && data.msg !== '') {
-        //         this.$message({
-        //           showClose: true,
-        //           message: data.msg,
-        //           type: 'info',
-        //           duration: 2000,
-        //           showClose:true
-        //         });
-        //       }
-        //       if (data.id === '00000') {
-        //         for (const v of this.list) {
-        //           if (v.id === this.temp.id) {
-        //             const index = this.list.indexOf(v);
-        //             this.list.splice(index, 1, this.temp);
-        //             break;
-        //           }
-        //         }
-        //         this.dialogVisible = false;
-        //         this.$notify({
-        //           title: '成功',
-        //           message: '更新成功',
-        //           type: 'success',
-        //           duration: 2000,
-        //           showClose:true
-        //         });
-        //       }
-        //     });
-        //   }
-        // });
+         this.$refs['dataForm'].validate((valid) => {
+           if (valid) {
+             let temp = Object.assign({method: 'Update'}, this.temp.descr);
+             SubmitTable('/deviceShow', temp).then(response => {
+               const data = response.data;
+               if (data.msg && data.msg !== '') {
+                 this.$message({
+                   message: data.msg,
+                   type: 'info',
+                   duration: 2000,
+                   showClose:true
+                 });
+               }
+               if (data.id === '00000') {
+                 for (const v of this.list) {
+                   if (v.id === this.temp.id) {
+                     const index = this.list.indexOf(v);
+                     this.list.splice(index, 1, this.temp);
+                     break;
+                   }
+                 }
+                 this.dialogVisible = false;
+                 this.$notify({
+                   title: '成功',
+                   message: '更新成功',
+                   type: 'success',
+                   duration: 2000,
+                   showClose:true
+                 });
+               }
+             });
+           }
+         });
       },
 
       //获取index
@@ -467,36 +409,6 @@
           this.temp.descr = '';
         }
         return 128 - this.temp.descr.length
-      },
-      //删除行
-      handleDelete(index) {
-        // this.deleteDialogVisible = true;
-        // this.deleteName = this.list[index].name
-      },
-      rowDelete(index, row) {
-        // var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
-        // SubmitTable('/deviceShow', deleteData).then(response => {
-        //   const data = response.data;
-        //   if (data.msg && data.msg !== '') {
-        //     this.$message({
-        //       showClose: true,
-        //       message: data.msg,
-        //       type: 'info',
-        //       duration: 2000
-        //     });
-        //   }
-        //   if (data.id === '00000') {
-        //     this.$notify({
-        //       title: '成功',
-        //       message: '删除成功',
-        //       type: 'success',
-        //       duration: 2000
-        //     });
-        //     row.splice(index, 1);
-        //     this.deleteDialogVisible = false;
-        //     this.total -= 1;
-        //   }
-        // });
       },
     }
   }

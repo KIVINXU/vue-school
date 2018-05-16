@@ -44,6 +44,13 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
               <el-button type="text"
+                         icon="el-icon-plus"
+                         disabled>
+                添加
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <el-button type="text"
                          icon="el-icon-edit"
                          @click="handleUpdate(list[currentRowIndex])"
                          :disabled="currentRowIndex === -1">
