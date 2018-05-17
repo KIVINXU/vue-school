@@ -267,7 +267,6 @@
       };
       //状态修改    flagValue
       const checkFlagValue = (rule, value, callback) => {
-        console.log(this.flagValue);
         if (this.flagValue === 1 && this.temp.flag > 0) {
           //当状态为禁止，且flag大于0的时候使两者值相等
           callback();
@@ -275,7 +274,6 @@
           this.temp.flag = this.flagValue;
           callback();
         }
-        console.log(this.flagValue);
       };
       //禁止时间限制 flag
       const checkFlag = (rule, value, callback) => {
@@ -321,7 +319,20 @@
         searchOption: [],
         //加载图标
         listLoading: true,
-        list: [],
+        list: [{
+          username: 'test1',
+          old_username: '', //修改之前的username
+          passwd: 'Eean8XDv/pk1k8PIa4WW6X5N3c0=',
+          maxcon: 2,
+          curcon: 1,
+          idle: 7200,
+          alive: 28800,
+          flag: 0,
+          flagname: '正常',
+          // changer: '',
+          way: '',
+          descr: '',
+        }],
         //行数
         currentRowIndex: -1,
         //-----添加/修改对话框--------
@@ -453,7 +464,7 @@
       //select获取焦点后请求数据
       handleFocus() {
         if (this.searchOption.length === 0) {
-          fetchSearchOption('/SuserHome', {method: 'FieldSelect'})
+          fetchSearchOption('/SuserHome', {method: 'FieldQuery'})
             .then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -530,6 +541,7 @@
           if (valid) {
             if(this.temp.passwd.length <= 16) {
               this.temp.passwd = cryptoPass(this.temp.passwd);
+              this.temp.passwd2 = cryptoPass(this.temp.passwd2);
             }
             this.temp.flagname = valueToLabel(this.flagOption, this.flagValue);
             var temp = Object.assign({method: 'Insert'}, this.temp);
@@ -577,7 +589,7 @@
       },
   
       handlePasswd(e) {
-        //按回退键和delete键就清空密码框
+        //按回退键和delete键就清空密码框，超过16位按任意键都清空
         if(this.temp.passwd.length > 16 ||
           e.keyCode === 8 || e.keyCode === 46) {
           this.temp.passwd = '';
@@ -588,14 +600,23 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.flagname = valueToLabel(this.flagOption, this.flagValue);
-            if(this.temp.passwd.length <= 16) {
+            let temp = Object.assign({}, this.temp);
+            let newTemp = {};
+            //如果密码未加密,则加密后发送
+            if(temp.passwd.length <= 16) {
               this.temp.passwd = cryptoPass(this.temp.passwd);
+              this.temp.passwd2 = cryptoPass(this.temp.passwd2);
+              newTemp = Object.assign({method: 'Update'}, this.temp);
+            }else {
+              //如果密码已加密，则发送空字符给后端
+              temp.passwd = '';
+              temp.passwd = '';
+              newTemp = Object.assign({method: 'Update'}, temp);
             }
-            let temp = Object.assign({method: 'Update'}, this.temp);
-            delete temp.passwd2;
-            delete temp.levelsname;
-            delete temp.flagname;
-            SubmitTable('/SuserHome', temp).then(response => {
+            delete newTemp.passwd2;
+            delete newTemp.levelsname;
+            delete newTemp.flagname;
+            SubmitTable('/SuserHome', newTemp).then(response => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
@@ -646,10 +667,10 @@
       //删除行
       handleDelete(index) {
         this.deleteDialogVisible = true;
-        this.deleteName = this.list[index].name
+        this.deleteName = this.list[index].username
       },
       rowDelete(index, row) {
-        var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
+        var deleteData = Object.assign({method: 'Delete'}, {username: this.list[index].username});
         SubmitTable('/SuserHome', deleteData).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {

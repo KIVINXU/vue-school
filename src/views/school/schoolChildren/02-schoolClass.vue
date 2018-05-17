@@ -266,7 +266,7 @@
           adviser: '秦大叔',
           adviser2: '',
           studentnum: '34',
-          flag: 0,
+          flag: '',
           flagname: '正常',
           descr: '啊实打实大师大师啊等'
         },{
@@ -279,7 +279,7 @@
           adviser: '萨队',
           adviser2: '',
           studentnum: '23',
-          flag: 0,
+          flag: '',
           flagname: '正常',
           descr: '花里胡哨大会收到啦'
         }],
@@ -339,7 +339,6 @@
           gradeid: {required: true, message: '请选择年级号', trigger: 'blur'},
           teacherid: {required: true, message: '请选择班主任', trigger: 'blur'},
           schoolid: {required: true, message: '请选择所属学校名称', trigger: 'blur'},
-          flag: {required: true, message: '请选择班级状态', trigger: 'change'},
         },
       }
     },
@@ -563,7 +562,8 @@
           teacherid: '',
           adviser: '',
           adviser2: '',
-          flag: 0,
+          studentnum: 0,
+          flag: '',
           flagname: '',
           descr: ''
         }
@@ -585,7 +585,11 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            if(this.temp.flag !== ''){
+              this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            }else {
+              this.temp.flagname = '';
+            }
             this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.adviser = valueToLabel(this.teacherIDOption, this.temp.teacherid);
             //自动更改id
@@ -645,7 +649,11 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            if(this.temp.flag !== ''){
+              this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            }else {
+              this.temp.flagname = '';
+            }
             this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.adviser = valueToLabel(this.teacherIDOption, this.temp.teacherid);
             //自动更改id
@@ -703,7 +711,7 @@
       //删除行
       handleDelete(index) {
         this.deleteDialogVisible = true;
-        this.deleteName = this.list[index].name
+        this.deleteName = this.list[index].id
       },
       rowDelete(index, row) {
         let deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});

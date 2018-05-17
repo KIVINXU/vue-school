@@ -161,13 +161,6 @@
                 <el-radio-button label="女">女</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="出生日期" prop="d_of_b">
-              <el-date-picker v-model.trim="temp.d_of_b"
-                              placeholder="请选择出生日期"
-                              align="right" style="width: 100%"
-                              type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy">
-              </el-date-picker>
-            </el-form-item>
             <el-form-item label="证件类别" prop="id_type">
               <el-select v-model.trim="temp.id_type"
                          placeholder="请选择证件类别"
@@ -181,7 +174,16 @@
               </el-select>
             </el-form-item>
             <el-form-item label="证件号码" prop="id">
-              <el-input v-model.trim="temp.id" :maxlength="18"></el-input>
+              <el-input v-model.trim="temp.id"
+                        @blur="handleStudentInfo"
+                        :maxlength="18" ></el-input>
+            </el-form-item>
+            <el-form-item label="出生日期" prop="d_of_b">
+              <el-date-picker v-model.trim="temp.d_of_b"
+                              placeholder="请选择出生日期"
+                              align="right" style="width: 100%"
+                              type="date" format="MM/dd/yyyy" value-format="MM/dd/yyyy">
+              </el-date-picker>
             </el-form-item>
             <el-form-item label="住址" prop="address">
               <el-input v-model.trim="temp.address" :maxlength="64"></el-input>
@@ -547,6 +549,11 @@
           this.$refs['dataForm'].clearValidate();
         })
       },
+      //输入学生编号可以自动补全对话框内容
+      handleStudentInfo() {
+        console.log('学生信息');
+      },
+      
       //添加完毕上传
       createData() {
         this.$refs['dataForm'].validate((valid) => {

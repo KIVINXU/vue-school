@@ -158,6 +158,10 @@
         ],
         //行数
         currentRowIndex: -1,
+        //-----删除对话框----
+        //对话框状态
+        deleteDialogVisible: false,
+        deleteName: '',
       }
     },
      created() {
@@ -284,7 +288,7 @@
       //删除行
       handleDelete(index) {
          this.deleteDialogVisible = true;
-         this.deleteName = this.list[index].name
+         this.deleteName = this.list[index].username
       },
       rowDelete(index, row) {
          var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
