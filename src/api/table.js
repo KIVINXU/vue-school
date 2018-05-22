@@ -37,11 +37,4 @@ export function labelToValue(option, label) {
   return obj.key;
 }
 
-//人员录入请求
-export function createPerson(url, data) {
-  return request({
-    url: url,
-    method: 'post',
-    data
-  })
-}
+

@@ -147,7 +147,7 @@
                         :maxlength="2"></el-input>
             </el-form-item>
             <el-form-item label="学校名称" prop="schoolid">
-              <el-tooltip class="item" effect="dark"
+              <el-tooltip effect="dark"
                           content="点击回车搜索" placement="top">
                 <el-select v-model.trim="temp.schoolid"
                            placeholder="请输入学校编号搜索"
@@ -177,7 +177,7 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item label="班主任" prop="teacherid">
-              <el-tooltip class="item" effect="dark"
+              <el-tooltip effect="dark"
                           content="点击回车搜索" placement="top">
                 <el-select v-model.trim="temp.teacherid"
                            placeholder="请输入班主任编号搜索"
@@ -298,6 +298,7 @@
         //对话框内容
         temp: {
           id: '',
+          old_id: '',
           classno: '',
           gradeid: '',
           schoolid: '',

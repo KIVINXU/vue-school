@@ -539,7 +539,7 @@
           id: '',
           old_id: '',
           name: '',
-          d_of_b: new Date().toLocaleDateString(),
+          d_of_b: '',
           sex: '男',
           address: '',
           id_type: 0,
@@ -568,7 +568,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
+//            this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
             // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.old_id;
@@ -624,7 +624,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
+//            this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
             // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
             delete temp.id_typename;

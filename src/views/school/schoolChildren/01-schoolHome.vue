@@ -276,6 +276,7 @@
         //对话框内容
         temp: {
           id: '',
+          old_id: '',
           name: '',
           levels: '',
           levelsname: '',
@@ -484,6 +485,7 @@
         this.eqpidTemp = [];
         this.temp = {
           id: '',
+          old_id: '',
           name: '',
           levels: 0,
           levelsname: '',
@@ -558,6 +560,7 @@
         //存储eqpid
         this.eqpidTemp = [].concat(this.temp.eqpid);
         this.handleOption();
+        this.temp.old_id = this.temp.id;//打开对话框，存储已有的id
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.$nextTick(() => {
@@ -590,7 +593,7 @@
               }
               if(data.id === '00000') {
                 for (const v of this.list) {
-                  if (v.id === this.temp.id) {
+                  if (v.id === this.temp.old_id) {
                     const index = this.list.indexOf(v);
                     this.list.splice(index, 1, this.temp);
                     break;

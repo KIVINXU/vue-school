@@ -86,7 +86,7 @@
                   highlight-current-row
                   @current-change="handleCurrentChange"
                   border>
-          <el-table-column prop="id" :show-overflow-tooltip="true" label="编号" width="140px"></el-table-column>
+          <el-table-column prop="id" :show-overflow-tooltip="true" label="标示符" width="140px"></el-table-column>
           <el-table-column prop="host" :show-overflow-tooltip="true" label="服务器IP地址" width="120px"></el-table-column>
           <el-table-column prop="client" :show-overflow-tooltip="true" label="用户IP地址" width="120px"></el-table-column>
           <el-table-column prop="username" :show-overflow-tooltip="true" label="登录用户" width="120px"></el-table-column>

@@ -300,6 +300,7 @@
         //对话框内容
         temp: {
           id: '',
+          old_id: '', //修改之前的id
           name: '',
           sex: '',
           id_type: '',
@@ -502,6 +503,7 @@
       resetTemp() {
         this.temp = {
           id: '',
+          old_id: '', //修改之前的id
           name: '',
           sex: '男',
           id_type: 0,
@@ -537,6 +539,7 @@
             this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
+            delete temp.old_id;
             delete temp.id_typename;
             delete temp.schoolname;
             delete temp.classname;
@@ -575,6 +578,7 @@
         this.schoolIDOption = [];
         this.schoolIDOption.push({key: this.temp.schoolid, label: this.temp.schoolname});
         this.handleOption();
+        this.temp.old_id = this.temp.id;//打开对话框，存储已有的id
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.$nextTick(() => {
@@ -605,7 +609,7 @@
               }
               if (data.id === '00000') {
                 for (const v of this.list) {
-                  if (v.id === this.temp.id) {
+                  if (v.id === this.temp.old_id) {
                     const index = this.list.indexOf(v);
                     this.list.splice(index, 1, this.temp);
                     break;

@@ -46,28 +46,32 @@
             <img v-if="avatarUrl" :src="avatarUrl" alt="" style="width: 98%">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-button>
-          <image-upload field="img" img-format="jpg" inputAccept="image/jpg,image/jpeg" v-model="showImage"
-                        @crop-success="cropSuccess" :no-circle="true" :width="300" :height="420">
+          <image-upload field="img" img-format="jpg"
+                        inputAccept="image/jpg,image/jpeg"
+                        v-model="showImage"
+                        @crop-success="cropSuccess"
+                        :no-circle="true"
+                        :width="300" :height="420">
           </image-upload>
         </el-form-item>
         <el-form-item label="员工姓名：">
-          <el-input v-model="staffForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
+          <el-input v-model.trim="staffForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
           <el-radio-group v-model="staffForm.gender">
-            <el-radio-button label="M">男</el-radio-button>
-            <el-radio-button label="F">女</el-radio-button>
+            <el-radio-button label="男">男</el-radio-button>
+            <el-radio-button label="女">女</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="证件号码：">
-          <el-input v-model="staffForm.id" readonly></el-input>
+          <el-input v-model.trim="staffForm.id" readonly></el-input>
         </el-form-item>
         <el-form-item label="联系电话：" prop="tel">
-          <el-input v-model="staffForm.tel" :maxlength="11"></el-input>
+          <el-input v-model.trim="staffForm.tel" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址：" prop="addr">
-          <el-input v-model="staffForm.addr" :maxlength="64"></el-input>
+          <el-input v-model.trim="staffForm.addr" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="所属学校：" prop="school">
-          <el-input type="textarea" v-model="staffForm.school" :maxlength="128"></el-input>
+          <el-input type="textarea" v-model.trim="staffForm.school" :maxlength="128"></el-input>
         </el-form-item>
       </el-col>
     </el-row>
@@ -76,7 +80,7 @@
 <script>
   import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
   import ImageUpload from 'vue-image-crop-upload'
-  import {createPerson} from '@/api/table'
+  import { SubmitTable, fetchSearchOption } from '@/api/table'
   import ElRadioButton from "element-ui/packages/radio/src/radio-button";
 
   export default {
@@ -166,7 +170,7 @@
     }
   }
 </script>
-<style lang="less">
+<style lang="scss">
   .parentForm {
     border-radius: 8px;
     border: #AAAAAA 1px solid;

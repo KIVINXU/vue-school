@@ -19,11 +19,11 @@
                   :disabled="listQuery.key === ''"
                   v-model.trim="listQuery.value"
                   @clear="getList()"
-                  @keyup.enter.native="handleFilter(1)">
+                  @keyup.enter.native="handleFilter()">
         </el-input>
         <el-button
           type="info" plain
-          @click="handleFilter(1)"
+          @click="handleFilter()"
           :disabled="listQuery.key === ''
             || listQuery.value === ''"
           icon="el-icon-search">查询
@@ -31,7 +31,7 @@
         <el-button
           icon="el-icon-search"
           type="info" plain
-          @click="handleExtFilter(1)"
+          @click="handleExtFilter()"
           :disabled="listQuery.key === ''
             || listQuery.value === ''">相似
         </el-button>
@@ -128,7 +128,8 @@
       <el-table-column prop="id_typename" :show-overflow-tooltip="true" label="证件类型"></el-table-column>
       <el-table-column prop="guarder" :show-overflow-tooltip="true" label="主监护人"></el-table-column>
       <el-table-column prop="relationname" :show-overflow-tooltip="true" label="与学生人关系"></el-table-column>
-      <el-table-column prop="code" :show-overflow-tooltip="true" label="学号"></el-table-column>
+      <el-table-column prop="relnum" :show-overflow-tooltip="true" label="关联数"></el-table-column>
+      <el-table-column prop="studentno" :show-overflow-tooltip="true" label="学号"></el-table-column>
       <el-table-column prop="flagname" :show-overflow-tooltip="true" label="状态"></el-table-column>
       <el-table-column prop="descr" :show-overflow-tooltip="true" label="说明"></el-table-column>
     </el-table>
@@ -174,9 +175,13 @@
               </el-select>
             </el-form-item>
             <el-form-item label="证件号码" prop="id">
-              <el-input v-model.trim="temp.id"
-                        @blur="handleStudentInfo"
-                        :maxlength="18" ></el-input>
+              <el-tooltip  content="注意：从服务器抓取信息会重置表单内容" placement="top">
+                <el-input v-model.trim="temp.id"
+                          :disabled="dialogVisible === 'update'"
+                          :maxlength="18" >
+                  <el-button slot="append" @click="handleStudentInfo">抓取信息</el-button>
+                </el-input>
+              </el-tooltip>
             </el-form-item>
             <el-form-item label="出生日期" prop="d_of_b">
               <el-date-picker v-model.trim="temp.d_of_b"
@@ -210,24 +215,22 @@
                            :key="item.key"
                            :label="item.label"
                            :value="item.key">
-                
                 </el-option>
               </el-select>
             </el-form-item>
-            <!--<el-form-item label="状态" prop="flag">-->
-            <!--<el-select v-model.trim="temp.flag"-->
-            <!--placeholder="请选择学生状态"-->
-            <!--style="width: 100%">-->
-            <!--<el-option v-for="item in flagOption"-->
-            <!--:key="item.key"-->
-            <!--:label="item.label"-->
-            <!--:value="item.key">-->
-            
-            <!--</el-option>-->
-            <!--</el-select>-->
-            <!--</el-form-item>-->
-            <el-form-item label="学号" prop="code">
-              <el-input v-model.trim="temp.code" :maxlength="20"></el-input>
+            <el-form-item label="状态" prop="flag">
+              <el-select v-model.trim="temp.flag"
+                         placeholder="请选择学生状态"
+                         style="width: 100%">
+                <el-option v-for="item in flagOption"
+                           :key="item.key"
+                           :label="item.label"
+                           :value="item.key">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="学号" prop="studentno">
+              <el-input v-model.trim="temp.studentno" :maxlength="20"></el-input>
             </el-form-item>
             <el-form-item label="母亲" prop="mother">
               <el-input v-model.trim="temp.mother" :maxlength="16"></el-input>
@@ -238,7 +241,8 @@
           </el-col>
         </el-row>
         <el-form-item label="说明" prop="descr">
-          <el-input type="textarea" :maxlength="128" v-model.trim.trim="temp.descr"
+          <el-input type="textarea" :maxlength="128"
+                    v-model.trim.trim="temp.descr"
                     :autosize="{ minRows: 1, maxRows: 4 }"></el-input>
           <span style="font-size: 12px" v-show="leftLength">剩余可输入{{leftLength()}}个字</span>
         </el-form-item>
@@ -254,7 +258,7 @@
 
 <script>
   import {fetchList, SubmitTable, fetchSearchOption, valueToLabel} from '@/api/table';
-  import {validateTel, validateIdentity18, validatePassport, validateOther} from "@/utils/validate";
+  import {validateIdentity18, validatePassport, validateOther} from "@/utils/validate";
   import ElRow from "element-ui/packages/row/src/row";
   
   export default {
@@ -263,11 +267,12 @@
     },
     data() {
       //证件号码验证
-      var checkID_number = (rule, value, callback) => {
+      const checkID_number = (rule, value, callback) => {
         if (this.temp.id_type === 0) {
           if (!validateIdentity18(value)) {
             callback(new Error('请输入正确的18位身份证号码'))
           } else {
+            this.handleBirthday();
             callback()
           }
         } else if (this.temp.id_type === 1) {
@@ -285,14 +290,14 @@
         }
       };
       //主监护人验证，如果主监护人证件号码不为空，则名称和关系不能空
-      var checkGuarder = (rule, value, callback) => {
+      const checkGuarder = (rule, value, callback) => {
         if (this.temp.guarderid && !value) {
           callback(new Error('主监护人名称不能为空'));
         } else {
           callback();
         }
       };
-      var checkRelation = (rule, value, callback) => {
+      const checkRelation = (rule, value, callback) => {
         if (this.temp.guarderid && !value) {
           callback(new Error('与学生关系不能为空'));
         } else {
@@ -319,8 +324,8 @@
           teacherid: '1101',
           adviser: '蒲鞋市',
           adviser2: '蒲鞋市',
-          studentnum: '34',
-          flag: '0',
+          studentno: '34',
+          flag: 0,
           flagname: '正常',
           descr: 'dd'
         },
@@ -333,7 +338,8 @@
             id_typename: '身份证',
             guarder: '蒲鞋市',
             relationname: '父母',
-            code: '',
+            relnum: 0,
+            studentno: '',
             flagename: '在校',
             descr: 'ddd',
             father: '岑湘鄂',
@@ -357,6 +363,7 @@
         //对话框内容
         temp: {
           id: '',
+          old_id: '', //修改之前的id
           name: '',
           d_of_b: '',
           sex: '',
@@ -372,8 +379,8 @@
           relation: '',
           relationname: '',
           relnum: '',
-          code: '',
-          // flag: '',
+          studentno: '',
+          flag: '',
           flagname: '',
           descr: '',
           schoolname: '',
@@ -393,7 +400,7 @@
         //证件类型
         id_typeOption: [],
         //标志选项
-        // flagOption: [],
+        flagOption: [],
         //关系选项
         relationOption: [],
         //-----删除对话框----
@@ -407,9 +414,9 @@
           d_of_b: {required: true, message: '请选择出生日期', trigger: 'blur'},
           id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
           id: [{required: true, message: '请输入正确的证件号码', trigger: 'blur'},
-            {validator: checkID_number, trigger: 'change'}],
-          guarder: {validator: checkGuarder, trigger: 'blur'},
-          relation: {validator: checkRelation, trigger: 'blur'},
+            {validator: checkID_number, trigger: 'blur'}],
+//          guarder: {validator: checkGuarder, trigger: 'blur'},
+//          relation: {validator: checkRelation, trigger: 'blur'},
           // flag: {required: true, message: '请选择学生状态', trigger: 'blur'},
           
         },
@@ -452,14 +459,14 @@
         this.requestList(this.listQuery);
       },
       //直接查询
-      handleFilter(val) {
+      handleFilter() {
         this.listQuery.ext = undefined;
         this.listQuery.method = 'Query';
         this.listQuery.classid = this.classInfo.id;
         this.requestList(this.listQuery);
       },
       //相似查询
-      handleExtFilter(val) {
+      handleExtFilter() {
         this.listQuery.ext = 'like';
         this.listQuery.method = 'Query';
         this.listQuery.classid = this.classInfo.id;
@@ -510,7 +517,7 @@
               if (data.data) {
                 this.id_typeOption = data.data.ID_TYPE;
                 this.relationOption = data.data.RELATION;
-                // this.flagOption = data.data.FLAG;
+                this.flagOption = data.data.FLAG;
               }
             });
         }
@@ -518,8 +525,9 @@
       resetTemp() {
         this.temp = {
           id: '',
+          old_id: '', //修改之前的id
           name: '',
-          d_of_b: new Date().toLocaleDateString(),
+          d_of_b: '',
           sex: '男',
           address: '',
           id_type: 0,
@@ -533,8 +541,8 @@
           relation: '',
           relnum: 0,
           relationname: '',
-          code: '',
-          // flag: '',
+          studentno: '',
+          flag: 0,
           flagname: '',
           descr: ''
         }
@@ -551,7 +559,34 @@
       },
       //输入学生编号可以自动补全对话框内容
       handleStudentInfo() {
-        console.log('学生信息');
+        fetchSearchOption('/schoolRoster', { method: 'FieldIdnumber', idnumber: this.temp.id})
+          .then(response => {
+            const data = response.data;
+            if (data.msg && data.msg !== '') {
+              this.$message({
+                showClose: true,
+                message: data.msg,
+                type: 'error',
+                duration: 2000
+              });
+            }
+            if (data.data && data.data !== []) {
+              this.temp = Object.assign(this.temp, data.data[0]);
+              //转化生日时间戳
+              let newDate = new Date(this.temp.d_of_b * 1000);
+              this.temp.d_of_b = (newDate.getMonth() + 1) + '/' + newDate.getDate() + '/' +  newDate.getFullYear();
+            }else {
+              this.resetTemp();
+            }
+          });
+      },
+      
+      //根据身份证自动填入出生年月
+      handleBirthday() {
+        let birthyear = this.temp.id.substring(6, 10);
+        let birthmonth = this.temp.id.substring(10, 12);
+        let birthday = this.temp.id.substring(12, 14);
+        this.temp.d_of_b = birthmonth + '/' + birthday + '/' + birthyear;
       },
       
       //添加完毕上传
@@ -559,9 +594,14 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
-            // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
-            let temp = Object.assign({method: 'Insert'}, this.temp);
+            if(this.temp.relation !== ''){
+              this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
+            }else {
+              this.temp.relationname = '';
+            }
+             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            let temp = Object.assign({method: 'Insert', classid: this.classInfo.id}, this.temp);
+            delete temp.old_id;
             delete temp.id_typename;
             delete temp.relationname;
             delete temp.flagname;
@@ -588,6 +628,7 @@
                   type: 'success',
                   duration: 2000
                 });
+                this.classInfo.studentnum += 1;
               }
             });
           }
@@ -596,6 +637,7 @@
       //修改对话框
       handleUpdate(row) {
         this.temp = Object.assign({}, row);
+        this.temp.old_id = this.temp.id;//打开对话框，存储已有的id
         this.dialogStatus = 'update';
         this.dialogVisible = true;
         this.handleOption();
@@ -608,9 +650,13 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
-            this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
-            // this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
-            let temp = Object.assign({method: 'Update'}, this.temp);
+            if(this.temp.relation !== ''){
+              this.temp.relationname = valueToLabel(this.relationOption, this.temp.relation);
+            }else {
+              this.temp.relationname = '';
+            }
+             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
+            let temp = Object.assign({method: 'Update', classid: this.classInfo.id}, this.temp);
             delete temp.id_typename;
             delete temp.relationname;
             delete temp.flagname;
@@ -630,7 +676,7 @@
               }
               if (data.id === '00000') {
                 for (const v of this.list) {
-                  if (v.id === this.temp.id) {
+                  if (v.id === this.temp.old_id) {
                     const index = this.list.indexOf(v);
                     this.list.splice(index, 1, this.temp);
                     break;
@@ -666,7 +712,7 @@
         this.deleteName = this.list[index].name
       },
       rowDelete(index, row) {
-        var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id});
+        var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id, classid: this.classInfo.id});
         SubmitTable('/schoolRoster', deleteData).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {
@@ -686,9 +732,11 @@
             });
             row.splice(index, 1);
             this.deleteDialogVisible = false;
+            this.classInfo.studentnum -= 1;
           }
         });
       },
+      //返回
       handleGoback() {
         window.sessionStorage.removeItem('classDetail')
         this.$router.go(-1);

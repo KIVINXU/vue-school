@@ -51,29 +51,29 @@
           </image-upload>
         </el-form-item>
         <el-form-item label="访客姓名：">
-          <el-input v-model="visitorForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
+          <el-input v-model.trim="visitorForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
           <el-radio-group v-model="visitorForm.gender">
-            <el-radio-button label="M">男</el-radio-button>
-            <el-radio-button label="F">女</el-radio-button>
+            <el-radio-button label="男">男</el-radio-button>
+            <el-radio-button label="女">女</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="证件号码：">
-          <el-input v-model="visitorForm.id" readonly></el-input>
+          <el-input v-model.trim="visitorForm.id" readonly></el-input>
         </el-form-item>
         <el-form-item label="联系电话：" prop="tel">
-          <el-input v-model="visitorForm.tel" :maxlength="11"></el-input>
+          <el-input v-model.trim="visitorForm.tel" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址：" prop="addr">
-          <el-input v-model="visitorForm.addr" :maxlength="64"></el-input>
+          <el-input v-model.trim="visitorForm.addr" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="说明：" prop="desc">
-          <el-input type="textarea" v-model="visitorForm.desc" :maxlength="128"></el-input>
+          <el-input type="textarea" v-model.trim="visitorForm.desc" :maxlength="128"></el-input>
         </el-form-item>
       </el-col>
       <el-col :xs="22" :sm="20" :md="14" :lg="16" :offset="1">
         <div class="tab">
           <el-form-item label="访问对象：">
-            <el-input v-model="visitorForm.visitTo"
+            <el-input v-model.trim="visitorForm.visitTo"
                       placeholder="请输入模糊查询内容"
                       :disabled="visitorForm.select !== '3'">
               <el-select v-model="visitorForm.select" slot="prepend" placeholder="请选择查询对象" style="width: 100px">
@@ -89,7 +89,7 @@
             </el-input>
           </el-form-item>
           <el-form-item label="访问姓名：" prop="visitTel" style="float: left">
-            <el-input v-model="visitorForm.visitName" readonly></el-input>
+            <el-input v-model.trim="visitorForm.visitName" readonly></el-input>
           </el-form-item>
           <el-form-item label="手机号码：" prop="visitTel" style="float: left">
             <el-input v-model.number="visitorForm.visitTel" readonly></el-input>
@@ -120,7 +120,7 @@
 <script>
   import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
   import ImageUpload from 'vue-image-crop-upload'
-  import {createPerson} from '@/api/table'
+  import { SubmitTable, fetchSearchOption } from '@/api/table'
   import ElRadioButton from "element-ui/packages/radio/src/radio-button";
 
   export default {
@@ -246,7 +246,7 @@
     }
   }
 </script>
-<style lang="less">
+<style lang="scss">
   .parentForm {
     border-radius: 8px;
     border: #AAAAAA 1px solid;

@@ -51,25 +51,25 @@
           </image-upload>
         </el-form-item>
         <el-form-item label="委托人姓名：">
-          <el-input v-model="guardianForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
+          <el-input v-model.trim="guardianForm.name" readonly style="float: left;width:50%;margin-right: 10px"></el-input>
           <template>
             <el-radio-group v-model="guardianForm.gender">
-              <el-radio-button label="M">男</el-radio-button>
-              <el-radio-button label="F">女</el-radio-button>
+              <el-radio-button label="男">男</el-radio-button>
+              <el-radio-button label="女">女</el-radio-button>
             </el-radio-group>
           </template>
         </el-form-item>
         <el-form-item label="证件号码：">
-          <el-input v-model="guardianForm.id" readonly></el-input>
+          <el-input v-model.trim="guardianForm.id" readonly></el-input>
         </el-form-item>
         <el-form-item label="联系电话：" prop="tel">
-          <el-input v-model="guardianForm.tel" :maxlength="11"></el-input>
+          <el-input v-model.trim="guardianForm.tel" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址：" prop="addr">
-          <el-input v-model="guardianForm.addr" :maxlength="64"></el-input>
+          <el-input v-model.trim="guardianForm.addr" :maxlength="64"></el-input>
         </el-form-item>
         <el-form-item label="说明：" prop="desc">
-          <el-input type="textarea" v-model="guardianForm.desc" :maxlength="128"></el-input>
+          <el-input type="textarea" v-model.trim="guardianForm.desc" :maxlength="128"></el-input>
         </el-form-item>
       </el-col>
       <el-col :xs="22" :sm="12" :md="14" :lg="16" :offset="1">
@@ -102,7 +102,7 @@
 <script>
   import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
   import ImageUpload from 'vue-image-crop-upload'
-  import {createPerson} from '@/api/table'
+  import { SubmitTable, fetchSearchOption } from '@/api/table'
   import ElRadioButton from "element-ui/packages/radio/src/radio-button";
 
   export default {
@@ -249,7 +249,7 @@
     }
   }
 </script>
-<style lang="less">
+<style lang="scss">
   .parentForm {
     border-radius: 8px;
     border: #AAAAAA 1px solid;

@@ -615,7 +615,7 @@
 
 </script>
 
-<style lang="less">
+<style>
   .el-table--small td, .el-table--small th {
     padding: 0;
     font-size: 14px;

@@ -229,7 +229,7 @@
         if (!value) {
           // callback(new Error('请再次输入密码'));
           callback();
-        } else if (value !== this.temp.passwd) {
+        } else if (value !== this.temp.passwd && value.length <= 16) {
           callback(new Error('两次输入密码不一致！'))
         } else {
           callback();
@@ -541,7 +541,7 @@
           if (valid) {
             if(this.temp.passwd.length <= 16) {
               this.temp.passwd = cryptoPass(this.temp.passwd);
-              this.temp.passwd2 = cryptoPass(this.temp.passwd2);
+              this.temp.passwd2 = this.temp.passwd;
             }
             this.temp.flagname = valueToLabel(this.flagOption, this.flagValue);
             var temp = Object.assign({method: 'Insert'}, this.temp);
@@ -605,7 +605,7 @@
             //如果密码未加密,则加密后发送
             if(temp.passwd.length <= 16) {
               this.temp.passwd = cryptoPass(this.temp.passwd);
-              this.temp.passwd2 = cryptoPass(this.temp.passwd2);
+              this.temp.passwd2 = this.temp.passwd;
               newTemp = Object.assign({method: 'Update'}, this.temp);
             }else {
               //如果密码已加密，则发送空字符给后端
