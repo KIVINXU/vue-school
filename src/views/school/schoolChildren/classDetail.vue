@@ -289,19 +289,36 @@
           }
         }
       };
-      //主监护人验证，如果主监护人证件号码不为空，则名称和关系不能空
+      //如果主监护人编号不为空，则主监护人不能空，关系不能为未知
+      //如果主监护人编号为空，则主监护人必须为空，关系必须为未知
       const checkGuarder = (rule, value, callback) => {
-        if (this.temp.guarderid && !value) {
-          callback(new Error('主监护人名称不能为空'));
+        if (this.temp.guarderid !== '') {
+          if(!value) {
+            callback(new Error('主监护人编号存在，名称不能为空'));
+          }else {
+            callback();
+          }
         } else {
-          callback();
+          if(!value) {
+            callback();
+          }else {
+            callback(new Error('主监护人编号为空，无法添加'))
+          }
         }
       };
       const checkRelation = (rule, value, callback) => {
-        if (this.temp.guarderid && !value) {
-          callback(new Error('与学生关系不能为空'));
+        if (this.temp.guarderid !== '') {
+          if(value === 0) {
+            callback(new Error('主监护人编号存在，关系不能为未知'));
+          }else {
+            callback()
+          }
         } else {
-          callback();
+          if(value === 0) {
+            callback();
+          }else {
+            callback(new Error('主监护人编号为空，无法选择'))
+          }
         }
       };
       return {
@@ -402,7 +419,13 @@
         //标志选项
         flagOption: [],
         //关系选项
-        relationOption: [],
+        relationOption: [{
+          key: 0, label: '未知'
+        },{
+          key: 1, label: '父亲'
+        },{
+          key: 2, label: '母亲'
+        }],
         //-----删除对话框----
         //对话框状态
         deleteDialogVisible: false,
@@ -415,8 +438,8 @@
           id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
           id: [{required: true, message: '请输入正确的证件号码', trigger: 'blur'},
             {validator: checkID_number, trigger: 'blur'}],
-//          guarder: {validator: checkGuarder, trigger: 'blur'},
-//          relation: {validator: checkRelation, trigger: 'blur'},
+          guarder: {validator: checkGuarder, trigger: ['blur', 'change']},
+          relation: {validator: checkRelation, trigger: ['blur', 'change']},
           // flag: {required: true, message: '请选择学生状态', trigger: 'blur'},
           
         },
@@ -538,7 +561,7 @@
           mo_contact: '',
           guarderid: '',
           guarder: '',
-          relation: '',
+          relation: 0,
           relnum: 0,
           relationname: '',
           studentno: '',
