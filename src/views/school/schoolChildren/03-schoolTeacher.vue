@@ -130,7 +130,7 @@
         <el-row>
           <el-col :sm="24" :md="12">
             <el-form-item label="教师编号" prop="id">
-              <el-input v-model.trim="temp.id" :maxlength="18" :readonly="dialogStatus=='update'"></el-input>
+              <el-input v-model.trim="temp.id" :maxlength="18"></el-input>
             </el-form-item>
             <el-form-item label="姓名" prop="name">
               <el-input v-model.trim="temp.name" :maxlength="8"
@@ -145,9 +145,6 @@
             </el-form-item>
             <el-form-item label="联系方式2" prop="contact2">
               <el-input v-model.trim="temp.contact2" :maxlength="24"></el-input>
-            </el-form-item>
-            <el-form-item label="联系住址" prop="address">
-              <el-input v-model.trim="temp.address" :maxlength="48"></el-input>
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
@@ -170,18 +167,6 @@
                 </el-select>
               </el-tooltip>
             </el-form-item>
-            <el-form-item label="证件类别" prop="id_type">
-              <el-select v-model.trim="temp.id_type"
-                         placeholder="请选择证件类别"
-                         style="width: 100%">
-                <el-option v-for="item in id_typeOption"
-                           :key="item.key"
-                           :label="item.label"
-                           :value="item.key">
-
-                </el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label="证件号码" prop="id_number">
               <el-input v-model.trim="temp.id_number" placeholder="请输入证件号码" :maxlength="18"></el-input>
             </el-form-item>
@@ -195,6 +180,9 @@
                            :value="item.key">
                 </el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item label="联系住址" prop="address">
+              <el-input v-model.trim="temp.address" :maxlength="48"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -242,33 +230,7 @@
           callback()
         }
       };
-      //证件号码验证
-      var checkID_number = (rule, value, callback) => {
-        if(value !== null){
-          if (this.temp.id_type === 0) {
-            if (!validateIdentity18(value)) {
-              callback(new Error('请输入正确的18位身份证号码'))
-            } else {
-              callback()
-            }
-          } else if (this.temp.id_type === 1) {
-            if (!validatePassport(value)) {
-              callback(new Error('请输入正确的护照号码'));
-            } else {
-              callback();
-            }
-          } else if (this.temp.id_type === 2) {
-            if (!validateOther(value)) {
-              callback(new Error('只能输入数字和英文字母'));
-            } else {
-              callback();
-            }
-          }
-        }else {
-          callback();
-        }
-        
-      };
+      
       return {
         //搜索内容
         listQuery: {
@@ -303,8 +265,6 @@
           old_id: '', //修改之前的id
           name: '',
           sex: '',
-          id_type: '',
-          id_typename: '',
           id_number: '',
           contact: '',
           contact2: '',
@@ -326,8 +286,6 @@
             label:'女'
           }
         ],
-        //证件类型
-        id_typeOption: [],
         //学校ID选项
         schoolIDOption: [],
         schoolTemp: '',
@@ -343,8 +301,6 @@
             {validator: checkID, trigger: 'blur'}],
           name: {required: true, message: '请输入教师姓名', trigger: 'blur'},
           sex: {required: true, message: '请选择性别', trigger: 'blur'},
-          id_type: {required: true, message: '请选择证件类别', trigger: 'blur'},
-          id_number: [{validator: checkID_number, trigger: 'change'}],
           contact: [{required: true, message: '请输入联系方式', trigger: 'blur'},
             {validator: checkTel, trigger: 'change'}],
           schoolid: {required: true, message: '请选择所属学校名称', trigger: 'blur'},
@@ -454,7 +410,7 @@
       },
       //打开弹出框select请求数据
       handleOption() {
-        if (this.id_typeOption.length === 0) {
+        if (this.flagOption.length === 0) {
           fetchSearchOption('/schoolTeacher', {method: 'FieldLabel'})
             .then(response => {
               const data = response.data;
@@ -467,7 +423,6 @@
                 });
               }
               if (data.data) {
-                this.id_typeOption = data.data.ID_TYPE;
                 this.flagOption = data.data.FLAG;
               }
             });
@@ -506,8 +461,6 @@
           old_id: '', //修改之前的id
           name: '',
           sex: '男',
-          id_type: 0,
-          id_typename: '',
           id_number: '',
           contact: '',
           contact2: '',
@@ -535,12 +488,10 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
             this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             var temp = Object.assign({method: 'Insert'}, this.temp);
             delete temp.old_id;
-            delete temp.id_typename;
             delete temp.schoolname;
             delete temp.classname;
             delete temp.flagname;
@@ -589,11 +540,9 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.id_typename = valueToLabel(this.id_typeOption, this.temp.id_type);
             this.temp.schoolname = valueToLabel(this.schoolIDOption, this.temp.schoolid);
             this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
             let temp = Object.assign({method: 'Update'}, this.temp);
-            delete temp.id_typename;
             delete temp.schoolname;
             delete temp.classname;
             delete temp.flagname;

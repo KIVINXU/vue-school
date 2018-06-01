@@ -205,7 +205,7 @@
               <el-input v-model.trim="temp.guarderid" :maxlength="18"></el-input>
             </el-form-item>
             <el-form-item label="主监护人" prop="guarder">
-              <el-input v-model.trim="temp.guarder" :maxlength="16"></el-input>
+              <el-input v-model.trim="temp.guarder" :maxlength="8"></el-input>
             </el-form-item>
             <el-form-item label="与学生关系" prop="relation">
               <el-select v-model.trim="temp.relation"
@@ -292,7 +292,7 @@
       //如果主监护人编号不为空，则主监护人不能空，关系不能为未知
       //如果主监护人编号为空，则主监护人必须为空，关系必须为未知
       const checkGuarder = (rule, value, callback) => {
-        if (this.temp.guarderid !== '') {
+        if (this.temp.guarderid) {
           if(!value) {
             callback(new Error('主监护人编号存在，名称不能为空'));
           }else {
@@ -307,7 +307,7 @@
         }
       };
       const checkRelation = (rule, value, callback) => {
-        if (this.temp.guarderid !== '') {
+        if (this.temp.guarderid) {
           if(value === 0) {
             callback(new Error('主监护人编号存在，关系不能为未知'));
           }else {

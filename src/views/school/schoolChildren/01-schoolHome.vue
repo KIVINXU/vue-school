@@ -139,8 +139,7 @@
         <el-row>
           <el-col :sm="24" :md="12">
             <el-form-item label="学校代码" prop="id">
-              <el-input v-model.trim="temp.id" :maxlength="12"
-                        :readonly="dialogStatus == 'update'"></el-input>
+              <el-input v-model.trim="temp.id" :maxlength="12"></el-input>
             </el-form-item>
             <el-form-item label="名称" prop="name">
               <el-input v-model.trim="temp.name" :maxlength="24"></el-input>

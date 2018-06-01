@@ -3,47 +3,69 @@
     <el-row>
       <el-col :xs="16" :sm="11" :md="9" :lg="8" class="parentForm">
         <el-form-item labelWidth="125px">
-          <el-button type="text" class="avatar" @click="toggleShow" title="点击上传照片">
-            <img v-if="avatarUrl" :src="avatarUrl" alt="" style="width: 98%">
+          <el-button type="text" class="avatar"
+                     :disabled="!idLocked"
+                     @click="toggleShow" title="点击上传照片">
+            <img v-if="imageInfo.face" :src="imageInfo.face" alt="" style="width: 98%">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-button>
-          <image-upload field="img" img-format="jpg"
+          <image-upload :field="imageInfo.imgField"
+                        :img-format="imageInfo.format"
+                        :url="imageInfo.url"
+                        :params="{id: parentForm.id}"
                         inputAccept="image/jpg,image/jpeg" v-model="showImage"
-                        @crop-success="cropSuccess" :no-circle="true"
+                        @crop-success="cropSuccess"
+                        @crop-upload-success="cropUploadSuccess"
+                        :no-circle="true"
                         :width="300" :height="420">
           </image-upload>
         </el-form-item>
         <el-form-item label="主监护人:">
           <el-input v-model.trim="parentForm.name"
+                    :readonly="idLocked"
                     style="float: left;margin-right:10px;width:60%;min-width: 87px"></el-input>
-          <el-radio-group v-model="parentForm.gender">
+          <el-radio-group v-model="parentForm.sex">
             <el-radio-button label="男">男</el-radio-button>
             <el-radio-button label="女">女</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="证件号码:" prop="id">
-          <el-tooltip  content="注意：从服务器抓取信息会重置表单内容" placement="top">
-            <el-input v-model.trim="parentForm.id">
-              <el-button slot="append" @click="handleStudentInfo">抓取信息</el-button>
-            </el-input>
-          </el-tooltip>
+          <el-input v-model.trim="parentForm.id" :readonly="idLocked">
+            <el-button slot="append"
+                       :disabled="fetchButton"
+                       @click="handleStudentInfo">抓取信息</el-button>
+          </el-input>
         </el-form-item>
-        <el-form-item label="联系电话:" prop="tel">
-          <el-input v-model.trim="parentForm.tel" :maxlength="11"></el-input>
+        <el-form-item label="联系电话:" prop="contact">
+          <el-input v-model.trim="parentForm.contact" :maxlength="11"></el-input>
         </el-form-item>
-        <el-form-item label="联系住址:" prop="addr">
-          <el-input v-model.trim="parentForm.addr" :maxlength="64"></el-input>
+        <el-form-item label="联系住址:" prop="address">
+          <el-input v-model.trim="parentForm.address" :maxlength="64"></el-input>
         </el-form-item>
-        <el-form-item label="说明:" prop="desc">
-          <el-input type="textarea" v-model.trim="parentForm.desc" :maxlength="128"></el-input>
+        <el-form-item label="说明:" prop="descr">
+          <el-input type="textarea" v-model.trim="parentForm.descr" :maxlength="128"></el-input>
+          <span style="font-size: 13px; color: #606266;">最近更新时间：{{parentForm.mtime}}</span>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width: 100%;" @click="submitForm('parentForm')">确认录入</el-button>
+          <el-button-group>
+            <el-button type="warning"
+                       size="medium"
+                       @click="resetForm">
+              取消录入
+            </el-button>
+            <el-button type="primary"
+                       size="medium"
+                       :disabled="!idLocked"
+                       @click="submitForm('parentForm')">
+              确认录入
+            </el-button>
+          </el-button-group>
         </el-form-item>
       </el-col>
       <el-col :xs="22" :sm="12" :md="14" :lg="16" style="margin-left: -1px">
-        <el-table :data="list" class="tab2">
+        <el-table :data="parentForm.guarders" class="tab2">
           <el-table-column label="序号" width="30px" type="index"></el-table-column>
+          <el-table-column label="主监护人" width="80px" prop="guarder"></el-table-column>
           <el-table-column label="学生姓名" width="80px" prop="name"></el-table-column>
           <el-table-column label="与学生关系" width="90px">
             <template slot-scope="scope">
@@ -70,7 +92,7 @@
           <el-table-column label="所属班级" width="80px" prop="classname"></el-table-column>
           <el-table-column label="委托人（点击可操作）">
             <template slot-scope="scope">
-              <el-button-group v-for="(item, index) in scope.row.guardianName"
+              <el-button-group v-for="(item, index) in scope.row.consigners"
                                :key="index">
                 <el-popover trigger="click" ref="popover" placement="bottom">
                   <p>是否解除该委托人？</p>
@@ -86,13 +108,13 @@
                              slot="reference"
                              title="点击可修改委托人"
                              style="font-size: 14px;color: #606266;margin-left: 5px">
-                    {{item}}
+                    {{item.label}}
                   </el-button>
                 </el-popover>
               </el-button-group>
-              <!--<el-button type="text" v-if="scope.row.guardianName.length === 0" @click="handleTrans(scope.row)">-->
-                <!--添加接送人-->
-              <!--</el-button>-->
+              <el-button type="text" v-if="scope.row.consigners.length === 0" @click="handleTrans(scope.row)">
+                添加接送人
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -119,8 +141,10 @@
       //证件号码验证
       const checkID_number = (rule, value, callback) => {
         if (!validateIdentity18(value)) {
+          this.fetchButton = true;
           callback(new Error('请输入正确的18位身份证号码'))
         } else {
+          this.fetchButton = false;
           callback()
         }
       };
@@ -136,31 +160,43 @@
         }
       };
       return {
-        //学生数据
-        list: [],
         //主监护人数据
         parentForm: {
           name: '',
-          gender: '男',
+          sex: '男',
           id: '',
-          tel: '',
-          addr: '',
-          desc: '',
+          facekey: '', //表明后台接受到图片的返回值
+          facesize: '', //后台图片的尺寸
+          //主监护人表格内容
+          guarders: [],
+          contact: '',
+          address: '',
+          mtime: '',
+          descr: '',
         },
+        //监护人名称和ID是否锁定为只读
+        idLocked: false,
+        //抓取按钮是否可用
+        fetchButton: true,
         parentRules: {
           id: [
-            {required: true, message: '请输入正确的证件号码', trigger: 'blur'},
-            {validator: checkID_number, trigger: 'blur'}
+            {required: true, message: '请输入证件号码', trigger: 'blur'},
+            {validator: checkID_number, trigger: ['blur','change']}
           ],
-          tel: [
+          contact: [
             {required: true, message: '请输入有效电话', trigger: 'blur'},
-            {validator: checkTel, trigger: 'change'}
+            {validator: checkTel, trigger: 'blur'}
           ],
-          addr: [{required: true, message: '请输入有效住址', trigger: 'blur'}]
         },
         //上传图片
         showImage: false,
-        avatarUrl: '',
+        //图片上传插件参数
+        imageInfo: {
+          url: '/faces',
+          face: '',
+          imgField: 'face',
+          format: 'jpg'
+        },
         //与学生关系选项
         options: [],
       }
@@ -169,25 +205,35 @@
       this.getList();
     },
     methods: {
+      //传过来是微秒
+      timestampToTime(timestamp) {
+        let time = timestamp.toString().split('.');
+        const date = new Date(parseInt(time[0]) * 1000);
+        const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '/';
+        const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '/';
+        const Y = date.getFullYear() + ' ';
+        const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+        const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+        const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+        return M + D + Y + h + m + s;
+      },
       //获取学生关系下拉框选项
       getList() {
-        if(this.options.length === 0) {
-          fetchSearchOption('/faceMaster',{method: 'FieldLabel'})
-            .then(response => {
-              const data = response.data;
-              if(data.msg && data.msg !== ''){
-                this.$message({
-                  showClose: true,
-                  message: data.msg,
-                  type: 'error',
-                  duration: 2000
-                });
-              }
-              if(data.data && data.data !== []){
-                this.options = data.data.RELATION;
-              }
-            })
-        }
+        fetchSearchOption('/faceGuarder',{method: 'FieldLabel'})
+          .then(response => {
+            const data = response.data;
+            if(data.msg && data.msg !== ''){
+              this.$message({
+                showClose: true,
+                message: data.msg,
+                type: 'error',
+                duration: 2000
+              });
+            }
+            if(data.data && data.data !== []){
+              this.options = data.data.RELATION;
+            }
+          })
       },
       //下拉菜单显示和隐藏触发
       handleSelectShow(e, row) {
@@ -198,14 +244,20 @@
       toggleShow() {
         this.showImage = !this.showImage;
       },
+      //照片裁剪完成后
       cropSuccess(avatarUrl, field) {
-        console.log('-------- 裁剪成功 --------');
-        this.avatarUrl = avatarUrl;
+        this.imageInfo.face = avatarUrl;
       },
-  
+      //照片上传成功后
+      cropUploadSuccess(jsonData, field){
+        if(jsonData.id === 0){
+          this.parentForm.facekey = jsonData.key;
+          this.parentForm.facesize = jsonData.size;
+        }
+      },
       //输入身份证编号可以自动补全表单内容和表格内容
       handleStudentInfo() {
-        fetchSearchOption('/faceMaster', { method: 'FieldIdnumber', idnumber: this.parentForm.id})
+        fetchSearchOption('/faceGuarder', { method: 'FieldIdnumber', idnumber: this.parentForm.id})
           .then(response => {
             const data = response.data;
             if (data.msg && data.msg !== '') {
@@ -216,21 +268,63 @@
                 duration: 2000
               });
             }
-            if (data.data && data.data !== []) {
-              this.list = data.data;
+            if (data.data.id && data.data.name) {
+              //监护人表单信息加载
+              this.parentForm = data.data;
+              //转化时间戳
+              if(this.parentForm.mtime){
+                this.parentForm.mtime = this.timestampToTime(this.parentForm.mtime);
+              }
+              //表格信息加载
               //给每条数据添加对象--显示下拉框
-              this.list.forEach(item => {
-                item.selectShow = false;
-              })
+              if(this.parentForm.guarders){
+                this.parentForm.guarders.forEach(item => {
+                  this.$set(item, 'selectShow', false); //set方法才能添加对象
+                });
+              }else {
+                this.parentForm.guarders = [];
+              }
+              //如果存在facekey，图片内容加载
+              if(this.parentForm.facekey){
+                fetchSearchOption('/face/portraits', {method: 'FieldFacekey', facekey: this.parentForm.facekey}).then(response => {
+                  const faceData = response.data;
+                  this.imageInfo.face = 'data:image/jpeg;base64,' + faceData.data.face;
+                });
+              }
+              this.idLocked = true;
+            }else {
+              this.$message({
+                showClose: true,
+                message: '找不到此证件号码对应的信息',
+                type: 'warning',
+                duration: 2000
+              });
             }
           });
+      },
+      //重置监护人信息
+      resetForm() {
+        this.parentForm = {
+          name: '',
+          sex: '男',
+          id: '',
+          contact: '',
+          address: '',
+          mtime: '',
+          descr: '',
+        };
+        this.imageInfo.face = '';
+        this.idLocked = false;
       },
       //上传主监护人信息
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.parentForm = Object.assign(this.parentForm, {imgUrl: this.avatarUrl});
-            SubmitTable('/faceMaster', this.parentForm).then((response) => {
+            let temp = Object.assign(this.parentForm, {method: 'Update'});
+            delete temp.guarders;
+            delete temp.face;
+            delete temp.mtime;
+            SubmitTable('/faceGuarder', temp).then((response) => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
                 this.$message({
@@ -241,22 +335,23 @@
                 });
               }
               if (data.id === '00000') {
+                //默认状态不上传 如果图片有变化则上传，状态再改回默认
                 this.$notify({
-                  title: '录入成功',
-                  message: '创建成功',
+                  title: '成功',
+                  message: '录入成功',
                   type: 'success',
                   duration: 2000
-                })
+                });
+                this.resetForm();
               }
-              
             })
           }
         })
       },
       //解除委托人
       handleDeleteTrans(row, index) {
-        var deleteData = Object.assign({method: 'Delete'}, {guardianName: row.guardianName[index]});
-        SubmitTable('/faceMaster', deleteData).then(response => {
+        let deleteData = Object.assign({method: 'Delete'}, {consigners: row.consigners[index].key});
+        SubmitTable('/faceGuarder', deleteData).then(response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
             this.$message({
@@ -273,14 +368,14 @@
               type: 'success',
               duration: 2000
             });
-            row.guardianName.splice(index, 1);
+            row.consigners.splice(index, 1);
             document.querySelector("#app").click();//模拟点击空白区域关闭弹框
           }
         });
       },
       //添加接送人跳转
       handleTrans(row) {
-        this.$router.push({name: 'consigners', params: {stuName: row.stuName, responseName: row.responseName}})
+        this.$router.push({name: 'consigners', params: {}})
       },
     }
   }
@@ -300,7 +395,7 @@
   }
 
   .avatar {
-    border: #3a8ee6 1px dashed;
+    border: #3a8ee6 1px dashed !important;
     border-radius: 6px;
     width: 120px;
     height: 180px;
@@ -311,10 +406,6 @@
     font-size: 28px;
     color: #8c939d;
     text-align: center;
-  }
-
-  .el-form-item {
-    margin-bottom: 14px;
   }
 
   .section {
