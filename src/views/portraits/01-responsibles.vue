@@ -22,7 +22,8 @@
         </el-form-item>
         <el-form-item label="主监护人:">
           <el-input v-model.trim="parentForm.name"
-                    :readonly="idLocked"
+                    :maxlength="8"
+                    :readonly="nameLocked"
                     style="float: left;margin-right:10px;width:60%;min-width: 87px"></el-input>
           <el-radio-group v-model="parentForm.sex">
             <el-radio-button label="男">男</el-radio-button>
@@ -40,7 +41,7 @@
           <el-input v-model.trim="parentForm.contact" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址:" prop="address">
-          <el-input v-model.trim="parentForm.address" :maxlength="64"></el-input>
+          <el-input v-model.trim="parentForm.address" :maxlength="32"></el-input>
         </el-form-item>
         <el-form-item label="说明:" prop="descr">
           <el-input type="textarea" v-model.trim="parentForm.descr" :maxlength="128"></el-input>
@@ -90,7 +91,7 @@
           </el-table-column>
           <el-table-column label="所属学校" width="160px" prop="schoolname"></el-table-column>
           <el-table-column label="所属班级" width="80px" prop="classname"></el-table-column>
-          <el-table-column label="委托人（点击可操作）">
+          <el-table-column label="委托人（点击可操作,最多5人）">
             <template slot-scope="scope">
               <el-button-group v-for="(item, index) in scope.row.consigners"
                                :key="index">
@@ -100,7 +101,9 @@
                     <el-button type="warning" @click="handleDeleteTrans(scope.row, index)">
                       解除
                     </el-button>
-                    <el-button type="text" @click="handleTrans(scope.row)">
+                    <el-button type="text"
+                               :disabled="scope.row.consigners.length >= 5"
+                               @click="handleTrans(scope.row)">
                       添加其他接送人
                     </el-button>
                   </div>
@@ -175,6 +178,7 @@
           descr: '',
         },
         //监护人名称和ID是否锁定为只读
+        nameLocked: false,
         idLocked: false,
         //抓取按钮是否可用
         fetchButton: true,
@@ -195,7 +199,9 @@
           url: '/faces',
           face: '',
           imgField: 'face',
-          format: 'jpg'
+          format: 'jpg',
+          key: '',
+          size: ''
         },
         //与学生关系选项
         options: [],
@@ -251,14 +257,15 @@
       //照片上传成功后
       cropUploadSuccess(jsonData, field){
         if(jsonData.id === 0){
-          this.parentForm.facekey = jsonData.key;
-          this.parentForm.facesize = jsonData.size;
+          this.imageInfo.key = jsonData.key;
+          this.imageInfo.size = jsonData.size;
         }
       },
       //输入身份证编号可以自动补全表单内容和表格内容
       handleStudentInfo() {
         fetchSearchOption('/faceGuarder', { method: 'FieldIdnumber', idnumber: this.parentForm.id})
           .then(response => {
+            this.idLocked = true;
             const data = response.data;
             if (data.msg && data.msg !== '') {
               this.$message({
@@ -275,30 +282,26 @@
               if(this.parentForm.mtime){
                 this.parentForm.mtime = this.timestampToTime(this.parentForm.mtime);
               }
-              //表格信息加载
-              //给每条数据添加对象--显示下拉框
-              if(this.parentForm.guarders){
-                this.parentForm.guarders.forEach(item => {
-                  this.$set(item, 'selectShow', false); //set方法才能添加对象
-                });
-              }else {
-                this.parentForm.guarders = [];
-              }
               //如果存在facekey，图片内容加载
-              if(this.parentForm.facekey){
+              if(data.data.facekey){
                 fetchSearchOption('/face/portraits', {method: 'FieldFacekey', facekey: this.parentForm.facekey}).then(response => {
                   const faceData = response.data;
                   this.imageInfo.face = 'data:image/jpeg;base64,' + faceData.data.face;
                 });
               }
-              this.idLocked = true;
+              this.nameLocked = true;
             }else {
-              this.$message({
-                showClose: true,
-                message: '找不到此证件号码对应的信息',
-                type: 'warning',
-                duration: 2000
+              this.nameLocked = false;
+            }
+            //表格信息加载
+            //给每条数据添加对象--显示下拉框
+            if(data.data.guarders_id === '00000'){
+              this.parentForm.guarders = data.data.guarders;
+              this.parentForm.guarders.forEach(item => {
+                this.$set(item, 'selectShow', false); //set方法才能添加对象
               });
+            }else {
+              this.parentForm.guarders = [];
             }
           });
       },
@@ -320,10 +323,27 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            let temp = Object.assign(this.parentForm, {method: 'Update'});
+            //如果抓取图片不存在,则判断
+            if(!this.parentForm.facekey) {
+              if(!this.imageInfo.key) {
+                this.$message({
+                  showClose: true,
+                  message: '请先上传照片',
+                  type: 'error',
+                  duration: 2000
+                });
+                return;
+              }else {
+                //如果已上传照片，则复制照片的key
+                this.parentForm.facekey = this.imageInfo.key;
+                this.parentForm.facesize = this.imageInfo.size;
+              }
+            }
+            let temp = Object.assign(this.parentForm, {method: 'Insert'});
             delete temp.guarders;
             delete temp.face;
             delete temp.mtime;
+            delete temp.guarders_id;
             SubmitTable('/faceGuarder', temp).then((response) => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -350,7 +370,12 @@
       },
       //解除委托人
       handleDeleteTrans(row, index) {
-        let deleteData = Object.assign({method: 'Delete'}, {consigners: row.consigners[index].key});
+        let deleteData = {
+          method: 'Remove',
+          snumber: row.snumber,
+          guarderid: this.parentForm.id,
+          consigid: row.consigners[index].key
+        };
         SubmitTable('/faceGuarder', deleteData).then(response => {
           const data = response.data;
           if(data.msg && data.msg !== ''){
@@ -373,9 +398,16 @@
           }
         });
       },
-      //添加接送人跳转
+      //添加接送人跳转,及附带参数
       handleTrans(row) {
-        this.$router.push({name: 'consigners', params: {}})
+        this.$router.push({name: 'consigners', params: {
+          snumber: row.snumber,
+          stuName: row.name,
+          guarderid: this.parentForm.id,
+          guarderName: row.guarder,
+          schoolname: row.schoolname,
+          classname: row.classname
+        }})
       },
     }
   }

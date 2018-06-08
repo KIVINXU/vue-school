@@ -1,98 +1,120 @@
 <template>
-  <el-form ref="guardianForm" :rules="guardianRules" :model="guardianForm" label-width="100px">
+  <div>
     <el-row>
-      <el-col :xs="16" :sm="11" :md="9" :lg="8" class="guardianForm">
-        <el-form-item labelWidth="125px">
-          <el-button type="text" class="avatar"
-                     :disabled="!idLocked"
-                     @click="toggleShow" title="点击上传照片">
-            <img v-if="imageInfo.face" :src="imageInfo.face" alt="" style="width: 98%">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-button>
-          <image-upload :field="imageInfo.imgField"
-                        :img-format="imageInfo.format"
-                        :url="imageInfo.url"
-                        :params="{id: guardianForm.id}"
-                        inputAccept="image/jpg,image/jpeg" v-model="showImage"
-                        @crop-success="cropSuccess"
-                        @crop-upload-success="cropUploadSuccess"
-                        :no-circle="true"
-                        :width="300" :height="420">
-          </image-upload>
-        </el-form-item>
-        <el-form-item label="委托人姓名：">
-          <el-input v-model.trim="guardianForm.name"
-                    :readonly="nameLocked"
-                    style="float: left;width:50%;margin-right: 10px"></el-input>
-          <template>
-            <el-radio-group v-model="guardianForm.sex">
-              <el-radio-button label="男">男</el-radio-button>
-              <el-radio-button label="女">女</el-radio-button>
-            </el-radio-group>
-          </template>
-        </el-form-item>
-        <el-form-item label="证件号码:" prop="id">
-          <el-input v-model.trim="guardianForm.id" :readonly="idLocked">
-            <el-button slot="append"
-                       :disabled="fetchButton"
-                       @click="handleStudentInfo">抓取信息</el-button>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="联系电话:" prop="contact">
-          <el-input v-model.trim="guardianForm.contact" :maxlength="11"></el-input>
-        </el-form-item>
-        <el-form-item label="联系住址:" prop="address">
-          <el-input v-model.trim="guardianForm.address" :maxlength="64"></el-input>
-        </el-form-item>
-        <el-form-item label="说明:" prop="descr">
-          <el-input type="textarea" v-model.trim="guardianForm.descr" :maxlength="128"></el-input>
-          <span style="font-size: 13px; color: #606266;">最近更新时间：{{guardianForm.mtime}}</span>
-        </el-form-item>
-        <el-form-item>
-          <el-button-group>
-            <el-button type="warning"
-                       size="medium"
-                       @click="resetForm">
-              取消录入
-            </el-button>
-            <el-button type="primary"
-                       size="medium"
-                       :disabled="!idLocked"
-                       @click="submitForm('guardianForm')">
-              确认录入
-            </el-button>
-          </el-button-group>
-        </el-form-item>
-      </el-col>
-      <el-col :xs="22" :sm="12" :md="14" :lg="16" style="margin-left: -1px">
-        <el-table :data="ing" class="tab">
-          <el-table-column label="正在进行绑定的信息" width="150px"></el-table-column>
-          <el-table-column label="主监护人" width="80px" prop="responseName"></el-table-column>
-          <el-table-column label="与学生关系" width="100px" property="请选择">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.relation" value="guardianRela" size="mini" style="width: 100px">
-                <el-option
-                  v-for="item in options"
-                  :key="item.key"
-                  :label="item.label"
-                  :value="item.label">
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="学生姓名" width="80px" prop="stuName"></el-table-column>
-        </el-table>
-        <el-table :data="stuInfo" class="tab" >
-          <el-table-column label="序号" width="30px" type="index"></el-table-column>
-          <el-table-column label="主监护人" width="80px" prop="guarder"></el-table-column>
-          <el-table-column label="与学生关系" width="90px" prop="relation"></el-table-column>
-          <el-table-column label="学生姓名" width="80px" prop="name"></el-table-column>
-          <el-table-column label="所属学校" width="160px" prop="schoolname"></el-table-column>
-          <el-table-column label="所属班级" width="80px" prop="classname"></el-table-column>
-        </el-table>
+      <el-col class="el-table-margin" :offset="21">
+        <el-button type="warning"
+                   size="medium"
+                   @click="$router.go(-1)">返回</el-button>
       </el-col>
     </el-row>
-  </el-form>
+    <el-form ref="guardianForm" :rules="guardianRules" :model="guardianForm" label-width="100px">
+      <el-row>
+        <el-col :xs="16" :sm="11" :md="9" :lg="8" class="guardianForm">
+          <el-form-item labelWidth="125px">
+            <el-button type="text" class="avatar"
+                       :disabled="!idLocked"
+                       @click="toggleShow" title="点击上传照片">
+              <img v-if="imageInfo.face" :src="imageInfo.face" alt="" style="width: 98%">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-button>
+            <image-upload :field="imageInfo.imgField"
+                          :img-format="imageInfo.format"
+                          :url="imageInfo.url"
+                          :params="{id: guardianForm.id}"
+                          inputAccept="image/jpg,image/jpeg" v-model="showImage"
+                          @crop-success="cropSuccess"
+                          @crop-upload-success="cropUploadSuccess"
+                          :no-circle="true"
+                          :width="300" :height="420">
+            </image-upload>
+          </el-form-item>
+          <el-form-item label="委托人姓名：">
+            <el-input v-model.trim="guardianForm.name"
+                      :maxlength="8"
+                      :readonly="nameLocked"
+                      style="float: left;width:50%;margin-right: 10px"></el-input>
+            <template>
+              <el-radio-group v-model="guardianForm.sex">
+                <el-radio-button label="男">男</el-radio-button>
+                <el-radio-button label="女">女</el-radio-button>
+              </el-radio-group>
+            </template>
+          </el-form-item>
+          <el-form-item label="证件号码:" prop="id">
+            <el-input v-model.trim="guardianForm.id" :readonly="idLocked">
+              <el-button slot="append"
+                         :disabled="fetchButton"
+                         @click="handleStudentInfo">抓取信息</el-button>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="联系电话:" prop="contact">
+            <el-input v-model.trim="guardianForm.contact" :maxlength="11"></el-input>
+          </el-form-item>
+          <el-form-item label="联系住址:" prop="address">
+            <el-input v-model.trim="guardianForm.address" :maxlength="32"></el-input>
+          </el-form-item>
+          <el-form-item label="说明:" prop="descr">
+            <el-input type="textarea" v-model.trim="guardianForm.descr" :maxlength="128"></el-input>
+            <span style="font-size: 13px; color: #606266;">最近更新时间：{{guardianForm.mtime}}</span>
+          </el-form-item>
+          <el-form-item>
+            <el-button-group>
+              <el-button type="warning"
+                         size="medium"
+                         @click="resetForm">
+                取消录入
+              </el-button>
+              <el-button type="primary"
+                         size="medium"
+                         :disabled="!idLocked"
+                         @click="submitForm('guardianForm')">
+                确认录入
+              </el-button>
+            </el-button-group>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="22" :sm="12" :md="14" :lg="15" style="margin-left: -1px">
+          <el-table :data="ing" class="tab">
+            <el-table-column label="正在进行绑定的信息" width="150px"></el-table-column>
+            <el-table-column label="主监护人" width="100px" prop="guarderName"></el-table-column>
+            <el-table-column label="与主监护人关系" width="120px" property="请选择">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.guardianRela"
+                           value-key="key"
+                           size="mini"
+                           style="width: 100px">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.key"
+                    :label="item.label"
+                    :value="item.label">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="学生姓名" width="100px" prop="stuName"></el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <!--只有委托人姓名，身份证号，照片，关系存在才能绑定-->
+                <el-button type="text"
+                           :disabled="confirmDisabled"
+                           @click="handleComfirm(scope.row)">确认绑定</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        
+          <el-table :data="guardianForm.consigners" class="tab" >
+            <el-table-column label="序号" width="50px" type="index"></el-table-column>
+            <el-table-column label="主监护人" width="100px" prop="guarder"></el-table-column>
+            <el-table-column label="与主监护人关系" width="120px" prop="relation.label"></el-table-column>
+            <el-table-column label="学生" width="100px" prop="name"></el-table-column>
+            <el-table-column label="所属学校" width="160px" prop="schoolname"></el-table-column>
+            <el-table-column label="所属班级" width="100px" prop="classname"></el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+    </el-form>
+  </div>
 </template>
 <script>
   import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
@@ -139,7 +161,7 @@
           facekey: '', //表明后台接受到图片的返回值
           facesize: '', //后台图片的尺寸
           //主监护人表格内容
-          guarders: [],
+          consigners: [],
           contact: '',
           address: '',
           mtime: '',
@@ -148,37 +170,18 @@
         //监护人名称和ID是否锁定为只读
         nameLocked: false,
         idLocked: false,
+        //确认绑定按钮是否可用
+        confirmDisabled: true,
         //抓取按钮是否可用
         fetchButton: true,
+        //监护人学生数据
         ing:[
           {
-            stuName:this.$route.params.stuName,
-            responseName:this.$route.params.responseName,
+            guarderName: this.$route.params.guarderName,
+            stuName: this.$route.params.stuName,
+            classname: this.$route.params.classname,
+            schoolname: this.$route.params.schoolname,
             guardianRela:'',
-          },
-        ],
-        //学生数据
-        stuInfo: [
-          {
-            stuName: '汪涵',
-            guardianRela: "父母",
-            stuSchool: "温州市鹿城第八十八小学",
-            stuClass: "六<22>班",
-            responseName:'谢娜',
-          },
-          {
-            stuName: '吴亦凡',
-            guardianRela: "爷奶",
-            stuSchool: "温州市鹿城区第三小学",
-            stuClass: "六<12>班",
-            responseName:'谢娜',
-          },
-          {
-            stuName: '王者荣耀',
-            guardianRela: "保姆",
-            stuSchool: "温州市鹿城区小学",
-            stuClass: "六<2>班",
-            responseName:'谢娜',
           },
         ],
         guardianRules: {
@@ -198,27 +201,12 @@
           url: '/faces',
           face: '',
           imgField: 'face',
-          format: 'jpg'
+          format: 'jpg',
+          key: '',
+          size: ''
         },
         //关系选项
-        options: [
-          {
-            key: 1,
-            label: '父母',
-          },
-          {
-            key: 2,
-            label: '爷奶',
-          },
-          {
-            key: 3,
-            label: '父系长辈',
-          },
-          {
-            key: 4,
-            label: '母系长辈',
-          },
-        ],
+        options: [],
       }
     },
     created () {
@@ -239,7 +227,12 @@
       },
       //获取学生关系下拉框选项
       getList() {
-        fetchSearchOption('/faceConsigner',{method: 'FieldLabel'})
+        let listTemp = {
+          method: 'FieldLabel',
+          snumber: this.$route.params.snumber,
+          guarderid: this.$route.params.guarderid,
+        };
+        fetchSearchOption('/faceConsigner',listTemp)
           .then(response => {
             const data = response.data;
             if(data.msg && data.msg !== ''){
@@ -262,11 +255,11 @@
       cropSuccess(avatarUrl, field) {
         this.imageInfo.face = avatarUrl;
       },
-      //照片上传成功后
+      //照片上传成功后,获取照片的key，size
       cropUploadSuccess(jsonData, field){
         if(jsonData.id === 0){
-          this.guardianForm.facekey = jsonData.key;
-          this.guardianForm.facesize = jsonData.size;
+          this.imageInfo.key = jsonData.key;
+          this.imageInfo.size = jsonData.size;
         }
       },
       //输入身份证编号可以自动补全表单内容和表格内容
@@ -290,31 +283,27 @@
               if(this.guardianForm.mtime){
                 this.guardianForm.mtime = this.timestampToTime(this.guardianForm.mtime);
               }
-              //表格信息加载
-              //给每条数据添加对象--显示下拉框
-              if(this.guardianForm.guarders){
-                this.guardianForm.guarders.forEach(item => {
-                  this.$set(item, 'selectShow', false); //set方法才能添加对象
-                });
-              }else {
-                this.guardianForm.guarders = [];
-              }
               //如果存在facekey，图片内容加载
-              if(this.guardianForm.facekey){
+              if(data.data.facekey){
                 fetchSearchOption('/face/portraits', {method: 'FieldFacekey', facekey: this.guardianForm.facekey}).then(response => {
                   const faceData = response.data;
                   this.imageInfo.face = 'data:image/jpeg;base64,' + faceData.data.face;
                 });
+                //如果抓取不到照片，则不能绑定
+                this.confirmDisabled = false;
               }
+              //委托人姓名和身份证存在 姓名栏改为只读
               this.nameLocked = true;
             }else {
-              this.$message({
-                showClose: true,
-                message: '找不到此证件号码对应的信息',
-                type: 'warning',
-                duration: 2000
-              });
+              this.confirmDisabled = true;
               this.nameLocked = false;
+            }
+            //表格信息加载
+            //给每条数据添加对象--显示下拉框
+            if(data.data.consigners_id === '00000'){
+              this.guardianForm.consigners = data.data.consigners;
+            }else {
+              this.guardianForm.consigners = [];
             }
           });
       },
@@ -337,10 +326,27 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            let temp = Object.assign(this.guardianForm, {method: 'Update'});
+            //如果抓取图片不存在,则判断
+            if(!this.guardianForm.facekey) {
+              if(!this.imageInfo.key) {
+                this.$message({
+                  showClose: true,
+                  message: '请先上传照片',
+                  type: 'error',
+                  duration: 2000
+                });
+                return;
+              }else {
+                //如果已上传照片，则复制照片的key
+                this.guardianForm.facekey = this.imageInfo.key;
+                this.guardianForm.facesize = this.imageInfo.size;
+              }
+            }
+            let temp = Object.assign(this.guardianForm, {method: 'Insert'});
             delete temp.guarders;
             delete temp.face;
             delete temp.mtime;
+            delete temp.guarders_id;
             SubmitTable('/faceConsigner', temp).then((response) => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
@@ -352,7 +358,6 @@
                 });
               }
               if (data.id === '00000') {
-                //默认状态不上传 如果图片有变化则上传，状态再改回默认
                 this.$notify({
                   title: '成功',
                   message: '录入成功',
@@ -361,10 +366,35 @@
                 });
                 this.resetForm();
               }
-            })
+            });
           }
         })
       },
+      //确认绑定委托人信息
+      handleComfirm() {
+        let confirmData = {
+          method: 'Append',
+          snumber: this.$route.params.snumber,
+          guarderid: this.$route.params.guarderid,
+          consigid: this.guardianForm.id,
+          relation: this.ing[0].guardianRela
+        };
+        SubmitTable('/faceConsigner', confirmData).then((response) => {
+          const data = response.data;
+          if (data.msg && data.msg !== '') {
+            this.$message({
+              showClose: true,
+              message: data.msg,
+              type: 'info',
+              duration: 2000
+            });
+          }
+          if (data.id === '00000') {
+            this.guardianForm.consigners.append(this.ing[0]);
+          }
+        })
+      }
+      
     }
   }
 </script>

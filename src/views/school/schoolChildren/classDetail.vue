@@ -155,7 +155,7 @@
         <el-row>
           <el-col :sm="24" :md="12">
             <el-form-item label="姓名" prop="name">
-              <el-input v-model.trim="temp.name" :maxlength="16"
+              <el-input v-model.trim="temp.name" :maxlength="8"
                         style="float: left;margin-right:10px;width:50%;min-width: 87px"></el-input>
               <el-radio-group v-model.trim="temp.sex">
                 <el-radio-button label="男">男</el-radio-button>
@@ -191,10 +191,10 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item label="住址" prop="address">
-              <el-input v-model.trim="temp.address" :maxlength="64"></el-input>
+              <el-input v-model.trim="temp.address" :maxlength="32"></el-input>
             </el-form-item>
             <el-form-item label="父亲" prop="father">
-              <el-input v-model.trim="temp.father" :maxlength="16"></el-input>
+              <el-input v-model.trim="temp.father" :maxlength="8"></el-input>
             </el-form-item>
             <el-form-item label="联系" prop="fa_contact">
               <el-input v-model.trim="temp.fa_contact" :maxlength="24"></el-input>
@@ -233,7 +233,7 @@
               <el-input v-model.trim="temp.studentno" :maxlength="20"></el-input>
             </el-form-item>
             <el-form-item label="母亲" prop="mother">
-              <el-input v-model.trim="temp.mother" :maxlength="16"></el-input>
+              <el-input v-model.trim="temp.mother" :maxlength="8"></el-input>
             </el-form-item>
             <el-form-item label="联系" prop="mo_contact">
               <el-input v-model.trim="temp.mo_contact" :maxlength="24"></el-input>
@@ -623,7 +623,7 @@
               this.temp.relationname = '';
             }
              this.temp.flagname = valueToLabel(this.flagOption, this.temp.flag);
-            let temp = Object.assign({method: 'Insert', classid: this.classInfo.id}, this.temp);
+            let temp = Object.assign({method: 'Append', classid: this.classInfo.id}, this.temp);
             delete temp.old_id;
             delete temp.id_typename;
             delete temp.relationname;
@@ -735,7 +735,7 @@
         this.deleteName = this.list[index].name
       },
       rowDelete(index, row) {
-        var deleteData = Object.assign({method: 'Delete'}, {id: this.list[index].id, classid: this.classInfo.id});
+        var deleteData = Object.assign({method: 'Remove'}, {id: this.list[index].id, classid: this.classInfo.id});
         SubmitTable('/schoolRoster', deleteData).then(response => {
           const data = response.data;
           if (data.msg && data.msg !== '') {

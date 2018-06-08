@@ -22,7 +22,8 @@
         </el-form-item>
         <el-form-item label="员工姓名：">
           <el-input v-model.trim="staffForm.name"
-                    :readonly="idLocked"
+                    :maxlength="8"
+                    :readonly="nameLocked"
                     style="float: left;width:50%;margin-right: 10px"></el-input>
           <el-radio-group v-model="staffForm.sex">
             <el-radio-button label="男">男</el-radio-button>
@@ -40,7 +41,7 @@
           <el-input v-model.trim="staffForm.contact" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址：" prop="address">
-          <el-input v-model.trim="staffForm.address" :maxlength="64"></el-input>
+          <el-input v-model.trim="staffForm.address" :maxlength="32"></el-input>
         </el-form-item>
         <el-form-item label="说明:" prop="descr">
           <el-input type="textarea" v-model.trim="staffForm.descr" :maxlength="128"></el-input>
@@ -114,6 +115,7 @@
           descr: '',
         },
         //监护人名称和ID是否锁定为只读
+        nameLocked: false,
         idLocked: false,
         //抓取按钮是否可用
         fetchButton: true,
@@ -169,6 +171,7 @@
       handleStudentInfo() {
         fetchSearchOption('/faceStaff', { method: 'FieldIdnumber', idnumber: this.staffForm.id})
           .then(response => {
+            this.idLocked = true;
             const data = response.data;
             if (data.msg && data.msg !== '') {
               this.$message({
@@ -192,14 +195,9 @@
                   this.imageInfo.face = 'data:image/jpeg;base64,' + faceData.data.face;
                 });
               }
-              this.idLocked = true;
+              this.nameLocked = true;
             }else {
-              this.$message({
-                showClose: true,
-                message: '找不到此证件号码对应的信息',
-                type: 'warning',
-                duration: 2000
-              });
+              this.nameLocked = false;
             }
           });
       },
@@ -221,10 +219,11 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            let temp = Object.assign(this.staffForm, {method: 'Update'});
+            let temp = Object.assign(this.staffForm, {method: 'Insert'});
             delete temp.guarders;
             delete temp.face;
             delete temp.mtime;
+            delete temp.guarders_id;
             SubmitTable('/faceStaff', temp).then((response) => {
               const data = response.data;
               if (data.msg && data.msg !== '') {

@@ -149,6 +149,7 @@ export const constantRouterMap = [
         path: 'consigners',
         component: () => import('@/views/portraits/02-guardians'),
         name: 'consigners',
+        hidden: true,
         meta: { title: '委托人', icon: 'n4_2' }
       },
       {

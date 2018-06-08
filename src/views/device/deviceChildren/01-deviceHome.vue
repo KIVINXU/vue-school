@@ -191,7 +191,6 @@
   import { cryptoPass } from '@/api/login'
   import { isvalidUsername, isvalidPassword, validateOther, validateNum } from '@/utils/validate'
   export default {
-
     data() {
       //编号验证
       const checkID = (rule, value, callback) => {

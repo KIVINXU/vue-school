@@ -167,7 +167,7 @@
         <el-row>
           <el-col :sm="24" :md="12">
             <el-form-item label="姓名" prop="name">
-              <el-input v-model.trim="temp.name" :maxlength="16"
+              <el-input v-model.trim="temp.name" :maxlength="8"
                         style="float: left;margin-right:10px;width:50%;min-width: 87px"></el-input>
               <el-radio-group v-model.trim="temp.sex">
                 <el-radio-button label="男">男</el-radio-button>
@@ -235,13 +235,13 @@
             
             
             <el-form-item label="父亲" prop="father">
-              <el-input v-model.trim="temp.father" :maxlength="16"></el-input>
+              <el-input v-model.trim="temp.father" :maxlength="8"></el-input>
             </el-form-item>
             <el-form-item label="联系方式" prop="fa_contact">
               <el-input v-model.trim="temp.fa_contact" :maxlength="24"></el-input>
             </el-form-item>
             <el-form-item label="母亲" prop="mother">
-              <el-input v-model.trim="temp.mother" :maxlength="16"></el-input>
+              <el-input v-model.trim="temp.mother" :maxlength="8"></el-input>
             </el-form-item>
             <el-form-item label="联系方式" prop="mo_contact">
               <el-input v-model.trim="temp.mo_contact" :maxlength="24"></el-input>

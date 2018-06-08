@@ -22,6 +22,7 @@
         </el-form-item>
         <el-form-item label="访客姓名:">
           <el-input v-model.trim="visitorForm.name"
+                    :maxlength="8"
                     :readonly="nameLocked"
                     style="float: left;width:50%;margin-right: 10px"></el-input>
           <el-radio-group v-model="visitorForm.sex">
@@ -40,7 +41,7 @@
           <el-input v-model.trim="visitorForm.contact" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="联系住址:" prop="address">
-          <el-input v-model.trim="visitorForm.address" :maxlength="64"></el-input>
+          <el-input v-model.trim="visitorForm.address" :maxlength="32"></el-input>
         </el-form-item>
         <el-form-item label="说明:" prop="descr">
           <el-input type="textarea" v-model.trim="visitorForm.descr" :maxlength="128"></el-input>
@@ -307,12 +308,6 @@
               }
               this.nameLocked = true;
             }else {
-              this.$message({
-                showClose: true,
-                message: '找不到此证件号码对应的信息',
-                type: 'warning',
-                duration: 2000
-              });
               this.nameLocked = false;
             }
           });
@@ -336,10 +331,11 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            let temp = Object.assign(this.visitorForm, {method: 'Update'});
+            let temp = Object.assign(this.visitorForm, {method: 'Insert'});
             delete temp.guarders;
             delete temp.face;
             delete temp.mtime;
+            delete temp.guarders_id;
             SubmitTable('/faceVisitor', temp).then((response) => {
               const data = response.data;
               if (data.msg && data.msg !== '') {
