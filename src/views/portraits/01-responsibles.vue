@@ -20,7 +20,7 @@
                         :width="300" :height="420">
           </image-upload>
         </el-form-item>
-        <el-form-item label="主监护人:">
+        <el-form-item label="主监护人:" prop="name">
           <el-input v-model.trim="parentForm.name"
                     :maxlength="8"
                     :readonly="nameLocked"
@@ -91,7 +91,7 @@
           </el-table-column>
           <el-table-column label="所属学校" width="160px" prop="schoolname"></el-table-column>
           <el-table-column label="所属班级" width="80px" prop="classname"></el-table-column>
-          <el-table-column label="委托人（点击可操作,最多5人）">
+          <el-table-column label="委托人（点击可操作,最多6人）">
             <template slot-scope="scope">
               <el-button-group v-for="(item, index) in scope.row.consigners"
                                :key="index">
@@ -102,7 +102,7 @@
                       解除
                     </el-button>
                     <el-button type="text"
-                               :disabled="scope.row.consigners.length >= 5"
+                               :disabled="scope.row.consigners.length >= 6"
                                @click="handleTrans(scope.row)">
                       添加其他接送人
                     </el-button>
@@ -183,6 +183,7 @@
         //抓取按钮是否可用
         fetchButton: true,
         parentRules: {
+          name: [{required: true, message: '请输入姓名', trigger: 'blur'}],
           id: [
             {required: true, message: '请输入证件号码', trigger: 'blur'},
             {validator: checkID_number, trigger: ['blur','change']}

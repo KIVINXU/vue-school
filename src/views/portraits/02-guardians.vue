@@ -76,10 +76,10 @@
         <el-col :xs="22" :sm="12" :md="14" :lg="15" style="margin-left: -1px">
           <el-table :data="ing" class="tab">
             <el-table-column label="正在进行绑定的信息" width="150px"></el-table-column>
-            <el-table-column label="主监护人" width="100px" prop="guarderName"></el-table-column>
+            <el-table-column label="主监护人" width="100px" prop="guarder"></el-table-column>
             <el-table-column label="与主监护人关系" width="120px" property="请选择">
               <template slot-scope="scope">
-                <el-select v-model="scope.row.guardianRela"
+                <el-select v-model="scope.row.relation"
                            value-key="key"
                            size="mini"
                            style="width: 100px">
@@ -87,12 +87,12 @@
                     v-for="item in options"
                     :key="item.key"
                     :label="item.label"
-                    :value="item.label">
+                    :value="item">
                   </el-option>
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column label="学生姓名" width="100px" prop="stuName"></el-table-column>
+            <el-table-column label="学生姓名" width="100px" prop="name"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <!--只有委托人姓名，身份证号，照片，关系存在才能绑定-->
@@ -177,12 +177,12 @@
         //监护人学生数据
         ing:[
           {
-            guarderName: this.$route.params.guarderName,
-            stuName: this.$route.params.stuName,
+            guarder: this.$route.params.guarderName,
+            name: this.$route.params.stuName,
             classname: this.$route.params.classname,
             schoolname: this.$route.params.schoolname,
-            guardianRela:'',
-          },
+            relation:''
+          }
         ],
         guardianRules: {
           id: [
@@ -377,7 +377,7 @@
           snumber: this.$route.params.snumber,
           guarderid: this.$route.params.guarderid,
           consigid: this.guardianForm.id,
-          relation: this.ing[0].guardianRela
+          relation: this.ing[0].relation.key
         };
         SubmitTable('/faceConsigner', confirmData).then((response) => {
           const data = response.data;
@@ -390,7 +390,8 @@
             });
           }
           if (data.id === '00000') {
-            this.guardianForm.consigners.append(this.ing[0]);
+            let newIng = Object.assign({}, this.ing[0]);
+            this.guardianForm.consigners.push(newIng);
           }
         })
       }
